@@ -1,0 +1,63 @@
+<div class="container">
+
+    <div class="row my-3">
+
+        <div class="card" style="width: 18rem;">
+            <div class="card-body">
+                <h5 class="card-title">Add To Cart</h5>
+                <p class="card-text">Add Product to a cart</p>
+                {{!--  --}}
+                <form action="/cart/add" method="POST">
+                    <div class="form-group">
+                        <label for="quantity">Quantity</label>
+                        <input type="text" class="form-control" id="quantity" name="quantity">
+                    </div>
+                    <div class="form-group">
+                        <label for="productId">Product Id</label>
+                        <input type="text" class="form-control" id="productId" name="productId">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+
+                {{!--  --}}
+            </div>
+        </div>
+        <div class="card" style="width: 18rem;">
+            <div class="card-body">
+                <h5 class="card-title">Edit Cart</h5>
+                <p class="card-text">Modify a cart (quantity)</p>
+                <form action="/cart/edit" method="POST">
+                    <div class="form-group">
+                        <label for="quantity">Quantity</label>
+                        <input type="text" class="form-control" id="quantity" name="quantity">
+                    </div>
+                    <div class="form-group">
+                        <label for="productId">Product Id</label>
+                        <input type="text" class="form-control" id="productId" name="productId">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        </div>
+        <div class="card" style="width: 18rem;">
+            <div class="card-body">
+                <h5 class="card-title">Delete Product</h5>
+                <p class="card-text">Remove product from cart</p>
+                <form action="/cart/remove" method="POST">
+
+                    <div class="form-group">
+                        <label for="productId">Product Id</label>
+                        <input type="text" class="form-control" id="productId" name="productId">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="row my-3">
+        <a href="/cart/" class="btn btn-primary btn-block">Get Cart</a>
+
+        <a href="/cart/checkout" class="btn btn-primary btn-block">Checkout</a>
+
+    </div>
+</div>
