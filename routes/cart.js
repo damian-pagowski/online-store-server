@@ -20,6 +20,7 @@ const router = express.Router();
 const cart = {
   items: [],
   customerId: null,
+  sessionId: null,
   paid: false,
   created: new Date(),
 };
@@ -30,8 +31,13 @@ router.get("/", function(req, res, next) {
 // productId
 // quantity
 router.post("/add", function(req, res, next) {
+  if (!cart.sessionId) {
+    cart.sessionId = req.sessionID;
+  }
   const { productId, quantity } = req.body;
   console.log(req.body);
+  console.log("session: " + JSON.stringify(req.session));
+  console.log("session id : " + req.sessionID);
   cart.items.push({ productId, quantity });
   res.json({ message: "added" });
 });

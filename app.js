@@ -6,12 +6,16 @@ const helmet = require("helmet");
 const SK_STRIPE = process.env.SK_STRIPE;
 const stripe = require("stripe")(SK_STRIPE);
 const exphbs = require("express-handlebars");
-const app = express();
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
 const cartRouter = require("./routes/cart");
+const session = require('express-session');
+const app = express();
+app.use(session({secret: 'secret',saveUninitialized: true,resave: true}));
+
+// app.use(session({secret: 'secret'}));
 
 // handlebars midleware
 app.engine("handlebars", exphbs({ defaultLayout: "main" }));
