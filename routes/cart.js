@@ -24,44 +24,67 @@ const cart = {
   paid: false,
   created: new Date(),
 };
+
+const stock = {
+  1: { name: "YPhone", unitPrice: 1000, currency: "usd" },
+  2: { name: "XBook", unitPrice: 1500, currency: "usd" },
+  3: { name: "ZPad", unitPrice: 500, currency: "usd" },
+};
 router.get("/", function(req, res, next) {
-  res.json(cart);
+  res.json(req.session.cart);
 });
 
-// productId
-// quantity
+router.get("/details", function(req, res, next) {
+  let total = 0;
+  const currency = "usd";
+  const cartItemsDetails = req.session.cart.items.map(item => {
+    let i = { ...item };
+    const product = stock[item.productId];
+    const subTotal = product.unitPrice * item.quantity;
+    i.subTotal = subTotal;
+    total += subTotal;
+    i.currency = product.currency;
+    i.unitPrice = product.unitPrice;
+    i.name = product.name;
+    return i;
+  });
+  res.json({ total, currency, items: cartItemsDetails });
+});
+
 router.post("/add", function(req, res, next) {
-  if (!cart.sessionId) {
-    cart.sessionId = req.sessionID;
-  }
   const { productId, quantity } = req.body;
-  console.log(req.body);
-  console.log("session: " + JSON.stringify(req.session));
-  console.log("session id : " + req.sessionID);
-  cart.items.push({ productId, quantity });
-  res.json({ message: "added" });
+  if (!req.session.cart) {
+    const sessionCart = { ...cart };
+    sessionCart.items.push({ productId, quantity });
+    sessionCart.sessionId = req.sessionID;
+    req.session.cart = sessionCart;
+    req.session.save(err => console.log(err));
+  } else {
+    req.session.cart.items.push({ productId, quantity });
+    req.session.save(err => console.log(err));
+  }
+  res.json({ message: "added", data: req.session.cart });
 });
 router.post("/edit", function(req, res, next) {
-  console.log(req.body);
   const { productId, quantity } = req.body;
-  const item = cart.items.find(item => item.productId == productId);
+  const item = req.session.cart.items.find(item => item.productId == productId);
   item.quantity = quantity;
-  //   push({productId, quantity})
-  res.json({ message: "modified" });
+  req.session.save(err => console.log(err));
+  res.json({ message: "modified", data: req.session.cart });
 });
 router.post("/remove", function(req, res, next) {
   const { productId } = req.body;
-  const items = cart.items.filter(item => item.productId != productId);
-  cart.items = items;
-
-  console.log(req.body);
-  res.json({ message: "removed" });
+  req.session.cart.items = req.session.cart.items.filter(
+    item => item.productId != productId
+  );
+  req.session.save(err => console.log(err));
+  res.json({ message: "removed", data: req.session.cart });
 });
 
 router.get("/checkout", function(req, res, next) {
-  console.log(req.body);
-  cart.paid = true;
-  res.json({ message: "paid" });
+  req.session.cart.paid = true;
+  req.session.save(err => console.log(err));
+  res.json({ message: "paid", data: req.session.cart });
 });
 
 module.exports = router;
