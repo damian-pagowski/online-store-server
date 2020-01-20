@@ -31,11 +31,18 @@ const stock = {
   3: { name: "ZPad", unitPrice: 500, currency: "usd" },
 };
 router.get("/", function(req, res, next) {
+  console.log("_____________________");
+  console.log(JSON.stringify(Object.keys(req)));
+  console.log(JSON.stringify(req.sess));
+
+  console.log("_____________________");
+
   res.json(req.session.cart);
 });
 
 router.get("/details", function(req, res, next) {
   let total = 0;
+  let numberOfProducts = 0;
   const currency = "usd";
   const cartItemsDetails = req.session.cart.items.map(item => {
     let i = { ...item };
@@ -43,11 +50,14 @@ router.get("/details", function(req, res, next) {
     const subTotal = product.unitPrice * item.quantity;
     i.subTotal = subTotal;
     total += subTotal;
+    numberOfProducts += item.quantity;
     i.currency = product.currency;
     i.unitPrice = product.unitPrice;
     i.name = product.name;
     return i;
   });
+  console.log("user " + JSON.stringify(req.user));
+  console.log("cart " + JSON.stringify(req.session.cart));
   res.json({ total, currency, items: cartItemsDetails });
 });
 
@@ -58,18 +68,24 @@ router.post("/add", function(req, res, next) {
     sessionCart.items.push({ productId, quantity });
     sessionCart.sessionId = req.sessionID;
     req.session.cart = sessionCart;
-    req.session.save(err => console.log(err));
+    req.session.save(err => console.log("error while /add - new cart" + err));
   } else {
     req.session.cart.items.push({ productId, quantity });
-    req.session.save(err => console.log(err));
+    req.session.save(err =>
+      console.log("error while /add - existing cart" + err)
+    );
   }
+  console.log("user " + JSON.stringify(req.user));
+  console.log("cart " + JSON.stringify(req.session.cart));
   res.json({ message: "added", data: req.session.cart });
 });
 router.post("/edit", function(req, res, next) {
   const { productId, quantity } = req.body;
   const item = req.session.cart.items.find(item => item.productId == productId);
   item.quantity = quantity;
-  req.session.save(err => console.log(err));
+  req.session.save(err => console.log("Error while /edit" + err));
+  console.log("user " + JSON.stringify(req.user));
+  console.log("cart " + JSON.stringify(req.session.cart));
   res.json({ message: "modified", data: req.session.cart });
 });
 router.post("/remove", function(req, res, next) {
@@ -77,13 +93,17 @@ router.post("/remove", function(req, res, next) {
   req.session.cart.items = req.session.cart.items.filter(
     item => item.productId != productId
   );
-  req.session.save(err => console.log(err));
+  req.session.save(err => console.log("ERROR while /remove" + err));
+  console.log("user " + JSON.stringify(req.user));
+  console.log("cart " + JSON.stringify(req.session.cart));
   res.json({ message: "removed", data: req.session.cart });
 });
 
 router.get("/checkout", function(req, res, next) {
   req.session.cart.paid = true;
-  req.session.save(err => console.log(err));
+  req.session.save(err => console.log("error while /checkout" + err));
+  console.log("user " + JSON.stringify(req.user));
+  console.log("cart " + JSON.stringify(req.session.cart));
   res.json({ message: "paid", data: req.session.cart });
 });
 
