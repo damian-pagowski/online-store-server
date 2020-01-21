@@ -1,13 +1,16 @@
-var express = require('express');
+var express = require("express");
 var router = express.Router();
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
-  
-  console.log("session :" + JSON.stringify(req.session))
-  res.render('index', { title: 'Express' });
-
-
+router.get("/", function(req, res, next) {
+  let username;
+  try {
+    username = req.session.user.displayName;
+  } catch (error) {
+    console.log("cannot set username yet " + error);
+  }
+  console.log("session :" + JSON.stringify(req.session));
+  res.render("index", { username });
 });
 
 module.exports = router;

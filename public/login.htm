@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <link
+      href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+      rel="stylesheet"
+      integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN"
+      crossorigin="anonymous"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+      integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+      crossorigin="anonymous"
+    />
+
+    <style>
+      .grid-container {
+        display: grid;
+        grid-template-columns: 2fr 8fr;
+        grid-gap: 10px;
+        /* background-color: #2196f3; */
+        padding: 10px;
+      }
+      .footer-columns {
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        grid-gap: 10px;
+        padding: 10px;
+      }
+
+      .product-img {
+        width: 240px;
+        height: 210px;
+      }
+      .product-list-item {
+        border-bottom: 1.2px solid #ddd;
+        margin-top: 10px;
+      }
+      .container {
+        margin: 10px 10px 10px 10px;
+      }
+      .card-body {
+        padding: 0;
+      }
+      .navbar {
+        padding: 4px;
+      }
+      #logo {
+        margin: 0;
+        padding-left: 10px;
+        width: 50px;
+        height: 40px;
+      }
+      .icon-nav-right {
+        padding-right: 5px;
+      }
+      .category-name,
+      .category-name:hover,
+      .category-name:active,
+      .category-name:visited {
+        text-decoration: none;
+        background-color: transparent;
+        color: rgb(33, 37, 41);
+      }
+      .footer-col {
+        text-align: center;
+        font-size: 80%;
+        font-weight: 600;
+      }
+      .footer-col > ul {
+        font-weight: 400;
+        list-style-type: none;
+        text-align: left;
+      }
+      #login-container {
+        width: 34vw;
+        height: 100vh;
+        
+      }
+      .card{
+        padding:20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="mx-auto mt-5" id="login-container">
+      <div class="card" >
+        <img src="images/logo.png" class="card-img-top" alt="...">
+        <div class="card-body">
+      <form>
+        <div class="form-group">
+          <label for="exampleInputEmail1">Email address</label>
+          <input
+            type="email"
+            class="form-control"
+            id="exampleInputEmail1"
+            aria-describedby="emailHelp"
+          />
+         
+        </div>
+        <div class="form-group">
+          <label for="exampleInputPassword1">Password</label>
+          <input
+            type="password"
+            class="form-control"
+            id="exampleInputPassword1"
+          />
+        </div>
+      
+        <button type="submit" class="btn btn-success">Login</button>
+      </form>
+    </div>
+  </div>
+    </div>
+  </body>
+</html>

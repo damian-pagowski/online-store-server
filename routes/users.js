@@ -44,10 +44,15 @@ module.exports = function(passport) {
     })
     .get("/logout", (req, res, next) => {
       try {
+        req.session.cart = null;
+        req.session.user = null;
+        req.session.save(err =>
+          console.log("error while saving session: " + err)
+        );
         req.logOut();
         res.json({ message: "logout successful" });
       } catch (error) {
         res.status(400).json({ message: error });
       }
-    });
-};
+    })
+}
