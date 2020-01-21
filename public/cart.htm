@@ -20,17 +20,24 @@
     />
 
     <style>
+      body {
+        min-height: 100vh;
+      }
+      .container {
+        height: 100%;
+        width:100%;
+      }
       .grid-container {
         display: grid;
-        grid-template-columns:  8fr 2fr;
+        grid-template-columns: 8fr 2fr;
         grid-gap: 10px;
         /* background-color: #2196f3; */
         padding: 10px;
       }
-      .footer-columns{
+      .footer-columns {
         width: 100%;
         display: grid;
-        grid-template-columns: repeat(4,1fr);
+        grid-template-columns: repeat(4, 1fr);
         grid-gap: 10px;
         padding: 10px;
       }
@@ -58,24 +65,38 @@
         width: 50px;
         height: 40px;
       }
-      .icon-nav-right{
-          padding-right: 5px;
+      .icon-nav-right {
+        padding-right: 5px;
       }
-      .category-name, .category-name:hover, .category-name:active, .category-name:visited  {
+      .category-name,
+      .category-name:hover,
+      .category-name:active,
+      .category-name:visited {
         text-decoration: none;
         background-color: transparent;
-        color:rgb(33, 37, 41);
-    }   
-    .footer-col{
+        color: rgb(33, 37, 41);
+      }
+      .footer {
+        position: relative;
+        margin-top: -150px; /* negative value of footer height */
+        height: 150px;
+        clear: both;
+        padding-top: 20px;
+        color: #fff;
+      }
+      .footer-col {
         text-align: center;
         font-size: 80%;
-    font-weight: 600;
-    }   
-    .footer-col > ul {
+        font-weight: 600;
+      }
+      .footer-col > ul {
         font-weight: 400;
         list-style-type: none;
         text-align: left;
-    }
+      }
+      #card-cart {
+        padding: 15px;
+      }
     </style>
   </head>
   <body>
@@ -99,9 +120,7 @@
       <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
         <ul class="navbar-nav  mt-2 mt-lg-0">
           <li class="nav-item">
-            <a class="nav-link" href="#"
-              >Help</span></a
-            >
+            <a class="nav-link" href="#">Help</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="#">Gift Cards</a>
@@ -124,10 +143,14 @@
         <!-- NAVBAR-RIGHT -->
         <ul class="navbar-nav ml-auto">
           <li class="nav-item">
-            <a class="nav-link" href="#"><i class="fa fa-user icon-nav-right"></i>Login</a>
+            <a class="nav-link" href="#"
+              ><i class="fa fa-user icon-nav-right"></i>Login</a
+            >
           </li>
           <li class="nav-item mr-4">
-            <a class="nav-link" href="#"><i class="fa fa-shopping-cart icon-nav-right"></i>Cart</a>
+            <a class="nav-link" href="#"
+              ><i class="fa fa-shopping-cart icon-nav-right"></i>Cart</a
+            >
           </li>
         </ul>
         <!-- NAVBAR RIGHT - END -->
@@ -135,12 +158,11 @@
     </nav>
     <!-- navbar - end -->
 
-   <div class="container">
+    <div class="container">
       <div class="grid-container">
-        
         <div class="item2">
           <!-- column - right - start -->
-
+          <ul>
             <li class="media product-list-item">
               <img
                 src="images/products/laptop.webp"
@@ -151,9 +173,8 @@
                 <div class="product-info-wrapper mx-4">
                   <h5 class="mt-1 mb-2">
                     U-Book Elite Laptop
-                    <span class="badge badge-warning">Bastseller</span>
                   </h5>
-                  
+
                   <div>
                     Cras sit amet nibh libero, in gravida nulla. Nulla vel metus
                     scelerisque ante sollicitudin. Cras purus odio, vestibulum
@@ -162,64 +183,159 @@
                     in faucibus.
                   </div>
                   <div>
-                    <h1>
-                      <span class="badge badge-pill badge-light">$2999.99</span>
-                      <i class="fa fa-cart-plus"></i>
-                    </h1>
+                    <h2>
+                      <div class="input-group my-3">
+                        <div class="input-group-prepend">
+                          <label
+                            class="input-group-text"
+                            for="inputGroupSelect01"
+                            >Quantity</label
+                          >
+                        </div>
+                        <select
+                          class="custom-select"
+                          id="inputGroupSelect04"
+                          aria-label="Example select with button addon"
+                        >
+                          <option selected value="1">One</option>
+                          <option value="2">Two</option>
+                          <option value="3">Three</option>
+                        </select>
+                        <div class="input-group-append">
+                          <button
+                            class="btn btn-outline-secondary"
+                            type="button"
+                          >
+                            <i class="fa fa-trash"></i>
+                          </button>
+                        </div>
+                        <span class="badge badge-pill badge-light"
+                          >$2999.99</span
+                        >
+                      </div>
+                    </h2>
                   </div>
                 </div>
               </div>
             </li>
+            <li class="media product-list-item">
+              <img
+                src="images/products/laptop.webp"
+                class="mr-3 product-img"
+                alt="..."
+              />
+              <div class="media-body ">
+                <div class="product-info-wrapper mx-4">
+                  <h5 class="mt-1 mb-2">
+                    U-Book Elite Laptop
+                  </h5>
+
+                  <div>
+                    Cras sit amet nibh libero, in gravida nulla. Nulla vel metus
+                    scelerisque ante sollicitudin. Cras purus odio, vestibulum
+                    in vulputate at, tempus viverra turpis. Fusce condimentum
+                    nunc ac nisi vulputate fringilla. Donec lacinia congue felis
+                    in faucibus.
+                  </div>
+                  <div>
+                    <h2>
+                      <div class="input-group my-3">
+                        <div class="input-group-prepend">
+                          <label
+                            class="input-group-text"
+                            for="inputGroupSelect01"
+                            >Quantity</label
+                          >
+                        </div>
+                        <select
+                          class="custom-select"
+                          id="inputGroupSelect04"
+                          aria-label="Example select with button addon"
+                        >
+                          <option selected value="1">One</option>
+                          <option value="2">Two</option>
+                          <option value="3">Three</option>
+                        </select>
+                        <div class="input-group-append">
+                          <button
+                            class="btn btn-outline-secondary"
+                            type="button"
+                          >
+                            <i class="fa fa-trash"></i>
+                          </button>
+                        </div>
+                        <span class="badge badge-pill badge-light"
+                          >$2999.99</span
+                        >
+                      </div>
+                    </h2>
+                  </div>
+                </div>
+              </div>
+            </li>
+           
+          </ul>
         </div>
         <div class="item1">
-          menu
+          <div class="card " id="card-cart">
+            <div class="card-body">
+              <h5 class="card-title text-center">Shopping Cart</h5>
+              <p class="card-text text-center">Subtotal (3 items)</p>
+              <h1 class="text-center mb-4">
+                <span class="badge badge-pill badge-light">$10999.99</span>
+              </h1>
+              <a href="#" class="btn btn-primary btn-block mb-2"
+                >Proceed to checkout</a
+              >
+            </div>
+          </div>
         </div>
       </div>
     </div>
     <!-- footer - stare -->
     <nav class="navbar sticky-bottom navbar-light bg-light">
-        <div class="mx-auto">
-            <small class="text-center">
-                <span class="badge badge-secondary">Back to top</span>
-            </small>
-        </div>
-
       <div class="container">
-          <div class="footer-columns">
-                <div class="footer-col">
-                    <ul>
-                    <li>Blog</li>
-                    <li>About</li>
-                    <li>Investor Relations</li>
-                </ul>
-            </div>
-                <div class="footer-col">      
-                <ul>
-                    <li>Sell Your Services</li>
-                    <li>Become an Affiliate</li>
-                    <li>Advertise Your Products</li>
-                </ul>
-            </div>
-                <div class="footer-col">
-                    <ul>
-                        <li>Payment Products</li>
-                        <li>Shop with Points</li>
-                        <li>Business Card</li>
-                    </ul>
-                </div>
-                <div class="footer-col">
-                    <ul>
-                        <li>Your Account</li>
-                        <li>Your Orders</li>
-                        <li>Returns & Replacements</li>
-                    </ul>
-
-                </div>
-          </div>
-       
+      <div class="mx-auto">
+        <small class="text-center">
+          <span class="badge badge-secondary">Back to top</span>
+        </small>
       </div>
-      <div class="mx-auto"><small class="text-center">All Rights Reserved &copy; 2019</small></div>
-
+    </div>
+      <div class="container">
+        <div class="footer-columns">
+          <div class="footer-col">
+            <ul>
+              <li>Blog</li>
+              <li>About</li>
+              <li>Investor Relations</li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <ul>
+              <li>Sell Your Services</li>
+              <li>Become an Affiliate</li>
+              <li>Advertise Your Products</li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <ul>
+              <li>Payment Products</li>
+              <li>Shop with Points</li>
+              <li>Business Card</li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <ul>
+              <li>Your Account</li>
+              <li>Your Orders</li>
+              <li>Returns & Replacements</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="mx-auto">
+        <small class="text-center">All Rights Reserved &copy; 2019</small>
+      </div>
     </nav>
 
     <!-- footer - end -->
