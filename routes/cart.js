@@ -3,7 +3,8 @@ const router = express.Router();
 const publishableKey = process.env.STRIPE_PUBLISHABLE_KEY;
 const secretKey = process.env.STRIPE_SECRET_KEY;
 const stripe = require("stripe")(secretKey);
-
+const fetch = require("node-fetch");
+const BASE_URL = process.env.SERVER_URL;
 // 1 handle abandoned cart - for example if cart was created more than X hours ago and
 // there is no payment, an email is sent to user
 // 2 user id - if user sends checkout it must be checked if user is authenticated
@@ -26,6 +27,9 @@ const cart = {
   sessionId: null,
   paid: false,
   created: new Date(),
+  total: 0,
+  currency: "EUR",
+  itemsCount: 0,
 };
 
 const stock = {
@@ -42,46 +46,103 @@ router.get("/", function(req, res, next) {
 
   res.json(req.session.cart);
 });
+const json = {
+  items: [{ productId: 2, quantity: 1, subTotal: null, numberOfProducts: 1 }],
+  customerId: null,
+  sessionId: "P0suL1ec-4BTRX4Pa8JpOiVdHawgD3WW",
+  paid: false,
+  created: "2020-01-25T08:20:17.524Z",
+  total: null,
+  currency: "EUR",
+  itemsCount: 1,
+};
 
-router.get("/details", function(req, res, next) {
-  let total = 0;
-  let numberOfProducts = 0;
-  const currency = "usd";
-  const cartItemsDetails = req.session.cart.items.map(item => {
-    let i = { ...item };
-    const product = stock[item.productId];
-    const subTotal = product.unitPrice * item.quantity;
-    i.subTotal = subTotal;
-    total += subTotal;
-    numberOfProducts += item.quantity;
-    i.currency = product.currency;
-    i.unitPrice = product.unitPrice;
-    i.name = product.name;
-    i.numberOfProducts = numberOfProducts;
-    return i;
-  });
-  console.log("user " + JSON.stringify(req.user));
-  console.log("cart " + JSON.stringify(req.session.cart));
-  res.json({ total, currency, items: cartItemsDetails });
+// name: "Y-Phone Deluxe"
+// image: "http://localhost:3030/images/products/phone.webp"
+// description: "Cras purus odio, vestibulum↵      in vulputate at, tempus viverra turpis. Fusce condimentum↵      nunc ac nisi vulputate fringilla. Donec lacinia congue felis↵      in faucibus."
+// rating: "9/10"
+// category: "phone-smartphone"
+// price: "$999.99"
+// productId: 2
+// quantity: 1
+
+const enrichItem = function(item) {
+  const url = `${BASE_URL}/products/${item.productId}`;
+  return fetch(url).then(res =>
+    res.json().then(product => {
+      product.subTotal = product.price * item.quantity;
+      console.log("### product enriched: " + JSON.stringify(product));
+      return product;
+    })
+  );
+};
+
+router.get("/details", async function(req, res, next) {
+  // let total = 0;
+  // let numberOfProducts = 0;
+  // console.log("SESSION KEYS: " + JSON.stringify(req.session));
+  // console.log("SESSION ID: " + req.sessionID);
+  // console.log("cart in session: " + JSON.stringify(req.session.cart));
+
+  // if (req.session.cart) {
+  //   const enrichedProducts = req.session.cart.items.map(item =>
+  //     { const enriched = await enrichItem(item); return enriched;}
+  //   );
+  //   // console.log(
+  //   //   "cartItemsDetails enriched >>> " + JSON.stringify(enrichedProducts)
+  //   // );
+
+  //   // req.session.cart.items = {};
+  //   // enrichedProducts.forEach(
+  //   //   item => (req.session.cart.items[item.productId] = item)
+  //   // );
+  //   // req.session.cart.itemsCount = numberOfProducts;
+  //   // req.session.cart.total = total;
+  //   // req.session.save(err => console.log("error while /updating cart" + err));
+
+  //   res.json(req.session.cart);
+  // } else {
+  res.json({ message: "no data" });
+  // }
 });
 
-router.post("/add", function(req, res, next) {
+router.post("/add", async function(req, res, next) {
   const { productId, quantity } = req.body;
+  const url = `${BASE_URL}/products/${productId}`;
+  const product = await fetch(url).then(res => res.json());
+  console.log("product: " + product);
   if (!req.session.cart) {
     const sessionCart = { ...cart };
-    sessionCart.items.push({ productId, quantity });
+
+    product.quantity = quantity;
+    product.subTotal = product.quantity * product.price;
+
+    sessionCart.items.push(product);
     sessionCart.sessionId = req.sessionID;
     req.session.cart = sessionCart;
+    req.session.cart;
     req.session.save(err => console.log("error while /add - new cart" + err));
   } else {
-    req.session.cart.items.push({ productId, quantity });
+    const found = req.session.cart.items.map(item => {
+      if (item.productId == productId) {
+        req.session.cart.items.remo;
+        found.quantity += quantity;
+        found.subTotal = found.quantity * product.price;
+      } else {
+        product.quantity = quantity;
+        product.subTotal = quantity * product.price;
+        req.session.cart.items.push(product);
+      }
+      return item;
+    });
     req.session.save(err =>
       console.log("error while /add - existing cart" + err)
     );
   }
+  console.log("SESSION ID: " + req.sessionID);
   console.log("user " + JSON.stringify(req.user));
   console.log("cart " + JSON.stringify(req.session.cart));
-  res.json({ message: "added", data: req.session.cart });
+  res.json(product);
 });
 router.post("/edit", function(req, res, next) {
   const { productId, quantity } = req.body;

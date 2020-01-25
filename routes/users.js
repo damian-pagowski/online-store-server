@@ -10,17 +10,19 @@ module.exports = function(passport) {
         if (info !== undefined) {
           console.error(info.message);
           if (info.message === "bad username") {
-            res.status(401).send(info.message);
+            return res.status(401).send(info.message);
           } else {
-            res.status(403).send(info.message);
+            return res.status(403).send(info.message);
           }
         }
         if (!user) {
-          res.status(404).send("user not found");
+          return res.status(404).send("user not found");
+        } else {
+          req.session.user = user;
+          req.session.save(err => console.log("error while /login" + err));
+          res.json({ email: user.email, id: user._id });
         }
-        req.session.user = user;
-        req.session.save(err => console.log("error while /login" + err));
-        res.redirect("/");
+        // res.redirect("/");
       })(req, res, next);
     })
     .post("/register", (req, res, next) => {
@@ -54,5 +56,5 @@ module.exports = function(passport) {
       } catch (error) {
         res.status(400).json({ message: error });
       }
-    })
-}
+    });
+};

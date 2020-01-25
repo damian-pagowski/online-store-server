@@ -9,6 +9,8 @@ const exphbs = require("express-handlebars");
 const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
 const cartRouter = require("./routes/cart");
+const productRouter = require("./routes/products");
+
 const session = require("express-session");
 const passport = require("passport");
 const mongoose = require("mongoose");
@@ -28,7 +30,14 @@ app.use(bodyParser.json());
 // set static folder
 app.use(express.static(`${__dirname}/public`));
 // cors
-app.use(Cors());
+// app.use(Cors());
+
+app.use(Cors({
+  origin:['http://localhost:3000'],
+  methods:['GET','POST'],
+  credentials: true // enable set cookie
+}));
+
 // helmet
 app.use(helmet());
 
@@ -36,7 +45,7 @@ app.use(helmet());
 app.use("/", indexRouter);
 app.use("/users", usersRouter(passport));
 app.use("/cart", cartRouter);
-
+app.use("/products", productRouter);
 
 // error handler
 app.use(function(err, req, res, next) {
@@ -52,7 +61,9 @@ app.use(function(err, req, res, next) {
 const DB_URI = process.env.MONGOLAB_URI;
 console.log(`Connecting to database:  ${DB_URI}`);
 mongoose.set("useFindAndModify", false);
-mongoose.connect(DB_URI, { useUnifiedTopology: true, useNewUrlParser: true });
+mongoose
+  .connect(DB_URI, { useUnifiedTopology: true, useNewUrlParser: true })
+  .catch(error => console.log(error));
 // run server
 const SERVER_PORT = process.env.PORT || 3030;
 app.listen(SERVER_PORT, () => console.log(`Listening on port ${SERVER_PORT}`));
