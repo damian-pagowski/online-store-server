@@ -32,78 +32,13 @@ const cart = {
   itemsCount: 0,
 };
 
-const stock = {
-  1: { name: "YPhone", unitPrice: 1000, currency: "usd" },
-  2: { name: "XBook", unitPrice: 1500, currency: "usd" },
-  3: { name: "ZPad", unitPrice: 500, currency: "usd" },
-};
-router.get("/", function(req, res, next) {
-  console.log("_____________________");
-  console.log(JSON.stringify(Object.keys(req)));
-  console.log(JSON.stringify(req.sess));
-
-  console.log("_____________________");
-
-  res.json(req.session.cart);
-});
-const json = {
-  items: [{ productId: 2, quantity: 1, subTotal: null, numberOfProducts: 1 }],
-  customerId: null,
-  sessionId: "P0suL1ec-4BTRX4Pa8JpOiVdHawgD3WW",
-  paid: false,
-  created: "2020-01-25T08:20:17.524Z",
-  total: null,
-  currency: "EUR",
-  itemsCount: 1,
-};
-
-// name: "Y-Phone Deluxe"
-// image: "http://localhost:3030/images/products/phone.webp"
-// description: "Cras purus odio, vestibulum↵      in vulputate at, tempus viverra turpis. Fusce condimentum↵      nunc ac nisi vulputate fringilla. Donec lacinia congue felis↵      in faucibus."
-// rating: "9/10"
-// category: "phone-smartphone"
-// price: "$999.99"
-// productId: 2
-// quantity: 1
-
-const enrichItem = function(item) {
-  const url = `${BASE_URL}/products/${item.productId}`;
-  return fetch(url).then(res =>
-    res.json().then(product => {
-      product.subTotal = product.price * item.quantity;
-      console.log("### product enriched: " + JSON.stringify(product));
-      return product;
-    })
-  );
-};
-
 router.get("/details", async function(req, res, next) {
-  // let total = 0;
-  // let numberOfProducts = 0;
-  // console.log("SESSION KEYS: " + JSON.stringify(req.session));
-  // console.log("SESSION ID: " + req.sessionID);
-  // console.log("cart in session: " + JSON.stringify(req.session.cart));
-
-  // if (req.session.cart) {
-  //   const enrichedProducts = req.session.cart.items.map(item =>
-  //     { const enriched = await enrichItem(item); return enriched;}
-  //   );
-  //   // console.log(
-  //   //   "cartItemsDetails enriched >>> " + JSON.stringify(enrichedProducts)
-  //   // );
-
-  //   // req.session.cart.items = {};
-  //   // enrichedProducts.forEach(
-  //   //   item => (req.session.cart.items[item.productId] = item)
-  //   // );
-  //   // req.session.cart.itemsCount = numberOfProducts;
-  //   // req.session.cart.total = total;
-  //   // req.session.save(err => console.log("error while /updating cart" + err));
-
-  //   res.json(req.session.cart);
-  // } else {
-  res.json({ message: "no data" });
-  // }
+  if (!req.session.cart) {
+    const sessionCart = { ...cart };
+    req.session.cart = sessionCart;
+    req.session.save(err => console.log("error while /add - new cart" + err));
+  }
+  res.json(req.session.cart);
 });
 
 router.post("/add", async function(req, res, next) {
