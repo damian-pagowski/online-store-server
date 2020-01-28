@@ -148,6 +148,18 @@ router.post("/add", async function(req, res, next) {
   console.log("SESSION ID: " + req.sessionID);
   console.log(">req.user: " + JSON.stringify(req.user));
   console.log(">session.cart: " + JSON.stringify(req.session.cart));
+
+  let itemsCount = 0;
+  let total = 0;
+  req.session.cart.items.forEach(element => {
+    itemsCount += element.quantity;
+    total += element.subTotal;
+  });
+  req.session.cart.total = total;
+  req.session.cart.itemsCount = itemsCount;
+  req.session.save(err =>
+    console.log("error while /add - existing cart" + err)
+  );
   res.json(req.session.cart);
 });
 router.post("/edit", function(req, res, next) {
