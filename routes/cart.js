@@ -109,40 +109,46 @@ router.get("/details", async function(req, res, next) {
 router.post("/add", async function(req, res, next) {
   const { productId, quantity } = req.body;
   const url = `${BASE_URL}/products/${productId}`;
+  console.log("Fetching: " + url);
   const product = await fetch(url).then(res => res.json());
-  console.log("product: " + product);
+
+  console.log(">product: " + JSON.stringify(product));
   if (!req.session.cart) {
     const sessionCart = { ...cart };
-
     product.quantity = quantity;
     product.subTotal = product.quantity * product.price;
-
     sessionCart.items.push(product);
     sessionCart.sessionId = req.sessionID;
     req.session.cart = sessionCart;
     req.session.cart;
     req.session.save(err => console.log("error while /add - new cart" + err));
   } else {
-    const found = req.session.cart.items.map(item => {
-      if (item.productId == productId) {
-        req.session.cart.items.remo;
-        found.quantity += quantity;
-        found.subTotal = found.quantity * product.price;
-      } else {
-        product.quantity = quantity;
-        product.subTotal = quantity * product.price;
-        req.session.cart.items.push(product);
-      }
-      return item;
-    });
+    const isAlreadyInCart = req.session.cart.items.find(
+      item => item.productId == productId
+    );
+    if (isAlreadyInCart) {
+      const updated = req.session.cart.items.map(item => {
+        if (item.productId == productId) {
+          item.quantity += quantity;
+          item.subTotal = item.quantity * product.price;
+        }
+        return item;
+      });
+
+      req.session.cart.items = updated;
+    } else {
+      product.quantity = quantity;
+      product.subTotal = product.quantity * product.price;
+      req.session.cart.items.push(product);
+    }
     req.session.save(err =>
       console.log("error while /add - existing cart" + err)
     );
   }
   console.log("SESSION ID: " + req.sessionID);
-  console.log("user " + JSON.stringify(req.user));
-  console.log("cart " + JSON.stringify(req.session.cart));
-  res.json(product);
+  console.log(">req.user: " + JSON.stringify(req.user));
+  console.log(">session.cart: " + JSON.stringify(req.session.cart));
+  res.json(req.session.cart);
 });
 router.post("/edit", function(req, res, next) {
   const { productId, quantity } = req.body;
