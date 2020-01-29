@@ -9,7 +9,7 @@ router.get("/:id", (req, res, next) => {
   const id = req.params["id"];
   const found = productInfo.find(item => item.productId == id);
 
-  found ? res.json(found) : res.status(404).json({ message: "not found" });
+  found ? res.json(found) : res.status(404).json({ error: "not found" });
 });
 
 const productInfo = [

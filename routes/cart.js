@@ -47,9 +47,13 @@ router.post("/add", async function(req, res, next) {
   console.log("Fetching: " + url);
   const product = await fetch(url).then(res => res.json());
 
+  if (product.error) {
+    return res.status(400).json({ error: "product ID invalid" });
+  }
   console.log(">product: " + JSON.stringify(product));
   if (!req.session.cart) {
     const sessionCart = { ...cart };
+
     product.quantity = quantity;
     product.subTotal = product.quantity * product.price;
     sessionCart.items.push(product);
@@ -99,7 +103,14 @@ router.post("/add", async function(req, res, next) {
 });
 router.post("/edit", function(req, res, next) {
   const { productId, quantity } = req.body;
+
+  if (!req.session.cart) {
+    return res.status(400).json({ error: "No cart in current session" });
+  }
   const item = req.session.cart.items.find(item => item.productId == productId);
+  if (!item) {
+    return res.status(404).json({ error: "Item not in cart" });
+  }
   item.quantity = quantity;
   item.subTotal = quantity * item.price;
 
@@ -120,13 +131,33 @@ router.post("/edit", function(req, res, next) {
 });
 router.post("/remove", function(req, res, next) {
   const { productId } = req.body;
-  req.session.cart.items = req.session.cart.items.filter(
+  if (!req.session.cart) {
+    res.status(400).json({ error: "No cart in current session" });
+  }
+  const before = req.session.cart.items;
+  const filtered = req.session.cart.items.filter(
     item => item.productId != productId
   );
+  if (before.length == filtered.length) {
+    return res.status(404).json({ error: "Item not in cart" });
+  }
+  req.session.cart.items = filtered;
   req.session.save(err => console.log("ERROR while /remove" + err));
   console.log("user " + JSON.stringify(req.user));
   console.log("cart " + JSON.stringify(req.session.cart));
-  res.json({ message: "removed", data: req.session.cart });
+
+  let itemsCount = 0;
+  let total = 0;
+  req.session.cart.items.forEach(element => {
+    itemsCount += element.quantity;
+    total += element.subTotal;
+  });
+  req.session.cart.total = total;
+  req.session.cart.itemsCount = itemsCount;
+  req.session.save(err => console.log("Error while /edit" + err));
+  console.log("user " + JSON.stringify(req.user));
+  console.log("cart " + JSON.stringify(req.session.cart));
+  res.json(req.session.cart);
 });
 
 router.get("/checkout", async function(req, res, next) {
