@@ -101,10 +101,22 @@ router.post("/edit", function(req, res, next) {
   const { productId, quantity } = req.body;
   const item = req.session.cart.items.find(item => item.productId == productId);
   item.quantity = quantity;
+  item.subTotal = quantity * item.price;
+
+  req.session.save(err => console.log("Error while /edit" + err));
+
+  let itemsCount = 0;
+  let total = 0;
+  req.session.cart.items.forEach(element => {
+    itemsCount += element.quantity;
+    total += element.subTotal;
+  });
+  req.session.cart.total = total;
+  req.session.cart.itemsCount = itemsCount;
   req.session.save(err => console.log("Error while /edit" + err));
   console.log("user " + JSON.stringify(req.user));
   console.log("cart " + JSON.stringify(req.session.cart));
-  res.json({ message: "modified", data: req.session.cart });
+  res.json(req.session.cart);
 });
 router.post("/remove", function(req, res, next) {
   const { productId } = req.body;
