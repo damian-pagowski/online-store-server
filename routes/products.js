@@ -2,7 +2,14 @@ const express = require("express");
 const router = express.Router();
 
 router.get("/", (req, res, next) => {
-  res.json(productInfo);
+  console.log(req.query)
+  if (req.query) {
+    const { subcategory, category } = req.query;
+    const filtered = productInfo.filter(product => product.category == category && product.subcategory == subcategory)
+    res.json(filtered);
+  } else {
+    res.json(productInfo);
+  }
 });
 
 router.get("/categories/", (req, res, next) => {
