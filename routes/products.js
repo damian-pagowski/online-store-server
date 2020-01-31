@@ -3,9 +3,9 @@ const router = express.Router();
 
 router.get("/", (req, res, next) => {
   console.log(req.query)
-  if (req.query) {
+  if (Object.keys(req.query).length > 0) {
     const { subcategory, category } = req.query;
-    const filtered = productInfo.filter(product => product.category == category && product.subcategory == subcategory)
+    const filtered = productInfo.filter(product => product.category == category && (subcategory ? product.subcategory == subcategory : true))
     res.json(filtered);
   } else {
     res.json(productInfo);
@@ -61,10 +61,23 @@ const productInfo = [
       nunc ac nisi vulputate fringilla. Donec lacinia congue felis
       in faucibus.`,
     rating: 4,
+    price: "19.99",
+    productId: 4,
+    category: "games",
+    subcategory: "pc",
+    badges: ["Best Seller"],
+  },
+  {
+    name: "Snake 3D",
+    image: "http://localhost:3030/images/products/snake.png",
+    description: `ante sollicitudin. Cras purus odio, vestibulum
+      in vulputate at, tempus viverra turpis. Fusce condimentum
+      nunc ac nisi vulputate fringilla. Donec lacinia.`,
+    rating: 4,
     price: "99.99",
     productId: 1,
     category: "games",
-    subcategory: "pc",
+    subcategory: "ps4",
     badges: ["Best Seller"],
   },
   {
