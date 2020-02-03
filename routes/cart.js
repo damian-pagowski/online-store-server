@@ -5,6 +5,7 @@ const secretKey = process.env.STRIPE_SECRET_KEY;
 const stripe = require("stripe")(secretKey);
 const fetch = require("node-fetch");
 const BASE_URL = process.env.SERVER_URL;
+const CLIENT_URL = process.env.CLIENT_URL;
 
 const cart = {
   items: [],
@@ -169,12 +170,15 @@ router.get("/charge", async (req, res) => {
 
 router.get("/payment-success", async (req, res) => {
   console.log(req);
-  res.json({ status: "OK" });
+  const sessionCart = { ...cart };
+  req.session.cart = sessionCart;
+  req.session.save(err => console.log("error while /add - new cart" + err));
+  res.redirect(`${CLIENT_URL}/checkout-success`);
 });
 
 router.get("/payment-failed", async (req, res) => {
   console.log(req);
-  res.json({ status: "FAIL" });
+  res.redirect(`${CLIENT_URL}/checkout-fail`);
 });
 
 function round(num) {
