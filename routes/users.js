@@ -22,7 +22,6 @@ module.exports = function(passport) {
           req.session.save(err => console.log("error while /login" + err));
           res.json({ email: user.email, id: user._id });
         }
-        // res.redirect("/");
       })(req, res, next);
     })
     .post("/register", (req, res, next) => {
