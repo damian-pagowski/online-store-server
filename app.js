@@ -30,7 +30,8 @@ app.use(bodyParser.json());
 // set static folder
 app.use(express.static(`${__dirname}/public`));
 // cors
-app.use(cors());
+// app.use(cors());
+app.use(cors({credentials: true}));
 
 // helmet
 app.use(helmet());
