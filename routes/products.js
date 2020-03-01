@@ -54,7 +54,7 @@ router.get("/:id", (req, res, next) => {
 const productInfo = [
   {
     name: "Another Hipster Game",
-    image: "http://localhost:3030/images/products/game.webp",
+    image: "/images/products/game.webp",
     description: `Cras sit amet nibh libero, in gravida nulla. Nulla vel metus
       scelerisque ante sollicitudin. Cras purus odio, vestibulum
       in vulputate at, tempus viverra turpis. Fusce condimentum
@@ -69,7 +69,7 @@ const productInfo = [
   },
   {
     name: "Snake 3D",
-    image: "http://localhost:3030/images/products/snake.png",
+    image: "/images/products/snake.png",
     description: `ante sollicitudin. Cras purus odio, vestibulum
       in vulputate at, tempus viverra turpis. Fusce condimentum
       nunc ac nisi vulputate fringilla. Donec lacinia.`,
@@ -82,7 +82,7 @@ const productInfo = [
   },
   {
     name: "Y-Phone Deluxe",
-    image: "http://localhost:3030/images/products/phone.webp",
+    image: "/images/products/phone.webp",
     description: `Cras purus odio, vestibulum
       in vulputate at, tempus viverra turpis. Fusce condimentum
       nunc ac nisi vulputate fringilla. Donec lacinia congue felis
@@ -96,7 +96,7 @@ const productInfo = [
   },
   {
     name: "Y-Book Premium Pro",
-    image: "http://localhost:3030/images/products/laptop.webp",
+    image: "/images/products/laptop.webp",
     description: `Cras sit amet nibh libero, in gravida nulla. Nulla vel metus
         scelerisque ante sollicitudin. Cras purus odio, vestibulum
         in vulputate at, tempus viverra turpis.`,
