@@ -3,35 +3,29 @@ const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const helmet = require("helmet");
-const SK_STRIPE = process.env.SK_STRIPE;
-const stripe = require("stripe")(SK_STRIPE);
-const exphbs = require("express-handlebars");
 const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
 const cartRouter = require("./routes/cart");
 const productRouter = require("./routes/products");
-
 const session = require("express-session");
 const passport = require("passport");
 const mongoose = require("mongoose");
-
 const app = express();
+
+const CLIENT_URL = process.env.CLIENT_URL;
+
 // session
 app.use(session({ secret: "secret", saveUninitialized: true, resave: true }));
 //passport
 require("./config/passport");
 app.use(passport.initialize());
-// handlebars midleware
-app.engine("handlebars", exphbs({ defaultLayout: "main" }));
-app.set("view engine", "handlebars");
-// body parser middleware
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 // set static folder
 app.use(express.static(`${__dirname}/public`));
 // cors
 // app.use(cors());
-app.use(cors({credentials: true}));
+app.use(cors({ credentials: true, origin: CLIENT_URL }));
 
 // helmet
 app.use(helmet());
