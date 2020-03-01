@@ -33,8 +33,7 @@ app.use(express.static(`${__dirname}/public`));
 // app.use(Cors());
 
 app.use(Cors({
-  origin:['http://localhost:3000'],
-  methods:['GET','POST'],
+
   credentials: true // enable set cookie
 }));
 
