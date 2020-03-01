@@ -1,6 +1,6 @@
 require("dotenv").config();
 const express = require("express");
-const Cors = require("cors");
+const cors = require("cors");
 const bodyParser = require("body-parser");
 const helmet = require("helmet");
 const SK_STRIPE = process.env.SK_STRIPE;
@@ -30,13 +30,7 @@ app.use(bodyParser.json());
 // set static folder
 app.use(express.static(`${__dirname}/public`));
 // cors
-app.use(Cors());
-
-// app.use(Cors({
-//   origin:['http://localhost:3000'],
-//   methods:['GET','POST'],
-//   credentials: true // enable set cookie
-// }));
+app.use(cors());
 
 // helmet
 app.use(helmet());
