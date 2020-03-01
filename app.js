@@ -30,12 +30,13 @@ app.use(bodyParser.json());
 // set static folder
 app.use(express.static(`${__dirname}/public`));
 // cors
-// app.use(Cors());
+app.use(Cors());
 
-app.use(Cors({
-
-  credentials: true // enable set cookie
-}));
+// app.use(Cors({
+//   origin:['http://localhost:3000'],
+//   methods:['GET','POST'],
+//   credentials: true // enable set cookie
+// }));
 
 // helmet
 app.use(helmet());
