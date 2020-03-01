@@ -1,6 +1,5 @@
 const express = require("express");
 const router = express.Router();
-const publishableKey = process.env.STRIPE_PUBLISHABLE_KEY;
 const secretKey = process.env.STRIPE_SECRET_KEY;
 const stripe = require("stripe")(secretKey);
 const fetch = require("node-fetch");
@@ -15,7 +14,7 @@ const cart = {
   created: new Date(),
   total: 0.0,
   currency: "EUR",
-  itemsCount: 0,
+  itemsCount: 0
 };
 
 router.get("/details", async function(req, res, next) {
@@ -145,17 +144,17 @@ router.get("/charge", async (req, res) => {
     images: [item.image],
     amount: Math.floor(item.subTotal * 100),
     currency: cart.currency,
-    quantity: item.quantity,
+    quantity: item.quantity
   }));
   try {
     session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       line_items,
       payment_intent_data: {
-        capture_method: "manual",
+        capture_method: "manual"
       },
-      success_url: "http://localhost:3030/cart/payment-success",
-      cancel_url: "http://localhost:3030/cart/payment-failed",
+      success_url: `${BASE_URL}/cart/payment-success`,
+      cancel_url: `${BASE_URL}/cart/payment-failed`
     });
   } catch (err) {
     console.log(err);
