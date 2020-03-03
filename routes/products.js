@@ -2,10 +2,19 @@ const express = require("express");
 const router = express.Router();
 
 router.get("/", (req, res, next) => {
-  console.log(req.query)
+  console.log(req.query);
   if (Object.keys(req.query).length > 0) {
-    const { subcategory, category } = req.query;
-    const filtered = productInfo.filter(product => product.category == category && (subcategory ? product.subcategory == subcategory : true))
+    const { subcategory, category, search } = req.query;
+    const filtered = productInfo.filter(
+      product =>
+        (category ? product.category == category : true) &&
+        (subcategory ? product.subcategory == subcategory : true) &&
+        (search
+          ? product.name
+              .toLocaleLowerCase()
+              .includes(search.toLocaleLowerCase())
+          : true)
+    );
     res.json(filtered);
   } else {
     res.json(productInfo);
@@ -20,8 +29,8 @@ router.get("/categories/", (req, res, next) => {
         laptops: "Laptops",
         tablets: "Tablets",
         peripherials: "Peripherials",
-        accessories: "Accessories",
-      },
+        accessories: "Accessories"
+      }
     },
     games: {
       display: "Video Games",
@@ -29,8 +38,8 @@ router.get("/categories/", (req, res, next) => {
         pc: "PC",
         ps5: "PS 5",
         ps4: "PS 4",
-        xbox360: "Bbox 360",
-      },
+        xbox360: "Bbox 360"
+      }
     },
     phones: {
       display: "Cell Phones",
@@ -38,9 +47,9 @@ router.get("/categories/", (req, res, next) => {
         smartphones: "Smart Phones",
         wisephones: "Wise Phones",
         hipster: "Hipster",
-        classic: "Classic",
-      },
-    },
+        classic: "Classic"
+      }
+    }
   };
   res.json(categories);
 });
@@ -65,7 +74,7 @@ const productInfo = [
     productId: 4,
     category: "games",
     subcategory: "pc",
-    badges: ["Best Seller"],
+    badges: ["Best Seller"]
   },
   {
     name: "Snake 3D",
@@ -78,7 +87,7 @@ const productInfo = [
     productId: 1,
     category: "games",
     subcategory: "ps4",
-    badges: ["Best Seller"],
+    badges: ["Best Seller"]
   },
   {
     name: "Y-Phone Deluxe",
@@ -92,7 +101,7 @@ const productInfo = [
     subcategory: "smartphones",
     price: "999.99",
     productId: 2,
-    badges: ["Our Choice"],
+    badges: ["Our Choice"]
   },
   {
     name: "Y-Book Premium Pro",
@@ -105,7 +114,7 @@ const productInfo = [
     category: "computers",
     subcategory: "laptops",
     productId: 3,
-    badges: ["Best Seller", "Best Value"],
-  },
+    badges: ["Best Seller", "Best Value"]
+  }
 ];
 module.exports = router;
