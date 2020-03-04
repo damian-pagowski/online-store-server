@@ -97,7 +97,7 @@ const productInfo = [
       nunc ac nisi vulputate fringilla. Donec lacinia congue felis
       in faucibus.`,
     rating: 3,
-    category: "cellphones",
+    category: "phones",
     subcategory: "smartphones",
     price: "999.99",
     productId: 2,

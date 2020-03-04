@@ -54,6 +54,6 @@ mongoose
   .connect(DB_URI, { useUnifiedTopology: true, useNewUrlParser: true })
   .catch(error => console.log(error));
 // run server
-const SERVER_PORT = process.env.PORT || 3030;
+const SERVER_PORT = process.env.PORT || process.env.SERVER_PORT || 3030;
 app.listen(SERVER_PORT, () => console.log(`Listening on port ${SERVER_PORT}`));
 module.exports = app;
