@@ -152,6 +152,18 @@ const productInfo = [
     category: "games",
     subcategory: "ps4",
     badges: ["Best Seller"]
-  }
+  },
+  {
+    name: "Som Tam Air",
+    image: "/images/products/laptop.webp",
+    description: `Nulla, excepturi veritatis. 
+    Doloribus, provident nisi ratione possimus aliquam eligendi! Dolorum eum sed asperiores alias natus repudiandae.`,
+    rating: 4,
+    price: "699.99",
+    category: "computers",
+    subcategory: "laptops",
+    productId: 3,
+    badges: ["Best Value"]
+  },
 ];
 module.exports = router;
