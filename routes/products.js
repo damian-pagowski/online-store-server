@@ -162,7 +162,7 @@ const productInfo = [
     price: "699.99",
     category: "computers",
     subcategory: "laptops",
-    productId: 3,
+    productId: 8,
     badges: ["Best Value"]
   },
 ];
