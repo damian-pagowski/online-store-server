@@ -141,7 +141,7 @@ router.get("/charge", async (req, res) => {
   const line_items = cart.items.map(item => ({
     name: item.name,
     description: item.description,
-    images: [item.image],
+    images: [BASE_URL + item.image],
     amount: Math.floor(item.subTotal * 100),
     currency: cart.currency,
     quantity: item.quantity
