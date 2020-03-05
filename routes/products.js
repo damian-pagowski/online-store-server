@@ -62,21 +62,6 @@ router.get("/:id", (req, res, next) => {
 
 const productInfo = [
   {
-    name: "Another Hipster Game",
-    image: "/images/products/game.webp",
-    description: `Cras sit amet nibh libero, in gravida nulla. Nulla vel metus
-      scelerisque ante sollicitudin. Cras purus odio, vestibulum
-      in vulputate at, tempus viverra turpis. Fusce condimentum
-      nunc ac nisi vulputate fringilla. Donec lacinia congue felis
-      in faucibus.`,
-    rating: 4,
-    price: "19.99",
-    productId: 4,
-    category: "games",
-    subcategory: "pc",
-    badges: ["Best Seller"]
-  },
-  {
     name: "Snake 3D",
     image: "/images/products/snake.png",
     description: `ante sollicitudin. Cras purus odio, vestibulum
@@ -103,6 +88,7 @@ const productInfo = [
     productId: 2,
     badges: ["Our Choice"]
   },
+
   {
     name: "Y-Book Premium Pro",
     image: "/images/products/laptop.webp",
@@ -115,6 +101,57 @@ const productInfo = [
     subcategory: "laptops",
     productId: 3,
     badges: ["Best Seller", "Best Value"]
+  },
+  {
+    name: "Another Hipster Game",
+    image: "/images/products/game.webp",
+    description: `Cras sit amet nibh libero, in gravida nulla. Nulla vel metus
+      scelerisque ante sollicitudin. Cras purus odio, vestibulum
+      in vulputate at, tempus viverra turpis. Fusce condimentum
+      nunc ac nisi vulputate fringilla. Donec lacinia congue felis
+      in faucibus.`,
+    rating: 4,
+    price: "19.99",
+    productId: 4,
+    category: "games",
+    subcategory: "pc",
+    badges: ["Best Seller"]
+  },
+  {
+    name: "Divide and Conquer",
+    image: "/images/products/strategy1.jpeg",
+    description: `Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nulla, excepturi veritatis. 
+    Doloribus, provident nisi ratione possimus aliquam eligendi! Dolorum eum sed asperiores alias natus repudiandae?`,
+    rating: 5,
+    price: "9.99",
+    productId: 5,
+    category: "games",
+    subcategory: "pc",
+    badges: ["Best Seller"]
+  },
+  {
+    name: "Durian Potato",
+    image: "/images/products/phone.webp",
+    description: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Vero, cumque. Lorem ipsum dolor sit amet.`,
+    rating: 5,
+    category: "phones",
+    subcategory: "smartphones",
+    price: "19.99",
+    productId: 6,
+    badges: []
+  },
+  {
+    name: "Age Of Colonies",
+    image: "/images/products/strategy2.jpeg",
+    description: `Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nulla, excepturi veritatis. 
+    Doloribus, provident nisi ratione possimus aliquam eligendi! Dolorum eum sed asperiores alias natus repudiandae.
+     Vero, cumque. Lorem ipsum dolor sit amet.`,
+    rating: 5,
+    price: "5.99",
+    productId: 7,
+    category: "games",
+    subcategory: "ps4",
+    badges: ["Best Seller"]
   }
 ];
 module.exports = router;
