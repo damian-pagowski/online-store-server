@@ -119,14 +119,14 @@ router.post("/remove", function(req, res, next) {
   if (before.length == filtered.length) {
     return res.status(404).json({ error: "Item not in cart" });
   }
-  req.session.cart.items = filtered;
   req.session.save(err => console.log("ERROR while /remove" + err));
   let itemsCount = 0;
   let total = 0.0;
-  req.session.cart.items.forEach(element => {
+  filtered.forEach(element => {
     itemsCount += element.quantity;
     total += element.subTotal;
   });
+  req.session.cart.items = filtered;
   req.session.cart.total = round(total);
   req.session.cart.itemsCount = itemsCount;
   req.session.save(err => console.log("Error while /edit" + err));
