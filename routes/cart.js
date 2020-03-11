@@ -14,7 +14,7 @@ const cart = {
   created: new Date(),
   total: 0.0,
   currency: "EUR",
-  itemsCount: 0
+  itemsCount: 0,
 };
 
 router.get("/details", async function(req, res, next) {
@@ -24,6 +24,13 @@ router.get("/details", async function(req, res, next) {
     req.session.save(err => console.log("error while /add - new cart" + err));
   }
   res.json(req.session.cart);
+});
+
+router.get("/destroy", async function(req, res, next) {
+  req.session.cart = null;
+  req.session.user = null;
+  req.session.save(err => console.log("error while saving session: " + err));
+  res.status(200).json({ status: "OK" });
 });
 
 router.post("/add", async function(req, res, next) {
@@ -144,17 +151,17 @@ router.get("/charge", async (req, res) => {
     images: [BASE_URL + item.image],
     amount: Math.floor(item.subTotal * 100),
     currency: cart.currency,
-    quantity: item.quantity
+    quantity: item.quantity,
   }));
   try {
     session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       line_items,
       payment_intent_data: {
-        capture_method: "manual"
+        capture_method: "manual",
       },
       success_url: `${BASE_URL}/cart/payment-success`,
-      cancel_url: `${BASE_URL}/cart/payment-failed`
+      cancel_url: `${BASE_URL}/cart/payment-failed`,
     });
   } catch (err) {
     console.log(err);
