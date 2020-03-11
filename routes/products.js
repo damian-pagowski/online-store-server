@@ -12,7 +12,11 @@ router.get("/", (req, res, next) => {
         (search
           ? product.name
               .toLocaleLowerCase()
-              .includes(search.toLocaleLowerCase())
+              .includes(search.toLocaleLowerCase()) || 
+              product.category
+              .toLocaleLowerCase() == search.toLocaleLowerCase() ||
+              product.subcategory
+              .toLocaleLowerCase() == search.toLocaleLowerCase() 
           : true)
     );
     res.json(filtered);
