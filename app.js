@@ -11,8 +11,14 @@ const session = require("express-session");
 const passport = require("passport");
 const mongoose = require("mongoose");
 const app = express();
+const rateLimit = require("express-rate-limit");
 
 const CLIENT_URL = process.env.CLIENT_URL;
+const limiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 100, // limit each IP to 100 requests per windowMs
+});
+app.use(limiter);
 
 // session
 app.use(session({ secret: "secret", saveUninitialized: false, resave: false }));
