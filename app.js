@@ -15,7 +15,7 @@ const app = express();
 const CLIENT_URL = process.env.CLIENT_URL;
 
 // session
-app.use(session({ secret: "secret", saveUninitialized: true, resave: true }));
+app.use(session({ secret: "secret", saveUninitialized: false, resave: false }));
 //passport
 require("./config/passport");
 app.use(passport.initialize());
