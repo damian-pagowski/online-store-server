@@ -1,6 +1,7 @@
 # Online Store Server
 
 Online store API developed with Node.js + Express.
+User authorization handled with Passport.js
 Integrated with Stripe for handling payments. 
 Products data is stored in Mongo DB.
 
