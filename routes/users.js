@@ -36,7 +36,7 @@ module.exports = function(passport) {
         } else {
           req.logIn(user, error => {
             console.log("registration > user: " + user);
-            res.status(200).json({ email: user.email, id: user._id });
+            res.status(201).json({ email: user.email, id: user._id });
           });
         }
       })(req, res, next);

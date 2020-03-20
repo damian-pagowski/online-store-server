@@ -26,13 +26,6 @@ router.get("/details", async function(req, res, next) {
   res.json(req.session.cart);
 });
 
-router.get("/destroy", async function(req, res, next) {
-  req.session.cart = null;
-  req.session.user = null;
-  req.session.save(err => console.log("error while saving session: " + err));
-  res.status(200).json({ status: "OK" });
-});
-
 router.post("/add", async function(req, res, next) {
   const { productId, quantity } = req.body;
   const url = `${BASE_URL}/products/${productId}`;
@@ -86,7 +79,7 @@ router.post("/add", async function(req, res, next) {
   req.session.save(err =>
     console.log("error while /add - existing cart" + err)
   );
-  res.json(req.session.cart);
+  res.status(201).json(req.session.cart);
 });
 router.post("/edit", function(req, res, next) {
   const { productId, quantity } = req.body;
