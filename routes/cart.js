@@ -21,7 +21,12 @@ router.get("/details", async function(req, res, next) {
   if (!req.session.cart) {
     const sessionCart = { ...cart };
     req.session.cart = sessionCart;
-    req.session.save(err => console.log("error while /add - new cart" + err));
+    req.session.save(err => {
+      {
+        console.log("error while /DETAILS  ERROR " + err);
+        console.log("error while /DETAILS - REQUEST " + req.body);
+      }
+    });
   }
   res.json(req.session.cart);
 });
@@ -44,7 +49,12 @@ router.post("/add", async function(req, res, next) {
     sessionCart.sessionId = req.sessionID;
     req.session.cart = sessionCart;
     req.session.cart;
-    req.session.save(err => console.log("error while /add - new cart" + err));
+    req.session.save(err => {
+      {
+        console.log("error while /add - NEW CART - ERROR " + err);
+        console.log("error while /add - REQUEST " + req.body);
+      }
+    });
   } else {
     const isAlreadyInCart = req.session.cart.items.find(
       item => item.productId == productId
@@ -64,9 +74,10 @@ router.post("/add", async function(req, res, next) {
       product.subTotal = round(product.quantity * product.price);
       req.session.cart.items.push(product);
     }
-    req.session.save(err =>
-      console.log("error while /add - existing cart" + err)
-    );
+    req.session.save(err => {
+      console.log("error while /add - EXISTING CART - ERROR " + err);
+      console.log("error while /add - REQUEST " + req.body);
+    });
   }
   let itemsCount = 0;
   let total = 0.0;
@@ -76,9 +87,10 @@ router.post("/add", async function(req, res, next) {
   });
   req.session.cart.total = round(total);
   req.session.cart.itemsCount = itemsCount;
-  req.session.save(err =>
-    console.log("error while /add - existing cart" + err)
-  );
+  req.session.save(err => {
+    console.log("error while /add - EXISTING CART - ERROR " + err);
+    console.log("error while /add - REQUEST " + req.body);
+  });
   res.status(201).json(req.session.cart);
 });
 router.post("/edit", function(req, res, next) {
@@ -94,7 +106,10 @@ router.post("/edit", function(req, res, next) {
   item.quantity = quantity;
   item.subTotal = round(quantity * item.price);
 
-  req.session.save(err => console.log("Error while /edit" + err));
+  req.session.save(err => {
+    console.log("error while /EDIT - ERROR " + err);
+    console.log("error while /EDIT - REQUEST " + req.body);
+  });
 
   let itemsCount = 0;
   let total = 0.0;

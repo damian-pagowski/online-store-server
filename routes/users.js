@@ -1,5 +1,7 @@
 const express = require("express");
 const router = express.Router();
+const Users = require("../models/user");
+
 module.exports = function(passport) {
   return router
     .post("/login", (req, res, next) => {
@@ -50,6 +52,18 @@ module.exports = function(passport) {
         );
         req.logOut();
         res.json({ message: "logout successful" });
+      } catch (error) {
+        res.status(400).json({ message: error });
+      }
+    })
+
+    .delete("/", (req, res, next) => {
+      const { email } = req.body;
+
+      try {
+        Users.findOneAndRemove({ email }).then(result =>
+          res.json({ message: "logout successful", result })
+        );
       } catch (error) {
         res.status(400).json({ message: error });
       }

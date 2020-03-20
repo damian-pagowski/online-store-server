@@ -5,8 +5,8 @@
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js",
-    "test-integration": "node ./node_modules/mocha/bin/mocha test/integration/api-test.js --reporter mocha-junit-reporter --reporter-options output=report.xml",
-    "api-test": "node ./node_modules/mocha/bin/mocha test/integration/api-test.js  --reporter mocha-simple-html-reporter --reporter-options output=report.html"
+    "test-api": "node ./node_modules/mocha/bin/mocha test/integration/api-test.js --reporter mocha-junit-reporter --reporter-options output=report.xml",
+    "test-api-local": "node ./node_modules/mocha/bin/mocha test/integration/api-test.js  --reporter mocha-simple-html-reporter --reporter-options output=report.html"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

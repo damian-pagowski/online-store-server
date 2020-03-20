@@ -150,7 +150,7 @@ npm run dev
 
 {
   "email": "joe@doe.com",
-  "id": "5e748ace065caf49a08ea637"
+  "id": "#######"
 }
 ```
 #### User Login
@@ -174,7 +174,7 @@ npm run dev
 
 {
   "email": "joe@doe.com",
-  "id": "5e748ace065caf49a08ea637"
+  "id": "#######"
 }
 ```
 
@@ -231,14 +231,203 @@ npm run dev
       "subTotal": 99.99
     }
  ],
-  "customerId": "5e748b92065caf49a08ea638",
-  "sessionId": "hYJp7ebIFKEzAoxg6_ciGJC82UfrYhtD",
+  "customerId": "######",
+  "sessionId": "######",
   "paid": false,
   "created": "2020-03-20T09:40:45.026Z",
   "total": 99.99,
   "currency": "EUR",
   "itemsCount": "1"
 }
+```
+
+#### Update Cart
+
+**URL:** /cart/edit
+
+**Method:** POST
+
+**Request body:**
+```javaScript
+{
+  "productId": "1",
+  "quantity": "2"
+}
+```
+
+**Success Response Code**: 200
+
+**Sample response:**
+
+```javaScript
+{
+  "items": [
+    {
+      "name": "Snake 3D",
+      "image": "/images/products/snake.png",
+      "description": "blah",
+      "rating": 4,
+      "price": "99.99",
+      "productId": 1,
+      "category": "games",
+      "subcategory": "ps4",
+      "badges": [
+        "Best Seller"
+      ],
+      "quantity": 2,
+      "subTotal": 199.98
+    }
+ ],
+  "customerId": "########",
+  "sessionId": "########",
+  "paid": false,
+  "created": "2020-03-20T09:40:45.026Z",
+  "total": 199.98,
+  "currency": "EUR",
+  "itemsCount": "2"
+}
+```
+
+#### Get Cart Details
+**URL:** /users/details
+
+**Method:** GET
+
+**Success Response Code**: 200
+
+**Sample response:**
+
+```javaScript
+{
+  "items": [
+    {
+      "name": "Snake 3D",
+      "image": "/images/products/snake.png",
+      "description": "blah",
+      "rating": 4,
+      "price": "99.99",
+      "productId": 1,
+      "category": "games",
+      "subcategory": "ps4",
+      "badges": [
+        "Best Seller"
+      ],
+      "quantity": 1,
+      "subTotal": 99.99
+    }
+  ],
+  "customerId": "#######",
+  "sessionId": null,
+  "paid": false,
+  "created": "2020-03-20T09:56:47.146Z",
+  "total": 99.99,
+  "currency": "EUR",
+  "itemsCount": 1
+}
+```
+
+#### Remove item from Cart
+
+**URL:** /cart/remove
+
+**Method:** POST
+
+**Request body:**
+```javaScript
+{
+  "productId": "1"
+}
+```
+
+**Success Response Code**: 200
+
+**Sample response:**
+
+```javaScript
+{
+  "items": [],
+  "customerId": "#######",
+  "sessionId": null,
+  "paid": false,
+  "created": "2020-03-20T09:56:47.146Z",
+  "total": 0,
+  "currency": "EUR",
+  "itemsCount": 0
+}
+```
+#### Send checkout event to payment provider
+
+**URL:** /cart/charge
+
+**Method:** GET
+
+
+**Success Response Code**: 200
+
+**Sample response:**
+
+```javaScript
+{
+  "session": {
+    "id": "############",
+    "object": "checkout.session",
+    "billing_address_collection": null,
+    "cancel_url": "http://localhost:3030/cart/payment-failed",
+    "client_reference_id": null,
+    "customer": null,
+    "customer_email": null,
+    "display_items": [
+      {
+        "amount": 1,
+        "currency": "eur",
+        "custom": {
+          "description": "blah",
+          "images": [
+            "http://localhost:3030/images/products/snake.png"
+          ],
+          "name": "Snake 3D"
+        },
+        "quantity": 1,
+        "type": "custom"
+      }
+    ],
+    "livemode": false,
+    "locale": null,
+    "metadata": {},
+    "mode": "payment",
+    "payment_intent": "############",
+    "payment_method_types": [
+      "card"
+    ],
+    "setup_intent": null,
+    "shipping": null,
+    "shipping_address_collection": null,
+    "submit_type": null,
+    "subscription": null,
+    "success_url": "http://localhost:3030/cart/payment-success"
+  },
+  "error": {}
+}
+```
+
+## Tests
+
+### Integration tests
+
+There are integration tests implemented for Online Store API using:
+- Mocha
+- Chai
+- Chai-http
+
+#### Running tests
+
+When running tests with CI and XML report is expected run:
+```bash
+npm run test-api
+```
+To get HTML report use:
+```bash
+npm run test-api-local
 ```
 
 ## Contributing
