@@ -1,12 +1,75 @@
 const {
   findCartItemByProductId,
-  updateProductQuantityAndSubtotal,
+  incrementProductQuantityAndCalculateSubtotal,
   updateTotalAndItemCount,
   calculateSubtotal,
   round,
   filterOutItem,
   removeFromCart,
+  setProductQuantityAndCalculateSubtotal,
+  replaceItem,
+  setQuantity,
+  incrementQuantity
+
 } = require("../../src/cart");
+
+test("should replace item in cart ", () => {
+  const cart = {
+    items: [
+      {
+        quantity: 3,
+        productId: 2,
+        price: 999.99,
+        subTotal: 2999.97,
+      },
+      {
+        quantity: 4,
+        productId: 3,
+        price: 2999.99,
+        subTotal: 11999.96,
+      },
+     
+    ],
+  };
+
+  const newItem = {
+    quantity: 1,
+    productId: 3,
+    price: 0.99,
+    subTotal: 0.99,
+  };
+
+  const updatedCart = replaceItem(cart, newItem);
+  expect(updatedCart.items.length).toBe(2);
+  
+  const updatedItem = updatedCart.items.find(item => item.productId = newItem.productId);
+  console.log(updatedItem)
+  expect(updatedItem.quantity).toBe(1);
+  expect(updatedItem.price).toBe(0.99);
+  expect(updatedItem.subTotal).toBe(0.99);
+  });
+
+test("should increment quantity", () => {
+  const item =   {
+    "quantity": 10,
+    "productId": 1,
+    "price": 99.99,
+    "subTotal": 999.9
+  };
+  const updatedItem = incrementQuantity(item, 1) 
+  expect(updatedItem.quantity).toBe(11);
+});
+
+test("should set quantity", () => {
+  const item =   {
+    "quantity": 10,
+    "productId": 1,
+    "price": 99.99,
+    "subTotal": 999.9
+  };
+  const updatedItem = setQuantity(item, 1) 
+  expect(updatedItem.quantity).toBe(1);
+});
 
 test("should round up price - increment integer part", () => {
   const rounded = round(79.998);
@@ -85,7 +148,7 @@ test("should update cart item subtotal and quantity - quantity not set", () => {
     subcategory: "ps4",
     badges: ["Best Seller"],
   };
-  const updatedItem = updateProductQuantityAndSubtotal(product, 7);
+  const updatedItem = incrementProductQuantityAndCalculateSubtotal(product, 7);
   expect(updatedItem.quantity).toBe(7);
   expect(updatedItem.price).toEqual(99.99);
   expect(updatedItem.productId).toBe(1);
@@ -105,7 +168,7 @@ test("should update cart item subtotal and quantity - quantity set", () => {
     subcategory: "ps4",
     badges: ["Best Seller"],
   };
-  const updatedItem = updateProductQuantityAndSubtotal(product, 7);
+  const updatedItem = incrementProductQuantityAndCalculateSubtotal(product, 7);
   expect(updatedItem.quantity).toBe(9);
   expect(updatedItem.price).toEqual(99.99);
   expect(updatedItem.productId).toBe(1);

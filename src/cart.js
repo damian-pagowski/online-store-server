@@ -9,11 +9,11 @@ exports.findCartItemByProductId = findCartItemByProductId;
 const addToCart = async (cart, productId, quantity) => {
   const productInCart = findCartItemByProductId(cart, productId);
   if (productInCart) {
-    updateProductQuantityAndSubtotal(productInCart, quantity);
+    incrementProductQuantityAndCalculateSubtotal(productInCart, quantity);
   } else {
     const productFetched = await fetchProductById(productId);
     const product = { quantity: 0, productId, price: productFetched.price };
-    cart.items.push(updateProductQuantityAndSubtotal(product, quantity));
+    cart.items.push(incrementProductQuantityAndCalculateSubtotal(product, quantity));
   }
   return updateTotalAndItemCount(cart);
 };
@@ -27,13 +27,33 @@ const fetchProductById = async productId => {
 };
 exports.fetchProductById = fetchProductById;
 
-const updateProductQuantityAndSubtotal = (product, quantity) => {
+const incrementProductQuantityAndCalculateSubtotal = (product, quantity) => {
+  const updatedItem = incrementQuantity(product, quantity);
+  updatedItem.subTotal = calculateSubtotal(updatedItem.quantity, product.price);
+  return updatedItem;
+};
+exports.incrementProductQuantityAndCalculateSubtotal = incrementProductQuantityAndCalculateSubtotal;
+
+const setProductQuantityAndCalculateSubtotal = (product, quantity) => {
+  const updatedItem = setQuantity(product, quantity);
+  updatedItem.subTotal = calculateSubtotal(updatedItem.quantity, product.price);
+  return updatedItem;
+};
+exports.setProductQuantityAndCalculateSubtotal = setProductQuantityAndCalculateSubtotal;
+
+const incrementQuantity = (product, quantity) => {
   const tmp = { ...product };
   tmp.quantity = tmp.quantity ? tmp.quantity + quantity : quantity;
-  tmp.subTotal = calculateSubtotal(tmp.quantity, product.price);
   return tmp;
-};
-exports.updateProductQuantityAndSubtotal = updateProductQuantityAndSubtotal;
+}
+exports.incrementQuantity=incrementQuantity;
+
+const setQuantity = (product, quantity) => {
+  const tmp = { ...product };
+  tmp.quantity = quantity;
+  return tmp;
+}
+exports.setQuantity=setQuantity;
 
 const updateTotalAndItemCount = cart => {
   let itemsCount = 0;
@@ -47,22 +67,22 @@ const updateTotalAndItemCount = cart => {
   return cart;
 };
 exports.updateTotalAndItemCount = updateTotalAndItemCount;
+
 const calculateSubtotal = (quantity, unitPrice) => {
   return round(quantity * unitPrice);
 };
 exports.calculateSubtotal = calculateSubtotal;
+
 const round = function(num) {
   return +(Math.round(num + "e+2") + "e-2");
 };
 exports.round = round;
-
 
 const removeFromCart = (cart, productId) => {
   const updatedCart = filterOutItem(cart, productId);
   return (updatedCart.items.length < cart.items.length) ? updateTotalAndItemCount(updatedCart): cart;
 }
 exports.removeFromCart = removeFromCart;
-
 
 const filterOutItem = (cart, productId) => {
   const tmpCart = {...cart};
@@ -73,3 +93,19 @@ const filterOutItem = (cart, productId) => {
 }
 exports.filterOutItem = filterOutItem;
 
+const replaceItem = async (cart, item) => {
+  const tmpCart = {...cart};
+  tmpCart.items = await tmpCart.items.filter(
+    i => i.productId != item.productId
+  ).push(item);
+   return tmpCart
+}
+exports.replaceItem = replaceItem;
+
+const updateCart = async (cart, productId,quantity) => {
+  const item = findCartItemByProductId(cart, productId);
+  const updatedItem =  setProductQuantityAndCalculateSubtotal(item, quantity);
+  const updatedCart =  replaceItem(cart, updatedItem);
+  return updateTotalAndItemCount(updatedCart);
+}
+exports.updateCart = updateCart;

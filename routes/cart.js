@@ -4,11 +4,9 @@ const secretKey = process.env.STRIPE_SECRET_KEY;
 const stripe = require("stripe")(secretKey);
 const BASE_URL = process.env.SERVER_URL;
 const CLIENT_URL = process.env.CLIENT_URL;
-const { addToCart, removeFromCart } = require("../src/cart");
+const { addToCart, removeFromCart , updateCart} = require("../src/cart");
 const defaultCart = {
   items: [],
-  customerId: null,
-  sessionId: null,
   paid: false,
   created: new Date(),
   total: 0.0,
@@ -20,7 +18,7 @@ router.get("/details", async function(req, res, next) {
   if (!req.session.cart) {
     const sessionCart = { ...defaultCart };
     req.session.cart = sessionCart;
-    req.session.save(err => {
+    await req.session.save(err => {
       {
         console.log("error while /DETAILS  ERROR " + err);
         console.log("error while /DETAILS - REQUEST " + req.body);
@@ -40,39 +38,19 @@ router.post("/add", async function(req, res, next) {
   req.session.cart = cart;
   console.log(">>CART: " + JSON.stringify(cart));
 
-  req.session.save(err => {
-    console.log("error while /add - EXISTING CART - ERROR " + err);
+  await req.session.save(err => {
     console.log("error while /add - REQUEST " + req.body);
   });
   res.status(201).json(cart);
 });
 
-router.post("/edit", function(req, res, next) {
+router.post("/edit", async function(req, res, next) {
   const { productId, quantity } = req.body;
-
   if (!req.session.cart) {
     return res.status(400).json({ error: "No cart in current session" });
   }
-  const item = req.session.cart.items.find(item => item.productId == productId);
-  if (!item) {
-    return res.status(404).json({ error: "Item not in cart" });
-  }
-  item.quantity = quantity;
-  item.subTotal = round(quantity * item.price);
-
-  req.session.save(err => {
-    console.log("error while /EDIT - ERROR " + err);
-    console.log("error while /EDIT - REQUEST " + req.body);
-  });
-
-  let itemsCount = 0;
-  let total = 0.0;
-  req.session.cart.items.forEach(element => {
-    itemsCount += element.quantity;
-    total += element.subTotal;
-  });
-  req.session.cart.total = round(total);
-  req.session.cart.itemsCount = itemsCount;
+  req.session.cart = await updateCart(req.session.cart, productId, quantity);
+  console.log(JSON.stringify(req.session.cart))
   req.session.save(err => console.log("Error while /edit" + err));
   res.json(req.session.cart);
 });
@@ -88,7 +66,6 @@ router.post("/remove", async function(req, res, next) {
   res.json(req.session.cart);
 });
 
-// Charge Route
 router.get("/charge", async (req, res) => {
   let session = {};
   let error = {};
