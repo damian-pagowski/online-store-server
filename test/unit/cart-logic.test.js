@@ -86,7 +86,6 @@ test("should update cart item subtotal and quantity - quantity not set", () => {
     badges: ["Best Seller"],
   };
   const updatedItem = updateProductQuantityAndSubtotal(product, 7);
-  console.log(JSON.stringify(updatedItem));
   expect(updatedItem.quantity).toBe(7);
   expect(updatedItem.price).toEqual(99.99);
   expect(updatedItem.productId).toBe(1);
@@ -107,42 +106,89 @@ test("should update cart item subtotal and quantity - quantity set", () => {
     badges: ["Best Seller"],
   };
   const updatedItem = updateProductQuantityAndSubtotal(product, 7);
-  console.log(JSON.stringify(updatedItem));
   expect(updatedItem.quantity).toBe(9);
   expect(updatedItem.price).toEqual(99.99);
   expect(updatedItem.productId).toBe(1);
   expect(updatedItem.subTotal).toBe(899.91);
 });
 
-// const updateProductQuantityAndSubtotal = (product, quantity) => {
-//   product.quantity += quantity;
-//   product.subTotal = calculateSubtotal(product.quantity, product.price);
-//   return product;
-// };
-// exports.updateProductQuantityAndSubtotal;
+test("should find item in cart by product ID", () => {
+  const cart = {
+    items: [
+      {
+        quantity: 3,
+        productId: 2,
+        price: 999.99,
+        subTotal: 2999.97,
+      },
+      {
+        quantity: 4,
+        productId: 3,
+        price: 2999.99,
+        subTotal: 11999.96,
+      },
+      {
+        quantity: 1,
+        productId: 1,
+        price: 99.99,
+        subTotal: 99.99,
+      },
+      {
+        quantity: 2,
+        productId: 4,
+        price: 19.99,
+        subTotal: 39.98,
+      },
+      {
+        quantity: 2,
+        productId: 5,
+        price: 9.99,
+        subTotal: 19.98,
+      },
+    ],
+  };
+  const item = findCartItemByProductId(cart, 4);
+  expect(item.productId).toBe(4);
+  expect(item.quantity).toBe(2);
+  expect(item.price).toEqual(19.99);
+  expect(item.subTotal).toBe(39.98);
+});
 
-// const findCartItemByProductId = (cart, productId) => {
-//   return cart.items.find(item => item.productId == productId);
-// };
-// exports.findCartItemByProductId;
-
-// const addToCart = async (cart, productId, quantity) => {
-//   const productInCart = findCartItemByProductId(cart, productId);
-//   if (productInCart) {
-//     updateProductQuantityAndSubtotal(productInCart, quantity);
-//   } else {
-//     const productFetched = fetchProductById(productId);
-//     const product = { quantity: 0, productId, price: productFetched.price };
-//     cart.items.push(updateProductQuantityAndSubtotal(product, quantity));
-//   }
-//   return updateTotalAndItemCount(cart);
-// };
-// exports.addToCart = addToCart;
-
-// const fetchProductById = async productId => {
-//   const url = `${BASE_URL}/products/${productId}`;
-//   console.log("Fetching: " + url);
-//   const product = await fetch(url).then(res => res.json());
-//   return product;
-// };
-// exports.fetchProductById;
+test("should find item in cart by product ID - product not in cart", () => {
+  const cart = {
+    items: [
+      {
+        quantity: 3,
+        productId: 2,
+        price: "999.99",
+        subTotal: 2999.97,
+      },
+      {
+        quantity: 4,
+        productId: 3,
+        price: "2999.99",
+        subTotal: 11999.96,
+      },
+      {
+        quantity: 1,
+        productId: 1,
+        price: "99.99",
+        subTotal: 99.99,
+      },
+      {
+        quantity: 2,
+        productId: 4,
+        price: "19.99",
+        subTotal: 39.98,
+      },
+      {
+        quantity: 2,
+        productId: 5,
+        price: "9.99",
+        subTotal: 19.98,
+      },
+    ],
+  };
+  const item = findCartItemByProductId(cart, 7);
+  expect(item).not.toBeDefined();
+});
