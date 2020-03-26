@@ -17,6 +17,7 @@
     "express-rate-limit": "^5.1.1",
     "express-session": "^1.17.0",
     "helmet": "^3.21.3",
+    "jest": "^25.1.0",
     "mongodb": "^3.5.5",
     "mongoose": "^5.9.5",
     "node-fetch": "^2.6.0",

@@ -2,11 +2,10 @@ const express = require("express");
 const router = express.Router();
 const secretKey = process.env.STRIPE_SECRET_KEY;
 const stripe = require("stripe")(secretKey);
-const fetch = require("node-fetch");
 const BASE_URL = process.env.SERVER_URL;
 const CLIENT_URL = process.env.CLIENT_URL;
-
-const cart = {
+const { addToCart } = require("../src/cart-logic");
+const defaultCart = {
   items: [],
   customerId: null,
   sessionId: null,
@@ -19,7 +18,7 @@ const cart = {
 
 router.get("/details", async function(req, res, next) {
   if (!req.session.cart) {
-    const sessionCart = { ...cart };
+    const sessionCart = { ...defaultCart };
     req.session.cart = sessionCart;
     req.session.save(err => {
       {
@@ -33,66 +32,21 @@ router.get("/details", async function(req, res, next) {
 
 router.post("/add", async function(req, res, next) {
   const { productId, quantity } = req.body;
-  const url = `${BASE_URL}/products/${productId}`;
-  console.log("Fetching: " + url);
-  const product = await fetch(url).then(res => res.json());
+  let cart = req.session.cart
+    ? req.session.cart
+    : (req.session.cart = defaultCart);
+  console.log("ADDING TO A CART: " + productId + " : " + quantity);
+  cart = await addToCart(cart, productId, quantity);
+  req.session.cart = cart;
+  console.log(">>CART: " + JSON.stringify(cart));
 
-  if (product.error) {
-    return res.status(400).json({ error: "product ID invalid" });
-  }
-  console.log(">product: " + JSON.stringify(product));
-  if (!req.session.cart) {
-    const sessionCart = { ...cart };
-    product.quantity = quantity;
-    product.subTotal = round(product.quantity * product.price);
-    sessionCart.items.push(product);
-    sessionCart.sessionId = req.sessionID;
-    req.session.cart = sessionCart;
-    req.session.cart;
-    req.session.save(err => {
-      {
-        console.log("error while /add - NEW CART - ERROR " + err);
-        console.log("error while /add - REQUEST " + req.body);
-      }
-    });
-  } else {
-    const isAlreadyInCart = req.session.cart.items.find(
-      item => item.productId == productId
-    );
-    if (isAlreadyInCart) {
-      const updated = req.session.cart.items.map(item => {
-        if (item.productId == productId) {
-          item.quantity += quantity;
-          item.subTotal = round(item.quantity * product.price);
-        }
-        return item;
-      });
-
-      req.session.cart.items = updated;
-    } else {
-      product.quantity = quantity;
-      product.subTotal = round(product.quantity * product.price);
-      req.session.cart.items.push(product);
-    }
-    req.session.save(err => {
-      console.log("error while /add - EXISTING CART - ERROR " + err);
-      console.log("error while /add - REQUEST " + req.body);
-    });
-  }
-  let itemsCount = 0;
-  let total = 0.0;
-  req.session.cart.items.forEach(element => {
-    itemsCount += element.quantity;
-    total += element.subTotal;
-  });
-  req.session.cart.total = round(total);
-  req.session.cart.itemsCount = itemsCount;
   req.session.save(err => {
     console.log("error while /add - EXISTING CART - ERROR " + err);
     console.log("error while /add - REQUEST " + req.body);
   });
-  res.status(201).json(req.session.cart);
+  res.status(201).json(cart);
 });
+
 router.post("/edit", function(req, res, next) {
   const { productId, quantity } = req.body;
 
@@ -122,6 +76,7 @@ router.post("/edit", function(req, res, next) {
   req.session.save(err => console.log("Error while /edit" + err));
   res.json(req.session.cart);
 });
+
 router.post("/remove", function(req, res, next) {
   const { productId } = req.body;
   if (!req.session.cart) {
@@ -184,7 +139,7 @@ router.get("/charge", async (req, res) => {
 
 router.get("/payment-success", async (req, res) => {
   console.log(req);
-  const sessionCart = { ...cart };
+  const sessionCart = { ...defaultCart };
   req.session.cart = sessionCart;
   req.session.save(err => console.log("error while /add - new cart" + err));
   res.redirect(`${CLIENT_URL}/checkout-success`);
