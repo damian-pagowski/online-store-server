@@ -5,6 +5,7 @@
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js",
+    "test": "node ./node_modules/jest/bin/jest test/unit",
     "test-api": "node ./node_modules/mocha/bin/mocha test/integration/api-test.js --reporter mocha-junit-reporter --reporter-options output=report.xml",
     "test-api-local": "node ./node_modules/mocha/bin/mocha test/integration/api-test.js  --reporter mocha-simple-html-reporter --reporter-options output=report.html"
   },

@@ -1,11 +1,11 @@
 const {
-  addToCart,
   findCartItemByProductId,
-  fetchProductById,
   updateProductQuantityAndSubtotal,
   updateTotalAndItemCount,
   calculateSubtotal,
   round,
+  filterOutItem,
+  removeFromCart,
 } = require("../../src/cart");
 
 test("should round up price - increment integer part", () => {
@@ -192,3 +192,78 @@ test("should find item in cart by product ID - product not in cart", () => {
   const item = findCartItemByProductId(cart, 7);
   expect(item).not.toBeDefined();
 });
+
+
+test("should filter out item with given productId", () => {
+  const cart = {
+    items: [
+      {
+        quantity: 3,
+        productId: 2,
+        price: 999.99,
+        subTotal: 2999.97,
+      },
+      {
+        quantity: 4,
+        productId: 3,
+        price: 2999.99,
+        subTotal: 11999.96,
+      },
+      {
+        quantity: 1,
+        productId: 1,
+        price: 99.99,
+        subTotal: 99.99,
+      },
+      {
+        quantity: 2,
+        productId: 4,
+        price: 19.99,
+        subTotal: 39.98,
+      },
+      {
+        quantity: 2,
+        productId: 5,
+        price: 9.99,
+        subTotal: 19.98,
+      },
+    ],
+  };
+  const updatedCart = filterOutItem(cart, 4);
+  expect(updatedCart.items.map( i => i.productId)).not.toContain(4);
+
+});
+
+
+test("should remove item from cart - update items array, cart total and items count", () => {
+  const cart = 
+  {
+    "items": [
+      {
+        "quantity": 1,
+        "productId": 1,
+        "price": 99.99,
+        "subTotal": 99.99
+      },
+      {
+        "quantity": 1,
+        "productId": 2,
+        "price": 999.99,
+        "subTotal": 999.99
+      }
+    ],
+    "customerId": null,
+    "sessionId": null,
+    "paid": false,
+    "created": "2020-03-26T12:22:00.770Z",
+    "total": 1099.98,
+    "currency": "EUR",
+    "itemsCount": 2
+  }
+  const updatedCart = removeFromCart(cart, 1);
+  expect(updatedCart.items.map( i => i.productId)).not.toContain(1);
+  expect(updatedCart.total).toBe(999.99);
+  expect(updatedCart.itemsCount).toBe(1);
+});
+
+

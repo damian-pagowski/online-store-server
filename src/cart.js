@@ -71,3 +71,5 @@ const filterOutItem = (cart, productId) => {
   );
   return tmpCart;
 }
+exports.filterOutItem = filterOutItem;
+
