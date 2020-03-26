@@ -4,7 +4,7 @@ const secretKey = process.env.STRIPE_SECRET_KEY;
 const stripe = require("stripe")(secretKey);
 const BASE_URL = process.env.SERVER_URL;
 const CLIENT_URL = process.env.CLIENT_URL;
-const { addToCart } = require("../src/cart-logic");
+const { addToCart, removeFromCart } = require("../src/cart");
 const defaultCart = {
   items: [],
   customerId: null,
@@ -77,29 +77,14 @@ router.post("/edit", function(req, res, next) {
   res.json(req.session.cart);
 });
 
-router.post("/remove", function(req, res, next) {
+router.post("/remove", async function(req, res, next) {
   const { productId } = req.body;
   if (!req.session.cart) {
     res.status(400).json({ error: "No cart in current session" });
   }
-  const before = req.session.cart.items;
-  const filtered = req.session.cart.items.filter(
-    item => item.productId != productId
-  );
-  if (before.length == filtered.length) {
-    return res.status(404).json({ error: "Item not in cart" });
-  }
+  const updatedCart = await removeFromCart(req.session.cart, productId);
+  req.session.cart = updatedCart;
   req.session.save(err => console.log("ERROR while /remove" + err));
-  let itemsCount = 0;
-  let total = 0.0;
-  filtered.forEach(element => {
-    itemsCount += element.quantity;
-    total += element.subTotal;
-  });
-  req.session.cart.items = filtered;
-  req.session.cart.total = round(total);
-  req.session.cart.itemsCount = itemsCount;
-  req.session.save(err => console.log("Error while /edit" + err));
   res.json(req.session.cart);
 });
 

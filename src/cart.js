@@ -55,3 +55,19 @@ const round = function(num) {
   return +(Math.round(num + "e+2") + "e-2");
 };
 exports.round = round;
+
+
+const removeFromCart = (cart, productId) => {
+  const updatedCart = filterOutItem(cart, productId);
+  return (updatedCart.items.length < cart.items.length) ? updateTotalAndItemCount(updatedCart): cart;
+}
+exports.removeFromCart = removeFromCart;
+
+
+const filterOutItem = (cart, productId) => {
+  const tmpCart = {...cart};
+  tmpCart.items = tmpCart.items.filter(
+    item => item.productId != productId
+  );
+  return tmpCart;
+}

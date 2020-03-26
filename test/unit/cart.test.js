@@ -6,7 +6,7 @@ const {
   updateTotalAndItemCount,
   calculateSubtotal,
   round,
-} = require("../../src/cart-logic");
+} = require("../../src/cart");
 
 test("should round up price - increment integer part", () => {
   const rounded = round(79.998);
