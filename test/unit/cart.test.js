@@ -13,7 +13,7 @@ const {
 
 } = require("../../src/cart");
 
-test("should replace item in cart ", () => {
+test("should replace item in cart ", async () => {
   const cart = {
     items: [
       {
@@ -39,14 +39,11 @@ test("should replace item in cart ", () => {
     subTotal: 0.99,
   };
 
-  const updatedCart = replaceItem(cart, newItem);
-  expect(updatedCart.items.length).toBe(2);
+  const updatedCart = await replaceItem(cart, newItem);
+
+  console.log(JSON.stringify(updatedCart))
+  expect(updatedCart.items).toBe(2);
   
-  const updatedItem = updatedCart.items.find(item => item.productId = newItem.productId);
-  console.log(updatedItem)
-  expect(updatedItem.quantity).toBe(1);
-  expect(updatedItem.price).toBe(0.99);
-  expect(updatedItem.subTotal).toBe(0.99);
   });
 
 test("should increment quantity", () => {
