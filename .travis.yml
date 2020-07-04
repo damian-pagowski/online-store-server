@@ -1,0 +1,10 @@
+language: node_js
+node_js:
+  - "0.10"
+install: npm install
+script: npm run test-api
+deploy:
+  provider: heroku
+  api_key: $HEROKU_API_KEY
+  app: damian-estore-server
+  on: master
