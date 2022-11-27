@@ -1,10 +1,15 @@
-import mongoose from "mongoose";
-import Blog from "./model/Blog";
+const mongoose = require("mongoose");
+const Products = require("./models/product");
+const Categories = require("./models/category");
+
 require("dotenv").config();
 
 const DB_URI = process.env.MONGOLAB_URI;
 
-mongoose.connect(DB_URI);
+mongoose.set("useFindAndModify", false);
+mongoose
+  .connect(DB_URI, { useUnifiedTopology: true, useNewUrlParser: true })
+  .catch((error) => console.log(error));
 
 const products = [
   {
@@ -21,7 +26,7 @@ const products = [
     badges: ["Best Seller"],
   },
   {
-    name: "Y-Phone Deluxe",
+    name: "Durian Deluxe",
     image: "/images/products/phone.webp",
     description: `Cras purus odio, vestibulum
         in vulputate at, tempus viverra turpis. Fusce condimentum
@@ -36,7 +41,7 @@ const products = [
   },
 
   {
-    name: "Y-Book Premium Pro",
+    name: "Durian Premium Pro",
     image: "/images/products/laptop.webp",
     description: `Cras sit amet nibh libero, in gravida nulla. Nulla vel metus
           scelerisque ante sollicitudin. Cras purus odio, vestibulum
@@ -49,7 +54,7 @@ const products = [
     badges: ["Best Seller", "Best Value"],
   },
   {
-    name: "Another Hipster Game",
+    name: "Hipster Game",
     image: "/images/products/game.webp",
     description: `Cras sit amet nibh libero, in gravida nulla. Nulla vel metus
         scelerisque ante sollicitudin. Cras purus odio, vestibulum
@@ -76,7 +81,7 @@ const products = [
     badges: ["Best Seller"],
   },
   {
-    name: "Durian Potato",
+    name: "Mockia",
     image: "/images/products/phone.webp",
     description: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Vero, cumque. Lorem ipsum dolor sit amet.`,
     rating: 5,
@@ -100,7 +105,7 @@ const products = [
     badges: ["Best Seller"],
   },
   {
-    name: "Som Tam Air",
+    name: "Durian Air",
     image: "/images/products/laptop.webp",
     description: `Nulla, excepturi veritatis. 
       Doloribus, provident nisi ratione possimus aliquam eligendi! Dolorum eum sed asperiores alias natus repudiandae.`,
@@ -112,45 +117,42 @@ const products = [
     badges: ["Best Value"],
   },
 ];
+const entities = products.map((p) => new Products(p));
+entities.forEach((e) => e.save());
 
-const categories = {
-  computers: {
+const categories = [
+  {
+    name: "computers",
     display: "Computers",
-    subcategories: {
-      laptops: "Laptops",
-      tablets: "Tablets",
-      peripherials: "Peripherials",
-      accessories: "Accessories",
-    },
+    subcategories: [
+      { name: "laptops", display: "Laptops" },
+      { name: "tablets", display: "Tablets" },
+      { name: "peripherials", display: "Peripherials" },
+      { name: "accessories", display: "Accessories" },
+    ],
   },
-  games: {
+  {
+    name: "games",
     display: "Video Games",
-    subcategories: {
-      pc: "PC",
-      ps5: "PS 5",
-      ps4: "PS 4",
-      xbox360: "Bbox 360",
-    },
+    subcategories: [
+      { name: "pc", display: "PC" },
+      { name: "ps5", display: "PS 5" },
+      { name: "ps4", display: "PS 4" },
+      { name: "xbox360", display: "Bbox 360" },
+    ],
   },
-  phones: {
+  {
+    name: "phones",
     display: "Cell Phones",
-    subcategories: {
-      smartphones: "Smart Phones",
-      wisephones: "Wise Phones",
-      hipster: "Hipster",
-      classic: "Classic",
-    },
+    subcategories: [
+      { name: "smartphones", display: "Smart Phones" },
+      { name: "wisephones", display: "Wise Phones" },
+      { name: "hipster", display: "Hipster" },
+      { name: "classic", display: "Classic" },
+    ],
   },
-};
+];
 
-// Create a new blog post object
-const article = new Blog({
-  title: "Awesome Post!",
-  slug: "awesome-post",
-  published: true,
-  content: "This is the best post ever",
-  tags: ["featured", "announcement"],
-});
+const entitiesCat = categories.map((c) => new Categories(c));
 
-// Insert the article in our MongoDB database
-await article.save();
+entitiesCat.forEach((e) => e.save());
