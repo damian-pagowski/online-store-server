@@ -3,7 +3,8 @@ const { getUser } = require("./userController");
 const Cart = require("../models/cart");
 const itemQuantityLimit = 10;
 
-const getCartItem = (username, productId) => Cart.find({ username, productId });
+const getCartItem = (username, productId) =>
+  Cart.findOne({ username, productId });
 
 const getCart = (username) => Cart.find({ username });
 
