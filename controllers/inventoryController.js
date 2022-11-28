@@ -13,4 +13,4 @@ const removeFromInventory = async (productId) => {
 
 getInventory = (productId) => Inventory.find({ productId });
 
-module.exports = { removeFromInventory };
+module.exports = { removeFromInventory, getInventory };

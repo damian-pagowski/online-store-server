@@ -3,7 +3,6 @@ const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const helmet = require("helmet");
-const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
 const cartRouter = require("./routes/cart");
 const productRouter = require("./routes/products");
@@ -37,7 +36,6 @@ app.use(cors());
 app.use(helmet());
 
 //routes
-app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/cart", cartRouter);
 app.use("/products", productRouter);

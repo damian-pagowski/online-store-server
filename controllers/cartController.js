@@ -1,47 +1,38 @@
-const { db } = require("./dbConnection");
 const { removeFromInventory } = require("./inventoryController");
-const logger = require("./logger");
+const { getUser } = require("./userController");
+const Cart = require("../models/cart");
+const itemQuantityLimit = 10;
 
-const addItemToCart = async (username, productId) => {
-  await removeFromInventory(itemName);
+const getCartItem = (username, productId) => Cart.find({ username, productId });
 
-  const user = await db.select().from("users").where({ username }).first();
+const getCart = (username) => Cart.find({ username });
+
+const deleteCart = (username) => Cart.deleteMany({ username });
+
+const addItemToCart = async (username, productId, quantity) => {
+  await removeFromInventory(productId);
+  const user = await getUser(username);
   if (!user) {
     const userNotFound = new Error("user not found");
     userNotFound.code = 404;
   }
+  const itemEntry = await getCartItem(username, productId);
 
-  const itemEntry = await db
-    .select()
-    .from("carts_items")
-    .where({ userId: user.id, itemName })
-    .first();
-
-  if (itemEntry && itemEntry.quantity + 1 > 3) {
-    const limitError = new Error(
-      "You can't have more than three units of an item in your cart"
-    );
-    limitError.code = 400;
-    throw limitError;
+  if (itemEntry && itemEntry.quantity + quantity > itemQuantityLimit) {
+    const err = new Error();
+    err.message = "Quantity limit 10 exceeded";
+    throw err;
   }
 
   if (itemEntry) {
-    await db("carts_items")
-      .increment("quantity")
-      .where({ userId: itemEntry.userId, itemName });
+    itemEntry.quantity += quantity;
+    await itemEntry.save();
   } else {
-    await db("carts_items").insert({
-      userId: user.id,
-      itemName,
-      quantity: 1,
-    });
+    const newItem = new Cart({ username, productId, quantity });
+    await newItem.save();
   }
 
-  logger.log(`${itemName} added to ${username}'s cart`);
-  return db
-    .select("itemName", "quantity")
-    .from("carts_items")
-    .where({ userId: user.id });
+  return getCartItem(username, productId);
 };
 
-module.exports = { addItemToCart };
+module.exports = { addItemToCart, getCart, deleteCart };
