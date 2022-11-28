@@ -1,14 +1,8 @@
-const crypto = require("crypto");
-const Users = require("../models/user");
-
-const hashPassword = (password) => {
-  const hash = crypto.createHash("sha256");
-  hash.update(password);
-  return hash.digest("hex");
-};
+const userController = require("./userController");
+const { hashPassword } = require("../utils/crypto");
 
 const credentialsAreValid = async (username, password) => {
-  const user = await Users.findOne({ username });
+  const user = await userController.getUser(username);
   if (!user) return false;
   return hashPassword(password) === user.password;
 };
@@ -34,7 +28,6 @@ const authenticationMiddleware = async (req, res, next) => {
 };
 
 module.exports = {
-  hashPassword,
   credentialsAreValid,
   authenticationMiddleware,
 };

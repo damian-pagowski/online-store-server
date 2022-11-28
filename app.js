@@ -7,6 +7,8 @@ const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
 const cartRouter = require("./routes/cart");
 const productRouter = require("./routes/products");
+const inventoryRouter = require("./routes/inventory");
+
 const session = require("express-session");
 // const passport = require("passport");
 const mongoose = require("mongoose");
@@ -39,6 +41,7 @@ app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/cart", cartRouter);
 app.use("/products", productRouter);
+app.use("/inventory", inventoryRouter);
 
 // db connection
 const DB_URI = process.env.MONGOLAB_URI;
