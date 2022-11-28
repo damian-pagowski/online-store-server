@@ -2,15 +2,11 @@ const mongoose = require("mongoose");
 const Products = require("../models/product");
 const Categories = require("../models/category");
 const Inventory = require("../models/inventory");
+const Users = require("../models/user");
 
 require("dotenv").config();
 
 const DB_URI = process.env.MONGOLAB_URI;
-
-mongoose.set("useFindAndModify", false);
-mongoose
-  .connect(DB_URI, { useUnifiedTopology: true, useNewUrlParser: true })
-  .catch((error) => console.log(error));
 
 const products = [
   {
@@ -187,10 +183,30 @@ const productInventory = [
   },
 ];
 
-const entities = products.map((p) => new Products(p));
-entities.forEach((e) => e.save());
-const entitiesCat = categories.map((c) => new Categories(c));
-entitiesCat.forEach((e) => e.save());
+mongoose
+  .connect(DB_URI, { useUnifiedTopology: true, useNewUrlParser: true })
+  .then(async () => {
+    // clear database
+    const products = await Products.find();
+    await products.forEach((p) => p.remove());
 
-const inventoryItems = productInventory.map((c) => new Inventory(c));
-inventoryItems.forEach((e) => e.save());
+    const categories = await Categories.find();
+    await categories.forEach((p) => p.remove());
+
+    const inventory = await Inventory.find();
+    await inventory.forEach((p) => p.remove());
+
+    const users = await Users.find();
+    await users.forEach((p) => p.remove());
+
+    // set categories, products and inventory
+    const entities = products.map((p) => new Products(p));
+    await entities.forEach((e) => e.save());
+
+    const entitiesCat = categories.map((c) => new Categories(c));
+    await entitiesCat.forEach((e) => e.save());
+
+    const inventoryItems = productInventory.map((c) => new Inventory(c));
+    await inventoryItems.forEach((e) => e.save());
+  })
+  .catch((error) => console.log(error));

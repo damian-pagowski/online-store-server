@@ -1,13 +1,14 @@
 const Inventory = require("../models/inventory");
 
-const removeFromInventory = async (productId) => {
+const removeFromInventory = async (productId, quantity) => {
   const productInventory = await Inventory.findOne({ productId });
-  if (!productInventory || productInventory.quantity === 0) {
-    const err = new Error(`${productId} is unavailable`);
+  if (!productInventory || productInventory.quantity - quantity < 0) {
+    const err = new Error(`Inventory: ${productId} is unavailable`);
+    err.type = "product_unavailable";
     err.code = 400;
     throw err;
   }
-  productInventory.quantity -= 1;
+  productInventory.quantity -= quantity;
   await productInventory.save();
 };
 
