@@ -1,6 +1,8 @@
 const Products = require("../models/product");
 const Categories = require("../models/category");
 
+const mask = { _id: 0, __v: 0 };
+
 const searchProduct = (subcategory, category, search) => {
   let queryCriteria = {};
   if (category) {
@@ -13,11 +15,11 @@ const searchProduct = (subcategory, category, search) => {
     const regex = new RegExp("(" + search + ")", "gi");
     queryCriteria = { ...queryCriteria, name: { $regex: regex } };
   }
-  return Products.find(queryCriteria);
+  return Products.find(queryCriteria, mask);
 };
 
-const getProduct = (productId) => Products.findOne({ productId });
+const getProduct = (productId) => Products.findOne({ productId }, mask);
 
-const getCategories = () => Categories.find();
+const getCategories = () => Categories.find({}, mask);
 
 module.exports = { searchProduct, getCategories, getProduct };

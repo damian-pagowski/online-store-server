@@ -12,6 +12,7 @@ const removeFromInventory = async (productId, quantity) => {
   await productInventory.save();
 };
 
-getInventory = (productId) => Inventory.find({ productId });
+getInventory = (productId) =>
+  Inventory.findOne({ productId }, { _id: 0, __v: 0 });
 
 module.exports = { removeFromInventory, getInventory };

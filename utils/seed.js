@@ -179,7 +179,7 @@ const productInventory = [
   },
   {
     productId: 8,
-    quantity: 3,
+    quantity: 0,
   },
 ];
 
@@ -187,26 +187,26 @@ mongoose
   .connect(DB_URI, { useUnifiedTopology: true, useNewUrlParser: true })
   .then(async () => {
     // clear database
-    const products = await Products.find();
-    await products.forEach((p) => p.remove());
+    const productsFound = await Products.find();
+    await productsFound.forEach((p) => p.remove());
 
-    const categories = await Categories.find();
-    await categories.forEach((p) => p.remove());
+    const categoriesFound = await Categories.find();
+    await categoriesFound.forEach((p) => p.remove());
 
-    const inventory = await Inventory.find();
-    await inventory.forEach((p) => p.remove());
+    const inventoryFound = await Inventory.find();
+    await inventoryFound.forEach((p) => p.remove());
 
-    const users = await Users.find();
-    await users.forEach((p) => p.remove());
+    const usersFound = await Users.find();
+    await usersFound.forEach((p) => p.remove());
 
     // set categories, products and inventory
-    const entities = products.map((p) => new Products(p));
-    await entities.forEach((e) => e.save());
+    const newProducts = products.map((p) => new Products(p));
+    await Promise.all(newProducts.map((e) => e.save()));
 
-    const entitiesCat = categories.map((c) => new Categories(c));
-    await entitiesCat.forEach((e) => e.save());
+    const newCategories = categories.map((c) => new Categories(c));
+    await Promise.all(newCategories.map((e) => e.save()));
 
-    const inventoryItems = productInventory.map((c) => new Inventory(c));
-    await inventoryItems.forEach((e) => e.save());
+    const newInventoryItems = productInventory.map((c) => new Inventory(c));
+    await Promise.all(newInventoryItems.map((e) => e.save()));
   })
   .catch((error) => console.log(error));

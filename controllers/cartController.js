@@ -20,7 +20,10 @@ const addItemToCart = async (username, productId, quantity) => {
     }
     const itemEntry = await getCartItem(username, productId);
 
-    if (itemEntry && itemEntry.quantity + quantity > itemQuantityLimit) {
+    if (
+      quantity > itemQuantityLimit ||
+      (itemEntry && itemEntry.quantity + quantity > itemQuantityLimit)
+    ) {
       const err = new Error();
       err.message = "Quantity limit 10 exceeded";
       throw err;

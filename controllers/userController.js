@@ -2,8 +2,8 @@ const crypto = require("crypto");
 const Users = require("../models/user");
 const { hashPassword } = require("../utils/crypto");
 
-const getUser = (username) => {
-  return Users.findOne({ username });
+const getUser = (username, mask = {}) => {
+  return Users.findOne({ username }, mask);
 };
 
 const deleteUser = (username) => {
