@@ -208,5 +208,6 @@ mongoose
 
     const newInventoryItems = productInventory.map((c) => new Inventory(c));
     await Promise.all(newInventoryItems.map((e) => e.save()));
+    mongoose.connection.close();
   })
   .catch((error) => console.log(error));
