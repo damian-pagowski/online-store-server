@@ -2,15 +2,12 @@
 
 Online store API developed with Node.js + Express.
 User authorization handled with Passport.js
-Integrated with Stripe for handling payments. 
+Integrated with Stripe for handling payments.
 Products data is stored in Mongo DB.
-
 
 ## Installation
 
-
 Requires specific environment variables to run:
-
 
 ```bash
 MONGOLAB_URI=
@@ -28,9 +25,11 @@ npm install
 ## Usage
 
 For production run:
+
 ```bash
 npm start
 ```
+
 For development it can be also run with script:
 
 ```bash
@@ -56,7 +55,7 @@ npm run dev
   {
     "name": "Snake 3D",
     "image": "/images/products/snake.png",
-    "description": "bla bla",
+    "description": "description",
     "rating": 4,
     "price": "99.99",
     "productId": 1,
@@ -70,7 +69,6 @@ npm run dev
 ]
 
 ```
-
 
 #### Get Categories
 
@@ -100,12 +98,12 @@ npm run dev
 ```
 
 #### Get Product by ID
+
 **URL:** /products/:id
 
 **Method:** GET
 
 **URL Params:** id=[integer]
-
 
 **Success Response Code**: 200
 
@@ -127,81 +125,37 @@ npm run dev
     ]
   }
 ```
+
 ### Users
-#### Register new User
+
+#### Create User
+
 **URL:** /users/register
 
 **Method:** POST
 
 **Request body:**
+
 ```javaScript
 {
-  email: "joe@doe.com",
-  password: "P@ssw0rd",
-  displayName: "Joe Doe",
-  defaultProject: "bugs"
+    "username": "test2",
+    "email": "test2@test.com",
+    "password": "secret"
 }
 ```
 
 **Success Response Code**: 201
 
-**Sample response:**
-
-```javaScript
-
-{
-  "email": "joe@doe.com",
-  "id": "#######"
-}
-```
-#### User Login
-**URL:** /users/login
-
-**Method:** POST
-
-**Request body:**
-```javaScript
-{
-  email: "joe@doe.com",
-  password: "P@ssw0rd",
-}
-```
-
-**Success Response Code**: 200
-
-**Sample response:**
-
-```javaScript
-
-{
-  "email": "joe@doe.com",
-  "id": "#######"
-}
-```
-
-#### User Logout
-**URL:** /users/logout
-
-**Method:** GET
-
-**Success Response Code**: 200
-
-**Sample response:**
-
-```javaScript
-{
-  "message": "logout successful"
-}
-```
-
 ### Cart
+
 #### Add product to the Cart
 
-**URL:** /cart/add
+**URL:** /cart/:userid
 
 **Method:** POST
 
 **Request body:**
+
 ```javaScript
 {
   "productId": "1",
@@ -215,82 +169,32 @@ npm run dev
 
 ```javaScript
 {
-  "items": [
-    {
-      "name": "Snake 3D",
-      "image": "/images/products/snake.png",
-      "description": "blah",
-      "rating": 4,
-      "price": "99.99",
-      "productId": 1,
-      "category": "games",
-      "subcategory": "ps4",
-      "badges": [
-        "Best Seller"
-      ],
-      "quantity": "1",
-      "subTotal": 99.99
-    }
- ],
-  "customerId": "######",
-  "sessionId": "######",
-  "paid": false,
-  "created": "2020-03-20T09:40:45.026Z",
-  "total": 99.99,
-  "currency": "EUR",
-  "itemsCount": "1"
+    "productId": 10,
+    "username": "test2",
+    "quantity": 1,
 }
 ```
 
-#### Update Cart
+\*\*To remove product from cart - send a request with negative quantity. Example:
 
-**URL:** /cart/edit
-
-**Method:** POST
-
-**Request body:**
 ```javaScript
 {
-  "productId": "1",
-  "quantity": "2"
+  "productId": 1,
+  "quantity": -1
 }
 ```
+
+#### Clear cart
+
+**URL:** /cart/:userid
+
+**Method:** DELETE
 
 **Success Response Code**: 200
 
-**Sample response:**
+#### Get Cart
 
-```javaScript
-{
-  "items": [
-    {
-      "name": "Snake 3D",
-      "image": "/images/products/snake.png",
-      "description": "blah",
-      "rating": 4,
-      "price": "99.99",
-      "productId": 1,
-      "category": "games",
-      "subcategory": "ps4",
-      "badges": [
-        "Best Seller"
-      ],
-      "quantity": 2,
-      "subTotal": 199.98
-    }
- ],
-  "customerId": "########",
-  "sessionId": "########",
-  "paid": false,
-  "created": "2020-03-20T09:40:45.026Z",
-  "total": 199.98,
-  "currency": "EUR",
-  "itemsCount": "2"
-}
-```
-
-#### Get Cart Details
-**URL:** /users/details
+**URL:** /cart/:userid
 
 **Method:** GET
 
@@ -299,116 +203,13 @@ npm run dev
 **Sample response:**
 
 ```javaScript
-{
-  "items": [
+[
     {
-      "name": "Snake 3D",
-      "image": "/images/products/snake.png",
-      "description": "blah",
-      "rating": 4,
-      "price": "99.99",
-      "productId": 1,
-      "category": "games",
-      "subcategory": "ps4",
-      "badges": [
-        "Best Seller"
-      ],
-      "quantity": 1,
-      "subTotal": 99.99
+        "productId": 1,
+        "username": "test2",
+        "quantity": 5,
     }
-  ],
-  "customerId": "#######",
-  "sessionId": null,
-  "paid": false,
-  "created": "2020-03-20T09:56:47.146Z",
-  "total": 99.99,
-  "currency": "EUR",
-  "itemsCount": 1
-}
-```
-
-#### Remove item from Cart
-
-**URL:** /cart/remove
-
-**Method:** POST
-
-**Request body:**
-```javaScript
-{
-  "productId": "1"
-}
-```
-
-**Success Response Code**: 200
-
-**Sample response:**
-
-```javaScript
-{
-  "items": [],
-  "customerId": "#######",
-  "sessionId": null,
-  "paid": false,
-  "created": "2020-03-20T09:56:47.146Z",
-  "total": 0,
-  "currency": "EUR",
-  "itemsCount": 0
-}
-```
-#### Send checkout event to payment provider
-
-**URL:** /cart/charge
-
-**Method:** GET
-
-
-**Success Response Code**: 200
-
-**Sample response:**
-
-```javaScript
-{
-  "session": {
-    "id": "############",
-    "object": "checkout.session",
-    "billing_address_collection": null,
-    "cancel_url": "http://localhost:3030/cart/payment-failed",
-    "client_reference_id": null,
-    "customer": null,
-    "customer_email": null,
-    "display_items": [
-      {
-        "amount": 1,
-        "currency": "eur",
-        "custom": {
-          "description": "blah",
-          "images": [
-            "http://localhost:3030/images/products/snake.png"
-          ],
-          "name": "Snake 3D"
-        },
-        "quantity": 1,
-        "type": "custom"
-      }
-    ],
-    "livemode": false,
-    "locale": null,
-    "metadata": {},
-    "mode": "payment",
-    "payment_intent": "############",
-    "payment_method_types": [
-      "card"
-    ],
-    "setup_intent": null,
-    "shipping": null,
-    "shipping_address_collection": null,
-    "submit_type": null,
-    "subscription": null,
-    "success_url": "http://localhost:3030/cart/payment-success"
-  },
-  "error": {}
-}
+]
 ```
 
 ## Tests
@@ -416,25 +217,23 @@ npm run dev
 ### Integration tests
 
 There are integration tests implemented for Online Store API using:
-- Mocha
-- Chai
-- Chai-http
+
+- Supertest
 
 #### Running tests
 
 When running tests with CI and XML report is expected run:
+
 ```bash
-npm run test-api
-```
-To get HTML report use:
-```bash
-npm run test-api-local
+npm test
 ```
 
 ## Contributing
+
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 Please make sure to update tests as appropriate.
 
 ## License
+
 [MIT](https://choosealicense.com/licenses/mit/)
