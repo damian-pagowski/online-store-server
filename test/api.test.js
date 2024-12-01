@@ -2,7 +2,7 @@ const request = require("supertest");
 const mongoose = require("mongoose");
 require("dotenv").config();
 
-const BASE_URL = `${process.env.SERVER_URL || "http://localhost"}:${process.env.SERVER_PORT || 8282}`;
+const BASE_URL = `${process.env.SERVER_URL || "http://localhost"}:${process.env.SERVER_PORT || 3030}`;
 
 // Import utilities from testUtil.js
 const {
