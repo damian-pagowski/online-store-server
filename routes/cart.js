@@ -13,6 +13,7 @@ router.post("/:username", authenticationMiddleware, async (req, res, next) => {
   const { productId, quantity } = req.body;
   try {
     const newItems = await addItemToCart(username, productId, quantity);
+    console.log(username, productId, quantity)
     return res.json(newItems);
   } catch (err) {
     res.status(400).json({ errors: err.message });

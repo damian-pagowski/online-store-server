@@ -28,9 +28,14 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(express.static(`${__dirname}/public`));
 // cors
+const CLIENT_URL = process.env.CLIENT_URL;
+const corsCfg = {
+  origin: CLIENT_URL, // Allow only your React app's origin
+  methods: 'GET,POST,PUT,DELETE', // Allowed HTTP methods
+  credentials: true, // Allow cookies and authorization headers
+}
+// Temporary: Allow all origins
 app.use(cors());
-// const CLIENT_URL = process.env.CLIENT_URL;
-// app.use(cors({ credentials: true, origin: CLIENT_URL }));
 
 // helmet
 app.use(helmet());

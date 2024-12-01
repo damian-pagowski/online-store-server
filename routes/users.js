@@ -4,6 +4,7 @@ const {
   createUser,
   getUser,
   deleteUser,
+  login
 } = require("../controllers/userController");
 const { authenticationMiddleware } = require("../controllers/authController");
 
@@ -11,7 +12,7 @@ router.post("/", async (req, res, next) => {
   const { username, email, password } = req.body;
   try {
     const user = await createUser(username, email, password);
-    return res.status(201).send();
+    return res.status(201).send(user);
   } catch (error) {
     return res.status(400).json(error);
   }
@@ -39,4 +40,16 @@ router.delete(
     return res.status(202).send();
   }
 );
+
+router.post("/login", async (req, res) => {
+  const { username, password } = req.body;
+
+  try {
+    const user = await login(username, password);
+    res.status(200).json(user);
+  } catch (err) {
+    res.status(401).json({ message: err.message });
+  }
+});
+
 module.exports = router;

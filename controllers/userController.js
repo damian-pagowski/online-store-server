@@ -27,8 +27,28 @@ const createUser = async (username, email, password) => {
   return newUser.save();
 };
 
+const login = async (username, password) => {
+  const user = await getUser(username);
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  const hashedInputPassword = hashPassword(password);
+  if (user.password !== hashedInputPassword) {
+    throw new Error("Invalid credentials");
+  }
+
+  return {
+    message: "Login successful",
+    username: user.username,
+    email: user.email,
+  };
+};
+
 module.exports = {
   getUser,
   createUser,
   deleteUser,
+  login,
 };
