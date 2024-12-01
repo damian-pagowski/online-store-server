@@ -28,7 +28,7 @@ const generateUniqueUser = () => {
 
 // Make an authenticated request
 const makeAuthenticatedRequest = (endpoint, method, user, data = {}) => {
-  const BASE_URL = `${process.env.SERVER_URL || "http://localhost"}:${process.env.SERVER_PORT || 8282}`;
+  const BASE_URL = `${process.env.SERVER_URL || "http://localhost"}:${process.env.SERVER_PORT || 3030}`;
   return request(BASE_URL)
     [method](endpoint)
     .auth(user.username, user.password)
