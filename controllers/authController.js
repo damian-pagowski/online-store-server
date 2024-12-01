@@ -1,30 +1,42 @@
-const userController = require("./userController");
+const { getUser } = require("./userController");
 const { hashPassword } = require("../utils/crypto");
 
 const credentialsAreValid = async (username, password) => {
-  const user = await userController.getUser(username);
+  const user = await getUser(username);
   if (!user) return false;
   return hashPassword(password) === user.password;
+};
+
+const parseAuthorizationHeader = (authHeader) => {
+  if (!authHeader || !authHeader.startsWith("Basic ")) {
+    throw new Error("Invalid or missing Authorization header");
+  }
+
+  const credentials = Buffer.from(authHeader.slice(6), "base64").toString();
+  const [username, password] = credentials.split(":");
+
+  if (!username || !password) {
+    throw new Error("Invalid credentials format");
+  }
+
+  return { username, password };
 };
 
 const authenticationMiddleware = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
-    const credentials = Buffer.from(
-      authHeader.slice("basic".length + 1),
-      "base64"
-    ).toString();
-    const [username, password] = credentials.split(":");
+    const { username, password } = parseAuthorizationHeader(authHeader);
 
-    const validCredentialsSent = await credentialsAreValid(username, password);
-    if (!validCredentialsSent) throw new Error("invalid credentials");
+    const validCredentials = await credentialsAreValid(username, password);
+    if (!validCredentials) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+
     req.currentuser = username;
-  } catch (e) {
-    return res
-      .status(401)
-      .json({ message: "please provide valid credentials" });
+    next();
+  } catch (error) {
+    res.status(401).json({ message: error.message || "Unauthorized" });
   }
-  next();
 };
 
 module.exports = {

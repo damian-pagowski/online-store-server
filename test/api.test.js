@@ -4,7 +4,6 @@ require("dotenv").config();
 
 const BASE_URL = `${process.env.SERVER_URL || "http://localhost"}:${process.env.SERVER_PORT || 3030}`;
 
-// Import utilities from testUtil.js
 const {
   generateUniqueUser,
   makeAuthenticatedRequest,
@@ -36,7 +35,7 @@ describe("Users Endpoint", () => {
 // --- INVENTORY ENDPOINT ---
 describe("Inventory Endpoint", () => {
   test("Get product availability", async () => {
-    const inventory = require("./fixtures/inventories")[0]; 
+    const inventory = require("./fixtures/inventories")[0];
     const response = await request(BASE_URL)
       .get(`/inventory/${inventory.productId}`)
       .expect(200);
@@ -102,141 +101,139 @@ describe("Cart Endpoint", () => {
     defaultUser = generateUniqueUser();
     await request(BASE_URL).post("/users").send(defaultUser).expect(201);
   });
-    test("Add item to cart", async () => {
-      const inventory = inventories[0]; // First product from fixture
-      const response = await makeAuthenticatedRequest(
-        `/cart/${defaultUser.username}`,
-        "post",
-        defaultUser,
-        { productId: inventory.productId, quantity: 1 }
-      ).expect(200);
-  
-      // New cart structure: Map of productId -> quantity
-      expect(response.body).toEqual({
-        [inventory.productId]: 1, // Key is the productId
-      });
-    });
-  
-    test("Add multiple items to cart", async () => {
-      const inventory1 = inventories[0];
-      const inventory2 = inventories[1];
-  
-      // Add first item
-      await makeAuthenticatedRequest(
-        `/cart/${defaultUser.username}`,
-        "post",
-        defaultUser,
-        { productId: inventory1.productId, quantity: 2 }
-      ).expect(200);
-  
-      // Add second item
-      const response = await makeAuthenticatedRequest(
-        `/cart/${defaultUser.username}`,
-        "post",
-        defaultUser,
-        { productId: inventory2.productId, quantity: 3 }
-      ).expect(200);
-  
-      // Verify both items are in the cart
-      expect(response.body).toEqual({
-        [inventory1.productId]: 2,
-        [inventory2.productId]: 3,
-      });
-    });
-  
-    test("Quantity limit exceeded", async () => {
-      const inventory = inventories[1]; // Second product from fixture
-      const response = await makeAuthenticatedRequest(
-        `/cart/${defaultUser.username}`,
-        "post",
-        defaultUser,
-        { productId: inventory.productId, quantity: 11 }
-      ).expect(200); // New response is 200, but includes error info
-  
-      // Verify cart with error details
-      expect(response.body).toEqual({
-        error: true,
-        message: `Inventory: ${inventory.productId} is unavailable`,
-        cart: {
-        },
-      });
-    });
-  
-    test("Remove item from cart", async () => {
-      const inventory = inventories[0];
-  
-      // Add item to cart first
-      await makeAuthenticatedRequest(
-        `/cart/${defaultUser.username}`,
-        "post",
-        defaultUser,
-        { productId: inventory.productId, quantity: 2 }
-      ).expect(200);
-  
-      // Remove item from cart
-      const response = await makeAuthenticatedRequest(
-        `/cart/${defaultUser.username}`,
-        "post",
-        defaultUser,
-        { productId: inventory.productId, quantity: -2 }
-      ).expect(200);
-  
-      // Cart should now be empty
-      expect(response.body).toEqual({});
-    });
-  
-    test("Get cart", async () => {
-      const inventory1 = inventories[0];
-      const inventory2 = inventories[1];
-  
-      // Add two items to the cart
-      await makeAuthenticatedRequest(
-        `/cart/${defaultUser.username}`,
-        "post",
-        defaultUser,
-        { productId: inventory1.productId, quantity: 2 }
-      ).expect(200);
-  
-      await makeAuthenticatedRequest(
-        `/cart/${defaultUser.username}`,
-        "post",
-        defaultUser,
-        { productId: inventory2.productId, quantity: 3 }
-      ).expect(200);
-  
-      // Fetch the cart
-      const response = await makeAuthenticatedRequest(
-        `/cart/${defaultUser.username}`,
-        "get",
-        defaultUser
-      ).expect(200);
-  
-      // Verify cart contents
-      expect(response.body).toEqual({
-        [inventory1.productId]: 2,
-        [inventory2.productId]: 3,
-      });
-    });
-  
-    test("Delete cart", async () => {
-      const inventory = inventories[0];
-  
-      // Add an item to the cart
-      await makeAuthenticatedRequest(
-        `/cart/${defaultUser.username}`,
-        "post",
-        defaultUser,
-        { productId: inventory.productId, quantity: 1 }
-      ).expect(200);
-  
-      // Delete the cart
-      const response = await makeAuthenticatedRequest(
-        `/cart/${defaultUser.username}`,
-        "delete",
-        defaultUser
-      ).expect(200);
-  
-      // Verify the cart is deleted
-      expect(response.body).toEqual({ message: "Cart removed successfully" });
+  test("Add item to cart", async () => {
+    const inventory = inventories[0];
+    const response = await makeAuthenticatedRequest(
+      `/cart/${defaultUser.username}`,
+      "post",
+      defaultUser,
+      { productId: inventory.productId, quantity: 1 }
+    ).expect(200);
+
+    expect(response.body).toEqual({
+      [inventory.productId]: 1,
     });
   });
+
+  test("Add multiple items to cart", async () => {
+    const inventory1 = inventories[0];
+    const inventory2 = inventories[1];
+
+    // Add first item
+    await makeAuthenticatedRequest(
+      `/cart/${defaultUser.username}`,
+      "post",
+      defaultUser,
+      { productId: inventory1.productId, quantity: 2 }
+    ).expect(200);
+
+    // Add second item
+    const response = await makeAuthenticatedRequest(
+      `/cart/${defaultUser.username}`,
+      "post",
+      defaultUser,
+      { productId: inventory2.productId, quantity: 3 }
+    ).expect(200);
+
+    // Verify both items are in the cart
+    expect(response.body).toEqual({
+      [inventory1.productId]: 2,
+      [inventory2.productId]: 3,
+    });
+  });
+
+  test("Quantity limit exceeded", async () => {
+    const inventory = inventories[1];
+    const response = await makeAuthenticatedRequest(
+      `/cart/${defaultUser.username}`,
+      "post",
+      defaultUser,
+      { productId: inventory.productId, quantity: 11 }
+    ).expect(200);
+
+    expect(response.body).toEqual({
+      error: true,
+      message: `Inventory: ${inventory.productId} - Insufficient stock`,
+      cart: {
+      },
+    });
+  });
+
+  test("Remove item from cart", async () => {
+    const inventory = inventories[0];
+
+    // Add item to cart first
+    await makeAuthenticatedRequest(
+      `/cart/${defaultUser.username}`,
+      "post",
+      defaultUser,
+      { productId: inventory.productId, quantity: 2 }
+    ).expect(200);
+
+    // Remove item from cart
+    const response = await makeAuthenticatedRequest(
+      `/cart/${defaultUser.username}`,
+      "post",
+      defaultUser,
+      { productId: inventory.productId, quantity: -2 }
+    ).expect(200);
+
+    // Cart should now be empty
+    expect(response.body).toEqual({});
+  });
+
+  test("Get cart", async () => {
+    const inventory1 = inventories[0];
+    const inventory2 = inventories[1];
+
+    // Add two items to the cart
+    await makeAuthenticatedRequest(
+      `/cart/${defaultUser.username}`,
+      "post",
+      defaultUser,
+      { productId: inventory1.productId, quantity: 2 }
+    ).expect(200);
+
+    await makeAuthenticatedRequest(
+      `/cart/${defaultUser.username}`,
+      "post",
+      defaultUser,
+      { productId: inventory2.productId, quantity: 3 }
+    ).expect(200);
+
+    // Fetch the cart
+    const response = await makeAuthenticatedRequest(
+      `/cart/${defaultUser.username}`,
+      "get",
+      defaultUser
+    ).expect(200);
+
+    // Verify cart contents
+    expect(response.body).toEqual({
+      [inventory1.productId]: 2,
+      [inventory2.productId]: 3,
+    });
+  });
+
+  test("Delete cart", async () => {
+    const inventory = inventories[0];
+
+    // Add an item to the cart
+    await makeAuthenticatedRequest(
+      `/cart/${defaultUser.username}`,
+      "post",
+      defaultUser,
+      { productId: inventory.productId, quantity: 1 }
+    ).expect(200);
+
+    // Delete the cart
+    const response = await makeAuthenticatedRequest(
+      `/cart/${defaultUser.username}`,
+      "delete",
+      defaultUser
+    ).expect(200);
+
+    // Verify the cart is deleted
+    expect(response.body).toEqual({ message: "Cart removed successfully" });
+  });
+});

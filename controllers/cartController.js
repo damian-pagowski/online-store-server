@@ -1,6 +1,7 @@
 const { removeFromInventory } = require("./inventoryController");
 const { getUser } = require("./userController");
 const Cart = require("../models/cart");
+
 const itemQuantityLimit = 10;
 
 const getCart = async (username) => {
@@ -8,59 +9,77 @@ const getCart = async (username) => {
   return cart ? cart.items : {}; // Return the map of productId -> quantity
 };
 
-const deleteCart = (username) => Cart.deleteOne({ username });
+const deleteCart = async (username) => {
+  return Cart.deleteOne({ username });
+};
 
 const addItemToCart = async (username, productId, quantity) => {
-  try {
-    // Check if user exists
-    const user = await getUser(username);
-    if (!user) {
-      const userNotFound = new Error("User not found");
-      userNotFound.code = 404;
-      throw userNotFound;
-    }
+  const cart = await ensureCartExists(username);
 
+  try {
     // Remove the item from inventory
     await removeFromInventory(productId, quantity);
 
-    // Get or initialize the user's cart
-    let cart = await Cart.findOne({ username });
-    if (!cart) {
-      cart = new Cart({ username, items: {} }); // Initialize empty cart
-    }
-
-    // Get current quantity for the product in the cart
-    let i = { ...cart.items } ;
-    const currentQuantity = Number( i[productId]) || 0;
-
-    // Validate quantity limits
-    if (currentQuantity + quantity > itemQuantityLimit) {
-      throw new Error("Quantity limit 10 exceeded");
-    }
-    if (currentQuantity + quantity < 0) {
-      throw new Error("Quantity of item in cart must be greater than 0");
-    }
-
     // Update the cart
-    if (currentQuantity + quantity === 0) {
-      // If the new quantity is 0, remove the product from the cart
-      delete i[productId];
-    } else {
-      // Otherwise, update the quantity
-      i[productId] = currentQuantity + quantity;
-    }
-
-    // Save the updated cart
-    cart.items = i
+    const updatedItems = updateCartItems(cart.items, productId, quantity);
+    cart.items = updatedItems;
     await cart.save();
-    return i;
+
+    return updatedItems;
   } catch (err) {
     // Roll back inventory changes on error, except for product_unavailable
     if (err.type !== "product_unavailable") {
-      await removeFromInventory(productId, -1 * quantity);
+      await removeFromInventory(productId, -quantity);
     }
     throw err;
   }
+};
+
+// Helper to ensure a user exists and retrieve their cart
+const ensureCartExists = async (username) => {
+  const user = await getUser(username);
+  if (!user) {
+    const error = new Error("User not found");
+    error.code = 404;
+    throw error;
+  }
+
+  let cart = await Cart.findOne({ username });
+  if (!cart) {
+    cart = new Cart({ username, items: {} }); // Initialize empty cart
+  }
+  return cart;
+};
+
+// Helper to update cart items
+const updateCartItems = (items, productId, quantity) => {
+  const currentItems = { ...items };
+  const currentQuantity = currentItems[productId] || 0;
+
+  // Validate quantity limits
+  if (currentQuantity + quantity > itemQuantityLimit) {
+    throw createCartError("Quantity limit exceeded");
+  }
+  if (currentQuantity + quantity < 0) {
+    throw createCartError("Quantity of item in cart must be greater than 0");
+  }
+
+  // Update or remove item
+  if (currentQuantity + quantity === 0) {
+    delete currentItems[productId];
+  } else {
+    currentItems[productId] = currentQuantity + quantity;
+  }
+
+  return currentItems;
+};
+
+// Helper to create cart-related errors
+const createCartError = (message) => {
+  const error = new Error(message);
+  error.type = "cart_error";
+  error.code = 400;
+  return error;
 };
 
 module.exports = { addItemToCart, getCart, deleteCart };

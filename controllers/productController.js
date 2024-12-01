@@ -3,18 +3,18 @@ const Categories = require("../models/category");
 
 const mask = { _id: 0, __v: 0 };
 
+const buildQueryCriteria = (subcategory, category, search) => {
+  const queryCriteria = {};
+
+  if (category) queryCriteria.category = category;
+  if (subcategory) queryCriteria.subcategory = subcategory;
+  if (search) queryCriteria.name = { $regex: new RegExp(`(${search})`, "gi") };
+
+  return queryCriteria;
+};
+
 const searchProduct = (subcategory, category, search) => {
-  let queryCriteria = {};
-  if (category) {
-    queryCriteria = { ...queryCriteria, category };
-  }
-  if (subcategory) {
-    queryCriteria = { ...queryCriteria, subcategory };
-  }
-  if (search) {
-    const regex = new RegExp("(" + search + ")", "gi");
-    queryCriteria = { ...queryCriteria, name: { $regex: regex } };
-  }
+  const queryCriteria = buildQueryCriteria(subcategory, category, search);
   return Products.find(queryCriteria, mask);
 };
 
