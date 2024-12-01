@@ -3,10 +3,10 @@ const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const helmet = require("helmet");
-const usersRouter = require("./routes/users");
-const cartRouter = require("./routes/cart");
-const productRouter = require("./routes/products");
-const inventoryRouter = require("./routes/inventory");
+const usersRouter = require("./routes/userRoutes");
+const cartRouter = require("./routes/cartRoutes");
+const productRouter = require("./routes/productRoutes");
+const inventoryRouter = require("./routes/inventoryRoutes");
 
 const session = require("express-session");
 // const passport = require("passport");
