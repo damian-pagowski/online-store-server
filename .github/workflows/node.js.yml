@@ -1,6 +1,3 @@
-# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
-
 name: Node.js CI
 
 on:
@@ -14,11 +11,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      MONGOLAB_URI: ${{secrets.MONGOLAB_URI}}
+      MONGOLAB_URI: ${{ secrets.MONGOLAB_URI }}
     strategy:
       matrix:
         node-version: [16.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
     steps:
       - uses: actions/checkout@v3
       - name: Use Node.js ${{ matrix.node-version }}
@@ -30,3 +26,26 @@ jobs:
       - run: npm run seed
       - run: npm start &
       - run: npm test
+
+  postman-tests:
+    if: github.event_name == 'workflow_dispatch' # Trigger only manually
+    runs-on: ubuntu-latest
+    env:
+      MONGOLAB_URI: ${{ secrets.MONGOLAB_URI }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+          cache: "npm"
+      - name: Install dependencies
+        run: npm install
+      - name: Install Newman
+        run: npm install -g newman
+      - name: Run Postman tests
+        run: |
+          newman run test/postman/postman_collection.json \
+            --env-var BASE_URL=http://localhost:3030 \
+            --env-var U_NAME=testuser123 \
+            --env-var U_PASSWORD=secret
