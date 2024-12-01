@@ -1,3 +1,10 @@
+/**
+ * @swagger
+ * tags:
+ *   name: Users
+ *   description: User management
+ */
+
 const express = require("express");
 const router = express.Router();
 const {
@@ -8,7 +15,35 @@ const {
 } = require("../controllers/userController");
 const { authenticationMiddleware } = require("../controllers/authController");
 
-// Create a new user
+/**
+ * @swagger
+ * /users:
+ *   post:
+ *     summary: Register a new user
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - username
+ *               - email
+ *               - password
+ *             properties:
+ *               username:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: User created successfully
+ *       400:
+ *         description: Validation error
+ */
 router.post("/", async (req, res) => {
   const { username, email, password } = req.body;
 
@@ -20,7 +55,38 @@ router.post("/", async (req, res) => {
   }
 });
 
-// Get current user
+
+/**
+ * @swagger
+ * /users/{username}:
+ *   get:
+ *     summary: Get user details
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: username
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Username of the user
+ *     responses:
+ *       200:
+ *         description: User details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 username:
+ *                   type: string
+ *                 email:
+ *                   type: string
+ *       403:
+ *         description: Access denied
+ *       404:
+ *         description: User not found
+ */
+
 router.get("/:username", authenticationMiddleware, async (req, res) => {
   const { username } = req.params;
 

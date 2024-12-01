@@ -19,7 +19,9 @@
     "helmet": "^6.0.0",
     "mongodb": "^4.12.1",
     "mongoose": "^6.7.3",
-    "node-fetch": "^3.3.0"
+    "node-fetch": "^3.3.0",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
     "jest": "^29.3.1",

@@ -1,3 +1,10 @@
+/**
+ * @swagger
+ * tags:
+ *   name: Cart
+ *   description: Cart management
+ */
+
 const express = require("express");
 const router = express.Router();
 const { authenticationMiddleware } = require("../controllers/authController");
@@ -9,7 +16,62 @@ const {
 
 const generateOrderId = () => Math.floor(Math.random() * 1e9); 
 
-// Add item to cart
+/**
+ * @swagger
+ * /cart/{username}:
+ *   post:
+ *     summary: Add item to cart
+ *     tags: [Cart]
+ *     parameters:
+ *       - in: path
+ *         name: username
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Username of the user
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - productId
+ *               - quantity
+ *             properties:
+ *               productId:
+ *                 type: number
+ *               quantity:
+ *                 type: number
+ *     responses:
+ *       200:
+ *         description: Updated cart
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *       400:
+ *         description: Quantity exceeds limit or invalid data
+ *       401:
+ *         description: Unauthorized
+ *   get:
+ *     summary: Get user's cart
+ *     tags: [Cart]
+ *     parameters:
+ *       - in: path
+ *         name: username
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Username of the user
+ *     responses:
+ *       200:
+ *         description: User's cart
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ */
 router.post("/:username", authenticationMiddleware, async (req, res) => {
   const username = req.params.username;
   const { productId, quantity } = req.body;

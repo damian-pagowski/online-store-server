@@ -1,4 +1,5 @@
 require("dotenv").config();
+const { setupSwaggerDocs } = require("./utils/swagger");
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
@@ -12,6 +13,7 @@ const usersRouter = require("./routes/userRoutes");
 const cartRouter = require("./routes/cartRoutes");
 const productRouter = require("./routes/productRoutes");
 const inventoryRouter = require("./routes/inventoryRoutes");
+
 
 const app = express();
 
@@ -55,6 +57,7 @@ app.use("/cart", cartRouter);
 app.use("/products", productRouter);
 app.use("/inventory", inventoryRouter);
 
+
 // Database connection
 const DB_URI = process.env.MONGOLAB_URI;
 mongoose
@@ -67,5 +70,9 @@ const SERVER_PORT = process.env.PORT || process.env.SERVER_PORT || 3030;
 app.listen(SERVER_PORT, () =>
   console.log(`Server is running on port ${SERVER_PORT}`)
 );
+
+// Swagger
+setupSwaggerDocs(app, SERVER_PORT);
+
 
 module.exports = app;
