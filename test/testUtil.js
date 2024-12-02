@@ -26,12 +26,11 @@ const generateUniqueUser = () => {
   };
 };
 
-// Make an authenticated request
-const makeAuthenticatedRequest = (endpoint, method, user, data = {}) => {
+const makeAuthenticatedRequest = (endpoint, method, token, data = {}) => {
   const BASE_URL = `${process.env.SERVER_URL || "http://localhost"}:${process.env.SERVER_PORT || 3030}`;
   return request(BASE_URL)
     [method](endpoint)
-    .auth(user.username, user.password)
+    .set("Authorization", `Bearer ${token}`)
     .send(data);
 };
 

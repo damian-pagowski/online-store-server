@@ -23,7 +23,9 @@ export function setup() {
   });
 
   check(loginRes, { "login successful": (r) => r.status === 200 });
+
   token = loginRes.json("token");
+  console.log()
   return { token };
 }
 
