@@ -1,17 +1,24 @@
+const jwt = require("jsonwebtoken");
 const Users = require("../models/user");
 const { hashPassword } = require("../utils/crypto");
 
-const getUser = (username, mask = {}) => {
-  return Users.findOne({ username }, mask);
+const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret_key"; 
+
+const generateToken = (user) => {
+  return jwt.sign(
+    { username: user.username, email: user.email },
+    JWT_SECRET,
+    { expiresIn: "12h" }
+  );
 };
 
-const deleteUser = (username) => {
-  return Users.findOneAndRemove({ username });
+const findUserByFields = async (fields) => {
+  return Users.findOne(fields);
 };
 
-const createUser = async (username, email, password) => {
-  const existingUser = await Users.findOne({
-    $or: [{ email }, { username }],
+const validateUserExistence = async (username, email) => {
+  const existingUser = await findUserByFields({
+    $or: [{ username }, { email }],
   });
 
   if (existingUser) {
@@ -19,14 +26,34 @@ const createUser = async (username, email, password) => {
     if (existingUser.email === email) errors.push("Email already registered");
     if (existingUser.username === username) errors.push("Username already registered");
 
-    const err = new Error("Validation error");
-    err.errors = errors;
-    throw err;
+    const error = new Error("Validation error");
+    error.errors = errors;
+    throw error;
   }
+};
+
+const getUser = async (username, mask = {}) => {
+  return Users.findOne({ username }).select(mask);
+};
+
+const deleteUser = async (username) => {
+  return Users.findOneAndRemove({ username });
+};
+
+const createUser = async (username, email, password) => {
+  await validateUserExistence(username, email);
 
   const hashedPassword = hashPassword(password);
   const newUser = new Users({ username, email, password: hashedPassword });
-  return newUser.save();
+  await newUser.save();
+
+  const token = generateToken(newUser);
+  return {
+    message: "User created successfully",
+    token,
+    username: newUser.username,
+    email: newUser.email,
+  };
 };
 
 const login = async (username, password) => {
@@ -45,8 +72,11 @@ const login = async (username, password) => {
     throw error;
   }
 
+  const token = generateToken(user);
+
   return {
     message: "Login successful",
+    token,
     username: user.username,
     email: user.email,
   };

@@ -7,28 +7,22 @@
 
 const express = require("express");
 const router = express.Router();
-const { authenticationMiddleware } = require("../controllers/authController");
+const { authenticationMiddleware } = require("../middlewares/authMiddleware");
 const {
   addItemToCart,
   getCart,
   deleteCart,
 } = require("../controllers/cartController");
 
-const generateOrderId = () => Math.floor(Math.random() * 1e9); 
+const generateOrderId = () => Math.floor(Math.random() * 1e9);
+
 
 /**
  * @swagger
- * /cart/{username}:
+ * /cart:
  *   post:
  *     summary: Add item to cart
  *     tags: [Cart]
- *     parameters:
- *       - in: path
- *         name: username
- *         schema:
- *           type: string
- *         required: true
- *         description: Username of the user
  *     requestBody:
  *       required: true
  *       content:
@@ -57,13 +51,6 @@ const generateOrderId = () => Math.floor(Math.random() * 1e9);
  *   get:
  *     summary: Get user's cart
  *     tags: [Cart]
- *     parameters:
- *       - in: path
- *         name: username
- *         schema:
- *           type: string
- *         required: true
- *         description: Username of the user
  *     responses:
  *       200:
  *         description: User's cart
@@ -71,11 +58,21 @@ const generateOrderId = () => Math.floor(Math.random() * 1e9);
  *           application/json:
  *             schema:
  *               type: object
+ *   delete:
+ *     summary: Clear user's cart
+ *     tags: [Cart]
+ *     responses:
+ *       200:
+ *         description: Cart cleared successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
  */
-router.post("/:username", authenticationMiddleware, async (req, res) => {
-  const username = req.params.username;
-  const { productId, quantity } = req.body;
+router.post("/", authenticationMiddleware, async (req, res) => {
+  const username = req.currentUser.username;
 
+  const { productId, quantity } = req.body;
   try {
     const updatedCart = await addItemToCart(username, productId, quantity);
     return res.status(200).json(updatedCart);
@@ -89,26 +86,38 @@ router.post("/:username", authenticationMiddleware, async (req, res) => {
   }
 });
 
-// Get cart
-router.get("/:username", authenticationMiddleware, async (req, res) => {
-  const username = req.params.username;
+router.get("/", authenticationMiddleware, async (req, res) => {
+  const username = req.currentUser.username;
   const cart = await getCart(username);
   return res.status(200).json(cart);
 });
 
-// Delete cart
-router.delete("/:username", authenticationMiddleware, async (req, res) => {
-  const username = req.params.username;
+router.delete("/", authenticationMiddleware, async (req, res) => {
+  const username = req.currentUser.username;
   await deleteCart(username);
   return res.status(200).json({ message: "Cart removed successfully" });
 });
 
-// Checkout
-router.post("/:username/checkout", authenticationMiddleware, async (req, res) => {
-  const username = req.params.username;
-
+/**
+* @swagger
+* /cart/checkout:
+*   post:
+*     summary: Checkout user's cart
+*     tags: [Cart]
+*     responses:
+*       200:
+*         description: Checkout successful
+*         content:
+*           application/json:
+*             schema:
+*               type: object
+*       500:
+*         description: Checkout failed
+*/
+router.post("/checkout", authenticationMiddleware, async (req, res) => {
+  const username = req.currentUser.username;
   try {
-    await deleteCart(username); 
+    await deleteCart(username);
     const orderId = generateOrderId();
     return res.status(200).json({
       orderId,

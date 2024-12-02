@@ -17,6 +17,7 @@
     "express-rate-limit": "^6.7.0",
     "express-session": "^1.17.3",
     "helmet": "^6.0.0",
+    "jsonwebtoken": "^9.0.2",
     "mongodb": "^4.12.1",
     "mongoose": "^6.7.3",
     "node-fetch": "^3.3.0",

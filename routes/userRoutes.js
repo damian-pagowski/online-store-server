@@ -7,13 +7,8 @@
 
 const express = require("express");
 const router = express.Router();
-const {
-  createUser,
-  getUser,
-  deleteUser,
-  login,
-} = require("../controllers/userController");
-const { authenticationMiddleware } = require("../controllers/authController");
+const { getUser, createUser, deleteUser, login } = require("../controllers/userController");
+const { authenticationMiddleware } = require("../middlewares/authMiddleware");
 
 /**
  * @swagger
@@ -55,20 +50,14 @@ router.post("/", async (req, res) => {
   }
 });
 
-
 /**
  * @swagger
- * /users/{username}:
+ * /users:
  *   get:
  *     summary: Get user details
  *     tags: [Users]
- *     parameters:
- *       - in: path
- *         name: username
- *         schema:
- *           type: string
- *         required: true
- *         description: Username of the user
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: User details
@@ -81,55 +70,106 @@ router.post("/", async (req, res) => {
  *                   type: string
  *                 email:
  *                   type: string
+ *       401:
+ *         description: Unauthorized - Token missing or invalid
  *       403:
  *         description: Access denied
  *       404:
  *         description: User not found
  */
-
-router.get("/:username", authenticationMiddleware, async (req, res) => {
-  const { username } = req.params;
-
-  if (username !== req.currentuser) {
-    return res.status(403).json({ message: "Access denied: can only retrieve your own data" });
-  }
-
+router.get("/", authenticationMiddleware, async (req, res) => {
   try {
+    const username = req.currentUser.username;
     const user = await getUser(username, { _id: 0, __v: 0, password: 0 });
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-    return res.status(200).json(user);
+    res.status(200).json(user);
   } catch (error) {
-    return res.status(500).json({ message: "Failed to fetch user", error: error.message });
+    res.status(400).json({ message: error.message });
   }
 });
 
-// Delete current user
-router.delete("/:username", authenticationMiddleware, async (req, res) => {
-  const { username } = req.params;
-
-  if (username !== req.currentuser) {
-    return res.status(403).json({ message: "Access denied: can only delete your own account" });
-  }
-
+/**
+ * @swagger
+ * /users:
+ *   delete:
+ *     summary: Delete the currently authenticated user
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       204:
+ *         description: User successfully deleted
+ *       401:
+ *         description: Unauthorized - Token missing or invalid
+ *       403:
+ *         description: Access denied
+ *       404:
+ *         description: User not found
+ */
+router.delete("/", authenticationMiddleware, async (req, res) => {
   try {
+    const username = req.currentUser.username;
     await deleteUser(username);
-    return res.status(202).json({ message: "User deleted successfully" });
+    res.status(204).send();
   } catch (error) {
-    return res.status(500).json({ message: "Failed to delete user", error: error.message });
+    res.status(400).json({ message: error.message });
   }
 });
 
-// Login user
+/**
+ * @swagger
+ * /users/login:
+ *   post:
+ *     summary: Authenticate user and return a JWT token
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - username
+ *               - password
+ *             properties:
+ *               username:
+ *                 type: string
+ *                 description: The user's username
+ *               password:
+ *                 type: string
+ *                 description: The user's password
+ *                 format: password
+ *     responses:
+ *       200:
+ *         description: Login successful, JWT token returned
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Login successful
+ *                 token:
+ *                   type: string
+ *                   description: JWT token for authentication
+ *                 username:
+ *                   type: string
+ *                 email:
+ *                   type: string
+ *       400:
+ *         description: Invalid request data
+ *       401:
+ *         description: Invalid credentials
+ *       404:
+ *         description: User not found
+ */
 router.post("/login", async (req, res) => {
-  const { username, password } = req.body;
-
   try {
-    const user = await login(username, password);
-    return res.status(200).json(user);
+    const { username, password } = req.body;
+    const response = await login(username, password);
+    res.status(200).json(response);
   } catch (error) {
-    return res.status(401).json({ message: error.message });
+    res.status(error.status || 400).json({ message: error.message });
   }
 });
 
