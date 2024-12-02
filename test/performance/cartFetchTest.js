@@ -33,7 +33,7 @@ export default function (data) {
         Authorization: `Bearer ${token}`,
     };
 
-    const res = http.get("http://localhost:3030/cart/defaultUser", { headers });
+    const res = http.get("http://localhost:3030/cart", { headers });
 
     check(res, {
         "status is 200": (r) => r.status === 200,

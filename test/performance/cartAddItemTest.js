@@ -4,8 +4,8 @@ import { check } from "k6";
 export const options = {
   stages: [
     { duration: "10s", target: 50 },
-    // { duration: "1m", target: 200 },
-    // { duration: "10s", target: 0 },
+    { duration: "1m", target: 200 },
+    { duration: "10s", target: 0 },
   ],
 };
 
@@ -37,14 +37,12 @@ export default function (data) {
   };
 
   // Add item to cart
-  const url = "http://localhost:3030/cart/defaultUser";
+  const url = "http://localhost:3030/cart";
   const payload = JSON.stringify({
-    productId: Math.floor(Math.random() * 10) + 1,
-    quantity: Math.floor(Math.random() * 5) + 1,
+    productId:  Math.floor(Math.random() * 8) + 1,
+    quantity: 1,
   });
-
   const res = http.post(url, payload, { headers });
-
   check(res, {
     "status is 200": (r) => r.status === 200,
     "error not present": (r) => !r.json("error"),
