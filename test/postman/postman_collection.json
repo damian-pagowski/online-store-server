@@ -87,6 +87,89 @@
 					"listen": "prerequest",
 					"script": {
 						"exec": [
+							"const username = pm.environment.get(\"U_NAME\");",
+							"const password = pm.environment.get(\"U_PASSWORD\");",
+							"const baseUrl = pm.environment.get(\"BASE_URL\");",
+							"",
+							"pm.sendRequest({",
+							"    url: `${baseUrl}/users/login`,",
+							"    method: 'POST',",
+							"    header: {",
+							"        'Content-Type': 'application/json',",
+							"    },",
+							"    body: {",
+							"        mode: 'raw',",
+							"        raw: JSON.stringify({ username, password }),",
+							"    },",
+							"}, function (err, response) {",
+							"    if (response.code === 200) {",
+							"        const token = response.json().token;",
+							"        pm.environment.set(\"TOKEN\", token);",
+							"        console.log(\"Token saved:\", token);",
+							"    } else {",
+							"        console.log(\"Login failed:\", response.json());",
+							"        throw new Error(\"Authentication failed\");",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BASE_URL}}/users",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Login successful\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    const jsonData = pm.response.json();",
+							"    ",
+							"    pm.expect(jsonData).to.have.property(\"message\", \"Login successful\");",
+							"    pm.expect(jsonData).to.have.property(\"token\").that.is.a(\"string\");",
+							"    pm.expect(jsonData).to.have.property(\"username\", pm.environment.get(\"U_NAME\"));",
+							"    pm.expect(jsonData).to.have.property(\"email\").that.is.a(\"string\");",
+							"",
+							"    // Save token to environment for reuse in subsequent requests",
+							"    pm.environment.set(\"TOKEN\", jsonData.token);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
 							""
 						],
 						"type": "text/javascript",
@@ -114,16 +197,25 @@
 						}
 					]
 				},
-				"method": "GET",
+				"method": "POST",
 				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"{{U_NAME}}\",\n    \"password\": \"{{U_PASSWORD}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
 				"url": {
-					"raw": "{{BASE_URL}}/users/{{U_NAME}}",
+					"raw": "{{BASE_URL}}/users/login",
 					"host": [
 						"{{BASE_URL}}"
 					],
 					"path": [
 						"users",
-						"{{U_NAME}}"
+						"login"
 					]
 				}
 			},
@@ -142,8 +234,8 @@
 							"",
 							"pm.test(\"Response contains correct inventory data\", function () {",
 							"    pm.expect(pm.response.json()).to.eql({",
-							"        productId: 1,",
-							"        quantity: 10",
+							"        productId: 8,",
+							"        quantity: 99999",
 							"    });",
 							"});",
 							"",
@@ -159,34 +251,326 @@
 			],
 			"request": {
 				"auth": {
-					"type": "basic",
-					"basic": [
-						{
-							"key": "username",
-							"value": "{{U_NAME}}",
-							"type": "string"
-						},
-						{
-							"key": "password",
-							"value": "{{U_PASSWORD}}",
-							"type": "string"
-						},
-						{
-							"key": "undefined",
-							"type": "any"
-						}
-					]
+					"type": "noauth"
 				},
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{BASE_URL}}/inventory/1",
+					"raw": "{{BASE_URL}}/inventory/8",
 					"host": [
 						"{{BASE_URL}}"
 					],
 					"path": [
 						"inventory",
-						"1"
+						"8"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add to cart",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const username = pm.environment.get(\"U_NAME\");",
+							"const password = pm.environment.get(\"U_PASSWORD\");",
+							"const baseUrl = pm.environment.get(\"BASE_URL\");",
+							"",
+							"pm.sendRequest({",
+							"    url: `${baseUrl}/users/login`,",
+							"    method: 'POST',",
+							"    header: {",
+							"        'Content-Type': 'application/json',",
+							"    },",
+							"    body: {",
+							"        mode: 'raw',",
+							"        raw: JSON.stringify({ username, password }),",
+							"    },",
+							"}, function (err, response) {",
+							"    if (response.code === 200) {",
+							"        const token = response.json().token;",
+							"        pm.environment.set(\"TOKEN\", token);",
+							"        console.log(\"Token saved:\", token);",
+							"    } else {",
+							"        console.log(\"Login failed:\", response.json());",
+							"        throw new Error(\"Authentication failed\");",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Product added to cart\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property(\"1\", 1);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"productId\": 1,\"quantity\":1}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/cart",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"cart"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get cart",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const username = pm.environment.get(\"U_NAME\");",
+							"const password = pm.environment.get(\"U_PASSWORD\");",
+							"const baseUrl = pm.environment.get(\"BASE_URL\");",
+							"",
+							"pm.sendRequest({",
+							"    url: `${baseUrl}/users/login`,",
+							"    method: 'POST',",
+							"    header: {",
+							"        'Content-Type': 'application/json',",
+							"    },",
+							"    body: {",
+							"        mode: 'raw',",
+							"        raw: JSON.stringify({ username, password }),",
+							"    },",
+							"}, function (err, response) {",
+							"    if (response.code === 200) {",
+							"        const token = response.json().token;",
+							"        pm.environment.set(\"TOKEN\", token);",
+							"        console.log(\"Token saved:\", token);",
+							"    } else {",
+							"        console.log(\"Login failed:\", response.json());",
+							"        throw new Error(\"Authentication failed\");",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Product added successfully\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property(\"1\", 1);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"productId\":1,\"quantity\":1}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/cart",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"cart"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get Product Categories",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Categories structure is valid\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(Array.isArray(jsonData)).to.be.true;",
+							"    ",
+							"    jsonData.forEach(category => {",
+							"        pm.expect(category).to.have.property(\"name\").that.is.a(\"string\");",
+							"        pm.expect(category).to.have.property(\"display\").that.is.a(\"string\");",
+							"        pm.expect(category).to.have.property(\"subcategories\").that.is.an(\"array\");",
+							"        ",
+							"        category.subcategories.forEach(subcategory => {",
+							"            pm.expect(subcategory).to.have.property(\"name\").that.is.a(\"string\");",
+							"            pm.expect(subcategory).to.have.property(\"display\").that.is.a(\"string\");",
+							"            pm.expect(subcategory).to.have.property(\"_id\").that.is.a(\"string\");",
+							"        });",
+							"    });",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BASE_URL}}/products/categories",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"products",
+						"categories"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete cart",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const username = pm.environment.get(\"U_NAME\");",
+							"const password = pm.environment.get(\"U_PASSWORD\");",
+							"const baseUrl = pm.environment.get(\"BASE_URL\");",
+							"",
+							"pm.sendRequest({",
+							"    url: `${baseUrl}/users/login`,",
+							"    method: 'POST',",
+							"    header: {",
+							"        'Content-Type': 'application/json',",
+							"    },",
+							"    body: {",
+							"        mode: 'raw',",
+							"        raw: JSON.stringify({ username, password }),",
+							"    },",
+							"}, function (err, response) {",
+							"    if (response.code === 200) {",
+							"        const token = response.json().token;",
+							"        pm.environment.set(\"TOKEN\", token);",
+							"        console.log(\"Token saved:\", token);",
+							"    } else {",
+							"        console.log(\"Login failed:\", response.json());",
+							"        throw new Error(\"Authentication failed\");",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/cart",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"cart"
 					]
 				}
 			},
@@ -199,8 +583,41 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test(\"Status code is 202\", function () {",
-							"    pm.response.to.have.status(202);",
+							"pm.test(\"Status code is 204\", function () {",
+							"    pm.response.to.have.status(204);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const username = pm.environment.get(\"U_NAME\");",
+							"const password = pm.environment.get(\"U_PASSWORD\");",
+							"const baseUrl = pm.environment.get(\"BASE_URL\");",
+							"",
+							"pm.sendRequest({",
+							"    url: `${baseUrl}/users/login`,",
+							"    method: 'POST',",
+							"    header: {",
+							"        'Content-Type': 'application/json',",
+							"    },",
+							"    body: {",
+							"        mode: 'raw',",
+							"        raw: JSON.stringify({ username, password }),",
+							"    },",
+							"}, function (err, response) {",
+							"    if (response.code === 200) {",
+							"        const token = response.json().token;",
+							"        pm.environment.set(\"TOKEN\", token);",
+							"        console.log(\"Token saved:\", token);",
+							"    } else {",
+							"        console.log(\"Login failed:\", response.json());",
+							"        throw new Error(\"Authentication failed\");",
+							"    }",
 							"});"
 						],
 						"type": "text/javascript",
@@ -210,34 +627,25 @@
 			],
 			"request": {
 				"auth": {
-					"type": "basic",
-					"basic": [
+					"type": "bearer",
+					"bearer": [
 						{
-							"key": "username",
-							"value": "{{U_NAME}}",
+							"key": "token",
+							"value": "{{TOKEN}}",
 							"type": "string"
-						},
-						{
-							"key": "password",
-							"value": "{{U_PASSWORD}}",
-							"type": "string"
-						},
-						{
-							"key": "undefined",
-							"type": "any"
 						}
 					]
 				},
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "{{BASE_URL}}/users/{{U_NAME}}",
+					"raw": "{{BASE_URL}}/users/",
 					"host": [
 						"{{BASE_URL}}"
 					],
 					"path": [
 						"users",
-						"{{U_NAME}}"
+						""
 					]
 				}
 			},

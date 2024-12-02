@@ -49,7 +49,4 @@ jobs:
         run: npm install -g newman
       - name: Run Postman tests
         run: |
-          newman run test/postman/postman_collection.json \
-            --env-var BASE_URL=http://localhost:3030 \
-            --env-var U_NAME=testuser123 \
-            --env-var U_PASSWORD=secret
+          newman run test/postman/postman_collection.json --environment test/postman/env.json
