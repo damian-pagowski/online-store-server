@@ -183,31 +183,36 @@ const productInventory = [
   },
 ];
 
-mongoose
-  .connect(DB_URI, { useUnifiedTopology: true, useNewUrlParser: true })
-  .then(async () => {
-    // clear database
-    const productsFound = await Products.find();
-    await productsFound.forEach((p) => p.remove());
+const seedDatabase = async () => {
+  try {
+    await mongoose.connect(DB_URI);
 
-    const categoriesFound = await Categories.find();
-    await categoriesFound.forEach((p) => p.remove());
+    console.log("Connected to the database");
 
-    const inventoryFound = await Inventory.find();
-    await inventoryFound.forEach((p) => p.remove());
+    // Clear database
+    await Products.deleteMany({});
+    await Categories.deleteMany({});
+    await Inventory.deleteMany({});
+    await Users.deleteMany({});
+    console.log("Collections cleared");
 
-    const usersFound = await Users.find();
-    await usersFound.forEach((p) => p.remove());
+    // Seed categories, products, and inventory
+    await Categories.insertMany(categories);
+    console.log("Categories seeded");
 
-    // set categories, products and inventory
-    const newProducts = products.map((p) => new Products(p));
-    await Promise.all(newProducts.map((e) => e.save()));
+    await Products.insertMany(products);
+    console.log("Products seeded");
 
-    const newCategories = categories.map((c) => new Categories(c));
-    await Promise.all(newCategories.map((e) => e.save()));
+    await Inventory.insertMany(productInventory);
+    console.log("Inventory seeded");
 
-    const newInventoryItems = productInventory.map((c) => new Inventory(c));
-    await Promise.all(newInventoryItems.map((e) => e.save()));
-    mongoose.connection.close();
-  })
-  .catch((error) => console.log(error));
+    console.log("Database seeding completed!");
+  } catch (error) {
+    console.error("Error seeding the database:", error);
+  } finally {
+    await mongoose.disconnect();
+    console.log("Disconnected from the database");
+  }
+};
+
+seedDatabase();

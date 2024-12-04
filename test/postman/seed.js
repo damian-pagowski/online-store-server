@@ -10,28 +10,35 @@ const MONGOLAB_URI = process.env.MONGOLAB_URI;
 
 const seedDatabase = async () => {
   try {
-    await mongoose.connect(MONGOLAB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    await mongoose.connect(MONGOLAB_URI);
 
-    await User.deleteOne({ username: "testuser1233" });
-    await Inventory.deleteOne({ productId: 1 });
+    // Remove user and inventory
+    const deleteUsers = User.deleteMany({ username: "testuser123" });
+    const deleteInventory = Inventory.deleteMany({ productId: 1 });
+    await Promise.all([deleteUsers, deleteInventory]);
 
-    const product = productsFixture.find((p) => p.productId === 1);
-    if (product) {
-      const existingProduct = await Product.findOne({ productId: 1 });
-      if (!existingProduct) {
-        await Product.create(product);
-      }
+    // Insert product if it doesn't exist
+    const productToInsert = productsFixture.find((p) => p.productId === 1);
+    if (productToInsert) {
+      await Product.updateOne(
+        { productId: 1 },
+        { $setOnInsert: productToInsert },
+        { upsert: true }
+      );
     }
 
-    const inventory = inventoriesFixture.find((i) => i.productId === 1) || {
+    // Insert inventory if it doesn't exist
+    const inventoryToInsert = inventoriesFixture.find((i) => i.productId === 1) || {
       productId: 1,
       quantity: 10,
     };
-    await Inventory.create(inventory);
+    await Inventory.updateOne(
+      { productId: 1 },
+      { $setOnInsert: inventoryToInsert },
+      { upsert: true }
+    );
 
+    console.log("Database seeding completed successfully!");
   } catch (err) {
     console.error("Error seeding the database:", err);
   } finally {

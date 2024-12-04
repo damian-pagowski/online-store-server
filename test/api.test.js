@@ -33,7 +33,7 @@ const createNewUserAndToken = async () => {
 };
 
 beforeAll(async () => {
-  await mongoose.connect(process.env.MONGOLAB_URI, { useUnifiedTopology: true, useNewUrlParser: true });
+  await mongoose.connect(process.env.MONGOLAB_URI);
   await clearDatabase();
   await seedDatabase();
 });
