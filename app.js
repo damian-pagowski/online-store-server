@@ -39,14 +39,16 @@ app.use(bodyParser.json());
 app.use(express.static(`${__dirname}/public`));
 
 // CORS configuration
-const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:3000";
-app.use(
-  cors({
-    origin: CLIENT_URL, // Allow only the React app's origin
-    methods: "GET,POST,PUT,DELETE", // Allowed HTTP methods
-    credentials: true, // Allow cookies and authorization headers
-  })
-);
+const CLIENT_URL = process.env.CLIENT_URL 
+const allowedOrigins = CLIENT_URL ||  ['http://127.0.0.1:3000', 'http://localhost:3000'];
+
+console.log(allowedOrigins)
+
+app.use(cors({
+    origin: allowedOrigins,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], 
+    credentials: true, 
+}));
 
 // Security headers
 app.use(helmet());
