@@ -1,7 +1,6 @@
 # Online Store Server
 
 Online store API developed with Node.js + Express.  
-User authentication is handled with Passport.js.  
 Integrated with MongoDB for product and user data storage.
 
 ## Features

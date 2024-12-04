@@ -42,7 +42,7 @@ app.use(express.static(`${__dirname}/public`));
 const CLIENT_URL = process.env.CLIENT_URL 
 const allowedOrigins = CLIENT_URL ||  ['http://127.0.0.1:3000', 'http://localhost:3000'];
 
-console.log(allowedOrigins)
+console.log("Allowed Origins: "+ allowedOrigins)
 
 app.use(cors({
     origin: allowedOrigins,

@@ -37,7 +37,7 @@ const getUser = async (username, mask = {}) => {
 };
 
 const deleteUser = async (username) => {
-  return Users.findOneAndRemove({ username });
+  return Users.findOneAndDelete({ username });
 };
 
 const createUser = async (username, email, password) => {
