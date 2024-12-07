@@ -13,6 +13,7 @@ const usersRouter = require("./routes/userRoutes");
 const cartRouter = require("./routes/cartRoutes");
 const productRouter = require("./routes/productRoutes");
 const inventoryRouter = require("./routes/inventoryRoutes");
+const categoryRouter = require("./routes/categoryRoutes");
 
 
 const app = express();
@@ -54,11 +55,11 @@ app.use(cors({
 app.use(helmet());
 
 // Routes
+app.use("/categories", categoryRouter);
 app.use("/users", usersRouter);
 app.use("/cart", cartRouter);
 app.use("/products", productRouter);
 app.use("/inventory", inventoryRouter);
-
 
 // Database connection
 const DB_URI = process.env.MONGOLAB_URI;

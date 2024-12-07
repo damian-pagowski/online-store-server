@@ -82,6 +82,73 @@ describe("Inventory Endpoint", () => {
   });
 });
 
+
+// --- PRODUCTS ENDPOINT ---
+describe("Products Endpoint", () => {
+  const products = require("./fixtures/products");
+
+  test("Get all products", async () => {
+    const response = await request(BASE_URL)
+      .get("/products")
+      .expect(200);
+
+    const expectedProducts = products.map(product => ({
+      name: product.name,
+      image: product.image,
+      description: product.description,
+      rating: product.rating,
+      price: parseFloat(product.price), // Ensuring price is a number
+      productId: product.productId,
+      category: product.category,
+      subcategory: product.subcategory,
+      badges: product.badges
+    }));
+
+    const actualProducts = response.body.map(product => ({
+      name: product.name,
+      image: product.image,
+      description: product.description,
+      rating: product.rating,
+      price: parseFloat(product.price), 
+      productId: product.productId,
+      category: product.category,
+      subcategory: product.subcategory,
+      badges: product.badges
+    }));
+
+    expect(actualProducts).toEqual(expectedProducts);
+  });
+});
+
+// --- CATEGORY ENDPOINT ---
+describe("Categories Endpoint", () => {
+  const categories = require("./fixtures/categories");
+
+  test("Get all categories", async () => {
+    const response = await request(BASE_URL)
+      .get("/categories")
+      .expect(200);
+
+    const expectedCategories = categories.map(category => ({
+      ...category,
+      subcategories: category.subcategories.map(subcategory => ({
+        name: subcategory.name,
+        display: subcategory.display
+      }))
+    }));
+
+    const actualCategories = response.body.map(category => ({
+      ...category,
+      subcategories: category.subcategories.map(subcategory => ({
+        name: subcategory.name,
+        display: subcategory.display
+      }))
+    }));
+
+    expect(actualCategories).toEqual(expectedCategories);
+  });
+});
+
 // --- CART ENDPOINT ---
 describe("Cart Endpoint", () => {
   const inventories = require("./fixtures/inventories");
