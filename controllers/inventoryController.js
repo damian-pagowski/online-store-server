@@ -19,7 +19,6 @@ const getInventory = (productId) => {
   return Inventory.findOne({ productId }, { _id: 0, __v: 0 });
 };
 
-// Utility function for consistent inventory error creation
 const createInventoryError = (productId, message) => {
   const error = new Error(`Inventory: ${productId} - ${message}`);
   error.type = "product_unavailable";

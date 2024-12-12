@@ -151,35 +151,35 @@ const categories = [
 const productInventory = [
   {
     productId: 1,
-    quantity: 10,
+    quantity: 9999,
   },
   {
     productId: 2,
-    quantity: 9,
+    quantity: 9999,
   },
   {
     productId: 3,
-    quantity: 8,
+    quantity: 9999,
   },
   {
     productId: 4,
-    quantity: 7,
+    quantity: 9999,
   },
   {
     productId: 5,
-    quantity: 6,
+    quantity: 9999,
   },
   {
     productId: 6,
-    quantity: 5,
+    quantity: 9999,
   },
   {
     productId: 7,
-    quantity: 4,
+    quantity: 9999,
   },
   {
     productId: 8,
-    quantity: 0,
+    quantity: 9999,
   },
 ];
 

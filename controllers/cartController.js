@@ -6,7 +6,7 @@ const itemQuantityLimit = 10;
 
 const getCart = async (username) => {
   const cart = await Cart.findOne({ username });
-  return cart ? cart.items : {}; // Return the map of productId -> quantity
+  return cart ? cart.items : {}; // map of productId -> quantity
 };
 
 const deleteCart = async (username) => {
@@ -17,17 +17,14 @@ const addItemToCart = async (username, productId, quantity) => {
   const cart = await ensureCartExists(username);
 
   try {
-    // Remove the item from inventory
     await removeFromInventory(productId, quantity);
 
-    // Update the cart
     const updatedItems = updateCartItems(cart.items, productId, quantity);
     cart.items = updatedItems;
     await cart.save();
 
     return updatedItems;
   } catch (err) {
-    // Roll back inventory changes on error, except for product_unavailable
     if (err.type !== "product_unavailable") {
       await removeFromInventory(productId, -quantity);
     }
@@ -35,7 +32,6 @@ const addItemToCart = async (username, productId, quantity) => {
   }
 };
 
-// Helper to ensure a user exists and retrieve their cart
 const ensureCartExists = async (username) => {
   const user = await getUser(username);
   if (!user) {
@@ -46,17 +42,15 @@ const ensureCartExists = async (username) => {
 
   let cart = await Cart.findOne({ username });
   if (!cart) {
-    cart = new Cart({ username, items: {} }); // Initialize empty cart
+    cart = new Cart({ username, items: {} }); 
   }
   return cart;
 };
 
-// Helper to update cart items
 const updateCartItems = (items, productId, quantity) => {
   const currentItems = { ...items };
   const currentQuantity = currentItems[productId] || 0;
 
-  // Validate quantity limits
   if (currentQuantity + quantity > itemQuantityLimit) {
     throw createCartError("Quantity limit exceeded");
   }
@@ -64,7 +58,6 @@ const updateCartItems = (items, productId, quantity) => {
     throw createCartError("Quantity of item in cart must be greater than 0");
   }
 
-  // Update or remove item
   if (currentQuantity + quantity === 0) {
     delete currentItems[productId];
   } else {
@@ -74,7 +67,6 @@ const updateCartItems = (items, productId, quantity) => {
   return currentItems;
 };
 
-// Helper to create cart-related errors
 const createCartError = (message) => {
   const error = new Error(message);
   error.type = "cart_error";

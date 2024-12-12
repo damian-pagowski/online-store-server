@@ -7,14 +7,12 @@ const helmet = require("helmet");
 const session = require("express-session");
 const mongoose = require("mongoose");
 const rateLimit = require("express-rate-limit");
-
 // Routers
 const usersRouter = require("./routes/userRoutes");
 const cartRouter = require("./routes/cartRoutes");
 const productRouter = require("./routes/productRoutes");
 const inventoryRouter = require("./routes/inventoryRoutes");
 const categoryRouter = require("./routes/categoryRoutes");
-
 
 const app = express();
 
@@ -25,16 +23,7 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
-// Session configuration
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET || "defaultSecret",
-    saveUninitialized: false,
-    resave: false,
-  })
-);
-
-// Middleware
+// Middlewares
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(express.static(`${__dirname}/public`));
@@ -42,14 +31,24 @@ app.use(express.static(`${__dirname}/public`));
 // CORS configuration
 const CLIENT_URL = process.env.CLIENT_URL 
 const allowedOrigins = CLIENT_URL ||  ['http://127.0.0.1:3000', 'http://localhost:3000'];
-
 console.log("Allowed Origins: "+ allowedOrigins)
 
 app.use(cors({
-    origin: allowedOrigins,
-    methods: ['GET', 'POST', 'PUT', 'DELETE'], 
-    credentials: true, 
+  origin: '*', 
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['*'],
+  credentials: true 
 }));
+
+app.options('*', cors()); // Pre-flight requests for all routes
+
+// debug only
+app.use((req, res, next) => {
+  res.on('finish', () => {
+    console.log('Response Headers:', res.getHeaders());
+  });
+  next();
+});
 
 // Security headers
 app.use(helmet());
@@ -64,7 +63,7 @@ app.use("/inventory", inventoryRouter);
 // Database connection
 const DB_URI = process.env.MONGOLAB_URI;
 mongoose
-  .connect(DB_URI, { useUnifiedTopology: true, useNewUrlParser: true })
+  .connect(DB_URI)
   .then(() => console.log("Connected to MongoDB"))
   .catch((error) => console.error("MongoDB connection error:", error));
 
