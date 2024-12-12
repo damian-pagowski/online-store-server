@@ -1,7 +1,6 @@
 const swaggerJSDoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
 
-// Swagger configuration
 const swaggerOptions = {
   definition: {
     openapi: "3.0.0",
@@ -12,12 +11,12 @@ const swaggerOptions = {
     },
     servers: [
       {
-        url: "http://localhost:3030", // Update with your server URL
+        url: "http://localhost:3030", 
         description: "Development Server",
       },
     ],
   },
-  apis: ["./routes/*.js"], // Location of your route files
+  apis: ["./routes/*.js"], 
 };
 
 const swaggerSpec = swaggerJSDoc(swaggerOptions);
