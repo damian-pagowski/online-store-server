@@ -4,7 +4,6 @@ const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const helmet = require("helmet");
-const session = require("express-session");
 const mongoose = require("mongoose");
 const rateLimit = require("express-rate-limit");
 const usersRouter = require("./routes/userRoutes");
@@ -12,6 +11,7 @@ const cartRouter = require("./routes/cartRoutes");
 const productRouter = require("./routes/productRoutes");
 const inventoryRouter = require("./routes/inventoryRoutes");
 const categoryRouter = require("./routes/categoryRoutes");
+const errorHandler = require('./middlewares/errorHandler');
 
 const app = express();
 
@@ -59,7 +59,10 @@ app.use("/cart", cartRouter);
 app.use("/products", productRouter);
 app.use("/inventory", inventoryRouter);
 
-// DB
+// Error Handling
+app.use(errorHandler);
+
+// DB Start
 const DB_URI = process.env.MONGOLAB_URI;
 mongoose
   .connect(DB_URI)
