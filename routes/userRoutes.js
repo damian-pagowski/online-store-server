@@ -9,7 +9,8 @@ const express = require("express");
 const router = express.Router();
 const { getUser, createUser, deleteUser, login } = require("../controllers/userController");
 const { authenticationMiddleware } = require("../middlewares/authMiddleware");
-
+const { registerUserSchema, loginUserSchema } = require('../validation/userValidation');
+const validate = require('../middlewares/validate');
 /**
  * @swagger
  * /users:
@@ -39,9 +40,9 @@ const { authenticationMiddleware } = require("../middlewares/authMiddleware");
  *       400:
  *         description: Validation error
  */
-router.post("/", async (req, res) => {
-  const { username, email, password } = req.body;
 
+router.post("/", validate(registerUserSchema), async (req, res) => {
+  const { username, email, password } = req.body;
   try {
     const user = await createUser(username, email, password);
     return res.status(201).json(user);
@@ -163,7 +164,7 @@ router.delete("/", authenticationMiddleware, async (req, res) => {
  *       404:
  *         description: User not found
  */
-router.post("/login", async (req, res) => {
+router.post("/login", validate(loginUserSchema), async (req, res) => {
   try {
     const { username, password } = req.body;
     const response = await login(username, password);

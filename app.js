@@ -42,12 +42,12 @@ app.use(cors({
 app.options('*', cors()); // Pre-flight requests for all routes
 
 // debug only
-app.use((req, res, next) => {
-  res.on('finish', () => {
-    console.log('Response Headers:', res.getHeaders());
-  });
-  next();
-});
+// app.use((req, res, next) => {
+//   res.on('finish', () => {
+//     console.log('Response Headers:', res.getHeaders());
+//   });
+//   next();
+// });
 
 // Security headers
 app.use(helmet());

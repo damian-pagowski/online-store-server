@@ -1,9 +1,10 @@
 const express = require("express");
 const router = express.Router();
+const { productQuerySchema, productIdSchema } = require('../validation/productValidation');
+const validateParams = require('../middlewares/validateParams');
 
 const {
   searchProduct,
-  getCategories,
   getProduct,
 } = require("../controllers/productController");
 
@@ -52,9 +53,8 @@ const {
  *       500:
  *         description: Internal server error
  */
-router.get("/", async (req, res) => {
+router.get("/", validateParams(productQuerySchema), async (req, res) => {
   const { subcategory, category, search } = req.query;
-
   try {
     const products = await searchProduct(subcategory, category, search);
     return res.status(200).json(products);
@@ -99,9 +99,8 @@ router.get("/", async (req, res) => {
  *       500:
  *         description: Internal server error
  */
-router.get("/:id", async (req, res) => {
+router.get("/:id", validateParams(productIdSchema), async (req, res) => {
   const { id: productId } = req.params;
-
   try {
     const product = await getProduct(productId);
     if (!product) {

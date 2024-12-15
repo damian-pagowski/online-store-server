@@ -13,15 +13,16 @@ const {
   getCart,
   deleteCart,
 } = require("../controllers/cartController");
-
+const { cartOperationSchema, checkoutCartSchema } = require('../validation/cartValidation');
 const generateOrderId = () => Math.floor(Math.random() * 1e9);
+const validate = require('../middlewares/validate');
 
 
 /**
  * @swagger
  * /cart:
  *   post:
- *     summary: Add item to cart
+ *     summary: Add or remove item from cart
  *     tags: [Cart]
  *     requestBody:
  *       required: true
@@ -32,11 +33,18 @@ const generateOrderId = () => Math.floor(Math.random() * 1e9);
  *             required:
  *               - productId
  *               - quantity
+ *               - operation
  *             properties:
  *               productId:
  *                 type: number
+ *                 description: The ID of the product to be added or removed
  *               quantity:
  *                 type: number
+ *                 description: The quantity of the product to be added or removed
+ *               operation:
+ *                 type: string
+ *                 enum: [add, remove]
+ *                 description: The operation to be performed. Use 'add' to add items and 'remove' to remove items from the cart.
  *     responses:
  *       200:
  *         description: Updated cart
@@ -45,9 +53,10 @@ const generateOrderId = () => Math.floor(Math.random() * 1e9);
  *             schema:
  *               type: object
  *       400:
- *         description: Quantity exceeds limit or invalid data
+ *         description: Invalid data or operation field is missing
  *       401:
  *         description: Unauthorized
+ * 
  *   get:
  *     summary: Get user's cart
  *     tags: [Cart]
@@ -58,6 +67,7 @@ const generateOrderId = () => Math.floor(Math.random() * 1e9);
  *           application/json:
  *             schema:
  *               type: object
+ * 
  *   delete:
  *     summary: Clear user's cart
  *     tags: [Cart]
@@ -69,20 +79,23 @@ const generateOrderId = () => Math.floor(Math.random() * 1e9);
  *             schema:
  *               type: object
  */
-router.post("/", authenticationMiddleware, async (req, res) => {
+
+router.post("/", authenticationMiddleware, validate(cartOperationSchema), async (req, res) => {
+  const { productId, quantity, operation } = req.body;
   const username = req.currentUser.username;
 
-  const { productId, quantity } = req.body;
   try {
-    const updatedCart = await addItemToCart(username, productId, quantity);
+    let updatedCart;
+    if (operation === 'add') {
+      updatedCart = await addItemToCart(username, productId, quantity);
+    } else if (operation === 'remove') {
+      updatedCart = await addItemToCart(username, productId, -quantity); // Quick and dirty fix
+    } else {
+      return res.status(400).json({ error: true, message: 'Invalid operation. Use "add" or "remove".' });
+    }
     return res.status(200).json(updatedCart);
   } catch (err) {
-    const cart = await getCart(username);
-    return res.status(200).json({
-      error: true,
-      message: err.message,
-      cart,
-    });
+    return res.status(400).json({ error: true, message: err.message });
   }
 });
 
@@ -114,7 +127,7 @@ router.delete("/", authenticationMiddleware, async (req, res) => {
 *       500:
 *         description: Checkout failed
 */
-router.post("/checkout", authenticationMiddleware, async (req, res) => {
+router.post("/checkout", authenticationMiddleware, validate(checkoutCartSchema), async (req, res) => {
   const username = req.currentUser.username;
   try {
     await deleteCart(username);
