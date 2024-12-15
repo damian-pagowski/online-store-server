@@ -1,9 +1,9 @@
 class AppError extends Error {
     constructor(message, statusCode) {
         super(message);
-        this.statusCode = statusCode || 500; // Default to 500 if statusCode is not provided
-        this.isOperational = true; // Used to distinguish between operational and programming errors
-        this.timestamp = new Date().toISOString(); // Add timestamp for better tracking
+        this.statusCode = statusCode || 500;
+        this.isOperational = true;
+        this.timestamp = new Date().toISOString();
         Error.captureStackTrace(this, this.constructor);
     }
 }
@@ -11,20 +11,19 @@ class AppError extends Error {
 class ValidationError extends AppError {
     constructor(errors = [], message = 'Validation failed') {
         super(message, 400);
-        this.errors = errors; // Array of validation messages
+        this.errors = errors;
         this.type = 'validation_error';
     }
 }
 
 class DatabaseError extends AppError {
     constructor(message, operation = 'unknown', details = {}) {
-        super(message, 500); // Database errors should be 500 (Internal Server Error)
+        super(message, 500);
         this.type = 'database_error';
-        this.operation = operation; // Operation that failed (e.g., 'findOne', 'updateOne')
-        this.details = details; // Additional details about the failure
+        this.operation = operation;
+        this.details = details;
     }
 }
-
 
 class NotFoundError extends AppError {
     constructor(resource = 'Resource', identifier = '') {
@@ -54,7 +53,7 @@ class CartError extends AppError {
     constructor(message, cartId = null) {
         super(message, 400);
         this.type = 'cart_error';
-        if (cartId) this.cartId = cartId; // Include cartId for debugging
+        if (cartId) this.cartId = cartId;
     }
 }
 
@@ -62,33 +61,33 @@ class InventoryError extends AppError {
     constructor(productId, message) {
         super(`Inventory Error for Product ${productId}: ${message}`, 400);
         this.type = 'inventory_error';
-        this.productId = productId; // Include the product ID to identify which product failed
+        this.productId = productId;
     }
 }
 
 class TokenError extends AppError {
     constructor(message) {
-        super(message, 401); // Token errors should use 401 (Unauthorized)
+        super(message, 401);
         this.type = 'token_error';
     }
 }
 
 class AuthenticationError extends AppError {
     constructor(message = 'Invalid authentication') {
-        super(message, 401); // Authentication errors should use 401 (Unauthorized)
+        super(message, 401);
         this.type = 'authentication_error';
     }
 }
 
-module.exports = { 
-    AppError, 
-    ValidationError, 
-    NotFoundError, 
-    UnauthorizedError, 
-    ForbiddenError, 
-    CartError, 
-    DatabaseError, 
-    InventoryError, 
-    AuthenticationError, 
-    TokenError 
+module.exports = {
+    AppError,
+    ValidationError,
+    NotFoundError,
+    UnauthorizedError,
+    ForbiddenError,
+    CartError,
+    DatabaseError,
+    InventoryError,
+    AuthenticationError,
+    TokenError
 };
