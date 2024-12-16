@@ -2,28 +2,18 @@
  * @swagger
  * tags:
  *   name: Cart
- *   description: Cart management
+ *   description: Endpoints for managing the user's shopping cart
  */
-
-const express = require("express");
-const router = express.Router();
-const { authenticationMiddleware } = require("../middlewares/authMiddleware");
-const {
-  addItemToCart,
-  getCart,
-  deleteCart,
-} = require("../controllers/cartController");
-const { cartOperationSchema, checkoutCartSchema } = require('../validation/cartValidation');
-const generateOrderId = () => Math.floor(Math.random() * 1e9);
-const validate = require('../middlewares/validate');
-
 
 /**
  * @swagger
  * /cart:
  *   post:
- *     summary: Add or remove item from cart
+ *     summary: Add or remove items in the user's cart
+ *     description: Add or remove a product from the user's cart based on the operation. The operation can be "add" or "remove".
  *     tags: [Cart]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -36,41 +26,97 @@ const validate = require('../middlewares/validate');
  *               - operation
  *             properties:
  *               productId:
- *                 type: number
- *                 description: The ID of the product to be added or removed
+ *                 type: string
+ *                 example: 64dcb8e7b1f8e8a34bafc3f2
  *               quantity:
  *                 type: number
- *                 description: The quantity of the product to be added or removed
+ *                 example: 2
  *               operation:
  *                 type: string
  *                 enum: [add, remove]
- *                 description: The operation to be performed. Use 'add' to add items and 'remove' to remove items from the cart.
+ *                 example: add
  *     responses:
  *       200:
- *         description: Updated cart
+ *         description: Cart updated successfully
  *         content:
  *           application/json:
  *             schema:
  *               type: object
+ *               properties:
+ *                 productId:
+ *                   type: string
+ *                   example: 64dcb8e7b1f8e8a34bafc3f2
+ *                 quantity:
+ *                   type: number
+ *                   example: 2
+ *                 message:
+ *                   type: string
+ *                   example: Cart updated successfully
  *       400:
- *         description: Invalid data or operation field is missing
- *       401:
- *         description: Unauthorized
- * 
- *   get:
- *     summary: Get user's cart
- *     tags: [Cart]
- *     responses:
- *       200:
- *         description: User's cart
+ *         description: Validation error (e.g., invalid operation, invalid productId)
  *         content:
  *           application/json:
  *             schema:
  *               type: object
- * 
- *   delete:
- *     summary: Clear user's cart
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Invalid operation. Use "add" or "remove".
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Internal server error
+ */
+
+/**
+ * @swagger
+ * /cart:
+ *   get:
+ *     summary: Get the current user's cart
+ *     description: Retrieves the items currently in the user's cart.
  *     tags: [Cart]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Returns the current user's cart
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 items:
+ *                   type: object
+ *                   example: 
+ *                     "64dcb8e7b1f8e8a34bafc3f2": 2
+ *                     "64dcb8e7b1f8e8a34bafc3f3": 5
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Internal server error
+ */
+
+/**
+ * @swagger
+ * /cart:
+ *   delete:
+ *     summary: Clear the user's cart
+ *     description: Removes all items from the user's cart.
+ *     tags: [Cart]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Cart cleared successfully
@@ -78,67 +124,31 @@ const validate = require('../middlewares/validate');
  *           application/json:
  *             schema:
  *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Cart cleared successfully
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Internal server error
  */
 
-router.post("/", authenticationMiddleware, validate(cartOperationSchema), async (req, res) => {
-  const { productId, quantity, operation } = req.body;
-  const username = req.currentUser.username;
+const express = require('express');
+const { addItemToCartHandler, getCartHandler, deleteCartHandler } = require('../controllers/cartController');
+const { authenticationMiddleware } = require('../middlewares/authMiddleware');
+const validate = require('../middlewares/validate');
 
-  try {
-    let updatedCart;
-    if (operation === 'add') {
-      updatedCart = await addItemToCart(username, productId, quantity);
-    } else if (operation === 'remove') {
-      updatedCart = await addItemToCart(username, productId, -quantity); // Quick and dirty fix
-    } else {
-      return res.status(400).json({ error: true, message: 'Invalid operation. Use "add" or "remove".' });
-    }
-    return res.status(200).json(updatedCart);
-  } catch (err) {
-    return res.status(400).json({ error: true, message: err.message });
-  }
-});
+const { cartOperationSchema } = require('../validation/cartValidation');
 
-router.get("/", authenticationMiddleware, async (req, res) => {
-  const username = req.currentUser.username;
-  const cart = await getCart(username);
-  return res.status(200).json(cart);
-});
-
-router.delete("/", authenticationMiddleware, async (req, res) => {
-  const username = req.currentUser.username;
-  await deleteCart(username);
-  return res.status(200).json({ message: "Cart removed successfully" });
-});
-
-/**
-* @swagger
-* /cart/checkout:
-*   post:
-*     summary: Checkout user's cart
-*     tags: [Cart]
-*     responses:
-*       200:
-*         description: Checkout successful
-*         content:
-*           application/json:
-*             schema:
-*               type: object
-*       500:
-*         description: Checkout failed
-*/
-router.post("/checkout", authenticationMiddleware, validate(checkoutCartSchema), async (req, res) => {
-  const username = req.currentUser.username;
-  try {
-    await deleteCart(username);
-    const orderId = generateOrderId();
-    return res.status(200).json({
-      orderId,
-      message: "Your order has been placed successfully. Products will be delivered soon.",
-    });
-  } catch (err) {
-    return res.status(500).json({ error: true, message: "Checkout failed" });
-  }
-});
-
+const router = express.Router();
+router.post("/", authenticationMiddleware, validate(cartOperationSchema), addItemToCartHandler);
+router.get("/", authenticationMiddleware, getCartHandler);
+router.delete("/", authenticationMiddleware, deleteCartHandler);
 module.exports = router;

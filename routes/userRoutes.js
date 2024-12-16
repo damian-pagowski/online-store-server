@@ -2,20 +2,15 @@
  * @swagger
  * tags:
  *   name: Users
- *   description: User management
+ *   description: User management endpoints for registration, login, account details, and account deletion
  */
 
-const express = require("express");
-const router = express.Router();
-const { getUser, createUser, deleteUser, login } = require("../controllers/userController");
-const { authenticationMiddleware } = require("../middlewares/authMiddleware");
-const { registerUserSchema, loginUserSchema } = require('../validation/userValidation');
-const validate = require('../middlewares/validate');
 /**
  * @swagger
  * /users:
  *   post:
  *     summary: Register a new user
+ *     description: Creates a new user account with a username, email, and password.
  *     tags: [Users]
  *     requestBody:
  *       required: true
@@ -30,38 +25,53 @@ const validate = require('../middlewares/validate');
  *             properties:
  *               username:
  *                 type: string
+ *                 description: The user's unique username
+ *                 example: john_doe
  *               email:
  *                 type: string
+ *                 description: The user's email address
+ *                 example: john@example.com
  *               password:
  *                 type: string
+ *                 description: The user's password
+ *                 format: password
+ *                 example: StrongPassword123
  *     responses:
  *       201:
  *         description: User created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: User created successfully
+ *                 username:
+ *                   type: string
+ *                   example: john_doe
+ *                 email:
+ *                   type: string
+ *                   example: john@example.com
+ *                 token:
+ *                   type: string
+ *                   description: JWT token for authentication
  *       400:
- *         description: Validation error
+ *         description: Validation error (username/email already exists or invalid data)
  */
-
-router.post("/", validate(registerUserSchema), async (req, res) => {
-  const { username, email, password } = req.body;
-  try {
-    const user = await createUser(username, email, password);
-    return res.status(201).json(user);
-  } catch (error) {
-    return res.status(400).json({ message: error.message, errors: error.errors });
-  }
-});
 
 /**
  * @swagger
  * /users:
  *   get:
  *     summary: Get user details
+ *     description: Retrieves the details of the currently authenticated user.
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: User details
+ *         description: User details retrieved successfully
  *         content:
  *           application/json:
  *             schema:
@@ -69,58 +79,40 @@ router.post("/", validate(registerUserSchema), async (req, res) => {
  *               properties:
  *                 username:
  *                   type: string
+ *                   example: john_doe
  *                 email:
  *                   type: string
+ *                   example: john@example.com
  *       401:
- *         description: Unauthorized - Token missing or invalid
- *       403:
- *         description: Access denied
+ *         description: Unauthorized - Token is missing or invalid
  *       404:
  *         description: User not found
  */
-router.get("/", authenticationMiddleware, async (req, res) => {
-  try {
-    const username = req.currentUser.username;
-    const user = await getUser(username, { _id: 0, __v: 0, password: 0 });
-    res.status(200).json(user);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-});
 
 /**
  * @swagger
  * /users:
  *   delete:
  *     summary: Delete the currently authenticated user
+ *     description: Deletes the account of the currently authenticated user.
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       204:
- *         description: User successfully deleted
+ *         description: User successfully deleted (no response body)
  *       401:
- *         description: Unauthorized - Token missing or invalid
- *       403:
- *         description: Access denied
+ *         description: Unauthorized - Token is missing or invalid
  *       404:
  *         description: User not found
  */
-router.delete("/", authenticationMiddleware, async (req, res) => {
-  try {
-    const username = req.currentUser.username;
-    await deleteUser(username);
-    res.status(204).send();
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-});
 
 /**
  * @swagger
  * /users/login:
  *   post:
- *     summary: Authenticate user and return a JWT token
+ *     summary: Login a user
+ *     description: Authenticates the user with their username and password and returns a JWT token.
  *     tags: [Users]
  *     requestBody:
  *       required: true
@@ -135,10 +127,12 @@ router.delete("/", authenticationMiddleware, async (req, res) => {
  *               username:
  *                 type: string
  *                 description: The user's username
+ *                 example: john_doe
  *               password:
  *                 type: string
  *                 description: The user's password
  *                 format: password
+ *                 example: StrongPassword123
  *     responses:
  *       200:
  *         description: Login successful, JWT token returned
@@ -155,23 +149,32 @@ router.delete("/", authenticationMiddleware, async (req, res) => {
  *                   description: JWT token for authentication
  *                 username:
  *                   type: string
+ *                   example: john_doe
  *                 email:
  *                   type: string
+ *                   example: john@example.com
  *       400:
- *         description: Invalid request data
+ *         description: Validation error (e.g., missing required fields)
  *       401:
  *         description: Invalid credentials
- *       404:
- *         description: User not found
  */
-router.post("/login", validate(loginUserSchema), async (req, res) => {
-  try {
-    const { username, password } = req.body;
-    const response = await login(username, password);
-    res.status(200).json(response);
-  } catch (error) {
-    res.status(error.status || 400).json({ message: error.message });
-  }
-});
+
+const express = require("express");
+const { 
+  registerUserHandler, 
+  getUserHandler, 
+  deleteUserHandler, 
+  loginHandler 
+} = require("../controllers/userController");
+const { authenticationMiddleware } = require("../middlewares/authMiddleware");
+const { registerUserSchema, loginUserSchema } = require('../validation/userValidation');
+const validate = require('../middlewares/validate');
+
+const router = express.Router();
+
+router.post("/", validate(registerUserSchema), registerUserHandler);
+router.get("/", authenticationMiddleware, getUserHandler);
+router.delete("/", authenticationMiddleware, deleteUserHandler);
+router.post("/login", validate(loginUserSchema), loginHandler);
 
 module.exports = router;

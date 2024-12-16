@@ -1,19 +1,17 @@
-const express = require("express");
-const router = express.Router();
-const { productQuerySchema, productIdSchema } = require('../validation/productValidation');
-const validateParams = require('../middlewares/validateParams');
-
-const {
-  searchProduct,
-  getProduct,
-} = require("../controllers/productController");
+/**
+ * @swagger
+ * tags:
+ *   name: Products
+ *   description: Endpoints for retrieving and searching for products
+ */
 
 /**
  * @swagger
- * /api/products:
+ * /products:
  *   get:
  *     summary: Retrieve a list of products
  *     description: Fetch a list of products with optional filters for subcategory, category, and search term.
+ *     tags: [Products]
  *     parameters:
  *       - in: query
  *         name: subcategory
@@ -53,22 +51,14 @@ const {
  *       500:
  *         description: Internal server error
  */
-router.get("/", validateParams(productQuerySchema), async (req, res) => {
-  const { subcategory, category, search } = req.query;
-  try {
-    const products = await searchProduct(subcategory, category, search);
-    return res.status(200).json(products);
-  } catch (error) {
-    return res.status(500).json({ error: "Failed to fetch products", message: error.message });
-  }
-});
 
 /**
  * @swagger
- * /api/products/{id}:
+ * /products/{id}:
  *   get:
  *     summary: Retrieve a product by ID
  *     description: Get the details of a specific product by its ID.
+ *     tags: [Products]
  *     parameters:
  *       - in: path
  *         name: id
@@ -99,17 +89,15 @@ router.get("/", validateParams(productQuerySchema), async (req, res) => {
  *       500:
  *         description: Internal server error
  */
-router.get("/:id", validateParams(productIdSchema), async (req, res) => {
-  const { id: productId } = req.params;
-  try {
-    const product = await getProduct(productId);
-    if (!product) {
-      return res.status(404).json({ error: "Product not found" });
-    }
-    return res.status(200).json(product);
-  } catch (error) {
-    return res.status(500).json({ error: "Failed to fetch product", message: error.message });
-  }
-});
+
+const express = require("express");
+const { searchProductHandler, getProductHandler } = require("../controllers/productController");
+const { productQuerySchema, productIdSchema } = require('../validation/productValidation');
+const validateParams = require('../middlewares/validateParams');
+
+const router = express.Router();
+
+router.get("/", validateParams(productQuerySchema), searchProductHandler);
+router.get("/:id", validateParams(productIdSchema), getProductHandler);
 
 module.exports = router;

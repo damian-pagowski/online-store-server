@@ -1,15 +1,18 @@
 const Products = require("../models/product");
-const Categories = require("../models/category");
 const { NotFoundError, DatabaseError } = require('../utils/errors');
 
 const mask = { _id: 0, __v: 0 };
 
-const buildQueryCriteria = (subcategory, category, search) => {
-  const queryCriteria = {};
-  if (category) queryCriteria.category = category;
-  if (subcategory) queryCriteria.subcategory = subcategory;
-  if (search) queryCriteria.name = { $regex: new RegExp(search, 'i') };
-  return queryCriteria;
+const searchProductHandler = async (req, res) => {
+  const { subcategory, category, search } = req.query;
+  const products = await searchProduct(subcategory, category, search);
+  res.status(200).json(products);
+};
+
+const getProductHandler = async (req, res) => {
+  const { id: productId } = req.params;
+  const product = await getProduct(productId);
+  res.status(200).json(product);
 };
 
 const searchProduct = async (subcategory, category, search) => {
@@ -23,7 +26,7 @@ const searchProduct = async (subcategory, category, search) => {
 
 const getProduct = async (productId) => {
   try {
-    const product = await Products.findOne({ _id: productId }, mask);
+    const product = await Products.findOne({ productId }, mask);
     if (!product) {
       throw new NotFoundError(`Product with ID ${productId} not found`);
     }
@@ -33,12 +36,17 @@ const getProduct = async (productId) => {
   }
 };
 
-const getCategories = async () => {
-  try {
-    return await Categories.find({}, mask);
-  } catch (error) {
-    throw new DatabaseError('Failed to retrieve product categories', error);
-  }
+const buildQueryCriteria = (subcategory, category, search) => {
+  const queryCriteria = {};
+  if (category) queryCriteria.category = category;
+  if (subcategory) queryCriteria.subcategory = subcategory;
+  if (search) queryCriteria.name = { $regex: new RegExp(search, 'i') };
+  return queryCriteria;
 };
 
-module.exports = { searchProduct, getCategories, getProduct };
+module.exports = { 
+  searchProductHandler, 
+  getProductHandler, 
+  searchProduct, 
+  getProduct 
+};

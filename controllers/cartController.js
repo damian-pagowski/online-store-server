@@ -1,11 +1,32 @@
 const { removeFromInventory } = require("./inventoryController");
 const { getUser } = require("./userController");
 const Cart = require("../models/cart");
-const { NotFoundError } = require('../utils/errors');
-const { CartError } = require('../utils/errors');
-const { DatabaseError } = require('../utils/errors');
+const { NotFoundError, CartError, DatabaseError, InventoryRollbackError } = require('../utils/errors');
 
 const itemQuantityLimit = 10;
+
+const addItemToCartHandler = async (req, res) => {
+  const { productId, quantity, operation } = req.body;
+  const username = req.currentUser.username;
+  if (!['add', 'remove'].includes(operation)) {
+    throw new CartError(`Invalid operation. Use "add" or "remove".`);
+  }
+  const operationQuantity = operation === 'add' ? quantity : -quantity;
+  const updatedCart = await addItemToCart(username, productId, operationQuantity);
+  res.status(200).json(updatedCart);
+};
+
+const getCartHandler = async (req, res) => {
+  const username = req.currentUser.username;
+  const cart = await getCart(username);
+  res.status(200).json(cart);
+};
+
+const deleteCartHandler = async (req, res) => {
+  const username = req.currentUser.username;
+  await deleteCart(username);
+  res.status(200).json({ message: 'Cart cleared successfully' });
+};
 
 const getCart = async (username) => {
   try {
@@ -50,7 +71,6 @@ const ensureCartExists = async (username) => {
     if (!user) {
       throw new NotFoundError(`User ${username} not found`);
     }
-
     let cart = await Cart.findOne({ username });
     if (!cart) {
       cart = new Cart({ username, items: {} });
@@ -67,21 +87,22 @@ const ensureCartExists = async (username) => {
 const updateCartItems = (items, productId, quantity) => {
   const currentItems = { ...items };
   const currentQuantity = currentItems[productId] || 0;
-
   if (currentQuantity + quantity > itemQuantityLimit) {
     throw new CartError(`Quantity limit exceeded for product ${productId}`);
   }
   if (currentQuantity + quantity < 0) {
     throw new CartError(`Cannot reduce product ${productId} to a negative quantity`);
   }
-
   if (currentQuantity + quantity === 0) {
     delete currentItems[productId];
   } else {
     currentItems[productId] = currentQuantity + quantity;
   }
-
   return currentItems;
 };
 
-module.exports = { addItemToCart, getCart, deleteCart };
+module.exports = { 
+  addItemToCartHandler, 
+  getCartHandler, 
+  deleteCartHandler 
+};

@@ -11,6 +11,7 @@ const cartRouter = require("./routes/cartRoutes");
 const productRouter = require("./routes/productRoutes");
 const inventoryRouter = require("./routes/inventoryRoutes");
 const categoryRouter = require("./routes/categoryRoutes");
+const orderRouter = require('./routes/orderRoutes');
 const errorHandler = require('./middlewares/errorHandler');
 
 const app = express();
@@ -58,7 +59,7 @@ app.use("/users", usersRouter);
 app.use("/cart", cartRouter);
 app.use("/products", productRouter);
 app.use("/inventory", inventoryRouter);
-
+app.use("/orders", orderRouter);
 // Error Handling
 app.use(errorHandler);
 

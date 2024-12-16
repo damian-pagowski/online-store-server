@@ -1,11 +1,19 @@
-const crypto = require("crypto");
+const bcrypt = require('bcrypt');
+const SALT_ROUNDS = 10;
 
 const hashPassword = (password) => {
-  const hash = crypto.createHash("sha256");
-  hash.update(password);
-  return hash.digest("hex");
+  if (!password) {
+    throw new Error('Password must be provided');
+  }
+  const salt = bcrypt.genSaltSync(SALT_ROUNDS);
+  return bcrypt.hashSync(password, salt);
 };
 
-module.exports = {
-  hashPassword,
+const verifyPassword = (password, hashedPassword) => {
+  if (!password || !hashedPassword) {
+    throw new Error('Password and hashed password must be provided');
+  }
+  return bcrypt.compareSync(password, hashedPassword);
 };
+
+module.exports = { hashPassword, verifyPassword };

@@ -79,6 +79,17 @@ class AuthenticationError extends AppError {
     }
 }
 
+class InventoryRollbackError extends Error {
+    constructor(message, originalError = null) {
+        super(message);
+        this.statusCode = 500; 
+        this.type = 'inventory_rollback_error';
+        this.originalError = originalError;
+        this.timestamp = new Date().toISOString();
+        Error.captureStackTrace(this, this.constructor);
+    }
+}
+
 module.exports = {
     AppError,
     ValidationError,
@@ -89,5 +100,6 @@ module.exports = {
     DatabaseError,
     InventoryError,
     AuthenticationError,
-    TokenError
+    TokenError,
+    InventoryRollbackError
 };

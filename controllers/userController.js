@@ -1,103 +1,93 @@
-const jwt = require("jsonwebtoken");
 const Users = require("../models/user");
-const { hashPassword } = require("../utils/crypto");
-const { TokenError, DatabaseError, ValidationError, NotFoundError, AuthenticationError } = require('../utils/errors');
+const { NotFoundError, ValidationError, DatabaseError, UnauthorizedError } = require('../utils/errors');
+const { hashPassword, verifyPassword } = require('../utils/crypto');
+const { generateToken } = require('../utils/token');
 
-const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret_key"; 
-
-const generateToken = (user) => {
+const registerUserHandler = async (req, res) => {
+  const { username, email, password } = req.body;
   try {
-    return jwt.sign(
-      { username: user.username, email: user.email },
-      JWT_SECRET,
-      { expiresIn: "12h" }
-    );
-  } catch (error) {
-    throw new TokenError(`Failed to generate token for user ${user.username}`, error);
-  }
-};
-
-const findUserByFields = async (fields) => {
-  try {
-    return await Users.findOne(fields);
-  } catch (error) {
-    throw new DatabaseError(`Failed to find user by fields: ${JSON.stringify(fields)}`, error);
-  }
-};
-
-const validateUserExistence = async (username, email) => {
-  const existingUser = await findUserByFields({
-    $or: [{ username }, { email }],
-  });
-  if (existingUser) {
-    const errors = [];
-    if (existingUser.email === email) errors.push(`Email "${email}" already registered`);
-    if (existingUser.username === username) errors.push(`Username "${username}" already registered`);
-    throw new ValidationError('User validation failed', errors);
-  }
-};
-
-const getUser = async (username, mask = {}) => {
-  try {
-    const user = await Users.findOne({ username }).select(mask);
-    if (!user) {
-      throw new NotFoundError(`User with username "${username}" not found`);
+    const existingUser = await Users.findOne({ $or: [{ username }, { email }] });
+    if (existingUser) {
+      throw new ValidationError('Username or email already exists', ['username', 'email']);
     }
-    return user;
-  } catch (error) {
-    throw new DatabaseError(`Failed to retrieve user with username: ${username}`, error);
-  }
-};
-
-const deleteUser = async (username) => {
-  try {
-    const user = await Users.findOneAndDelete({ username });
-    if (!user) {
-      throw new NotFoundError(`User with username "${username}" not found`);
-    }
-    return user;
-  } catch (error) {
-    throw new DatabaseError(`Failed to delete user with username: ${username}`, error);
-  }
-};
-
-const createUser = async (username, email, password) => {
-  try {
-    await validateUserExistence(username, email);
     const hashedPassword = hashPassword(password);
     const newUser = new Users({ username, email, password: hashedPassword });
     await newUser.save();
     const token = generateToken(newUser);
-    return {
-      message: "User created successfully",
-      token,
-      username: newUser.username,
-      email: newUser.email,
-    };
+    res.status(201).json({ message: 'User created successfully', username, email, token });
   } catch (error) {
     if (error instanceof ValidationError) {
-      throw error; 
+      res.status(400).json({ message: error.message, errors: error.errors });
+    } else {
+      throw new DatabaseError('Failed to create user', error);
     }
-    throw new DatabaseError('Failed to create user', 'createUser', { username, email, originalError: error });
   }
 };
 
-const login = async (username, password) => {
-  const user = await getUser(username);
-  if (!user) {
-    throw new NotFoundError(`User with username ${username} not found`);
+const getUserHandler = async (req, res) => {
+  const username = req.currentUser.username;
+  try {
+    const user = await Users.findOne({ username }, { _id: 0, __v: 0, password: 0 });
+    if (!user) {
+      throw new NotFoundError('User not found');
+    }
+    res.status(200).json(user);
+  } catch (error) {
+    if (error instanceof NotFoundError) {
+      res.status(404).json({ message: error.message });
+    } else {
+      throw new DatabaseError('Failed to get user', error);
+    }
   }
-  const hashedInputPassword = hashPassword(password);
-  if (user.password !== hashedInputPassword) {
-    throw new AuthenticationError('Invalid username or password');
-  }
-  const token = generateToken(user);
-  return { message: "Login successful", token, username: user.username, email: user.email };
 };
 
-module.exports = {
-  getUser,
-  createUser,
-  deleteUser,
-  login,
+const deleteUserHandler = async (req, res) => {
+  const username = req.currentUser.username;
+  try {
+    const result = await Users.findOneAndDelete({ username });
+    if (!result) {
+      throw new NotFoundError('User not found');
+    }
+    res.status(204).send();
+  } catch (error) {
+    if (error instanceof NotFoundError) {
+      res.status(404).json({ message: error.message });
+    } else {
+      throw new DatabaseError('Failed to delete user', error);
+    }
+  }
+};
+
+const loginHandler = async (req, res) => {
+  const { username, password } = req.body;
+  try {
+    const user = await getUser(username)
+    if (!user) {
+      throw new UnauthorizedError('User not found');
+    }
+    const passwordValid = verifyPassword(password, user.password);
+    if (!passwordValid) {
+      throw new UnauthorizedError('Invalid credentials');
+    }
+    const token = generateToken(user);
+    res.status(200).json({ message: 'Login successful', username, email: user.email, token });
+  } catch (error) {
+    if (error instanceof UnauthorizedError) {
+      res.status(401).json({ message: error.message });
+    } else {
+      throw new DatabaseError('Failed to login', error);
+    }
+  }
+};
+
+function getUser(username) {
+  return Users.findOne({ username });
+};
+
+module.exports = { 
+  registerUserHandler, 
+  getUserHandler, 
+  deleteUserHandler, 
+  loginHandler,
+  getUser
 };
