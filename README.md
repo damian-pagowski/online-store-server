@@ -94,4 +94,11 @@ Ensure new features or changes are tested adequately.
 
 ## License
 
-[MIT](https://choosealicense.com/licenses/mit/)
+
+Copyright (c) 2024 Damian Pągowski
+
+All rights reserved.
+
+This source code is the property of Damian Pągowski. No permission is granted to use, copy, modify, distribute, or sublicense this code for commercial or non-commercial purposes without **explicit written consent** from the owner.
+
+If you'd like to discuss licensing this project for use, please contact Damian Pągowski at d.pagowski*AT*gmail*DOT*com.
