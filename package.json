@@ -16,6 +16,7 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.1",
     "express-rate-limit": "^7.4.1",
+    "express-sanitizer": "^1.0.6",
     "express-session": "^1.18.1",
     "express-validator": "^7.2.0",
     "helmet": "^8.0.0",
@@ -26,7 +27,8 @@
     "node-fetch": "^3.3.2",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
-    "uuidv4": "^6.2.13"
+    "uuidv4": "^6.2.13",
+    "xss-clean": "^0.1.4"
   },
   "devDependencies": {
     "jest": "^29.7.0",
