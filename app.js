@@ -13,14 +13,12 @@ const inventoryRouter = require("./routes/inventoryRoutes");
 const categoryRouter = require("./routes/categoryRoutes");
 const orderRouter = require('./routes/orderRoutes');
 const errorHandler = require('./middlewares/errorHandler');
-const expressSanitizer = require('express-sanitizer');
 const xssClean = require('xss-clean');
 
 const app = express();
 
 // sanitize query, body, and param inputs
 // XSS attack prevention
-app.use(expressSanitizer());
 app.use(xssClean());
 
 // Rate limiter
