@@ -212,13 +212,15 @@
  *                   example: Internal server error
  */
 const express = require('express');
-const { checkout, getOrderHistory, getOrderById } = require('../controllers/orderController');
+const { checkoutHandler,
+    getOrderHistoryHandler,
+    getOrderByIdHandler } = require('../controllers/orderController');
 const { authenticationMiddleware } = require('../middlewares/authMiddleware');
 
 const router = express.Router();
 
-router.post('/checkout', authenticationMiddleware, checkout);
-router.get('/', authenticationMiddleware, getOrderHistory);
-router.get('/:id', authenticationMiddleware, getOrderById);
+router.post('/checkout', authenticationMiddleware, checkoutHandler);
+router.get('/', authenticationMiddleware, getOrderHistoryHandler);
+router.get('/:id', authenticationMiddleware, getOrderByIdHandler);
 
 module.exports = router;

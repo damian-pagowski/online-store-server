@@ -17,7 +17,6 @@ const xssClean = require('xss-clean');
 
 const app = express();
 
-// sanitize query, body, and param inputs
 // XSS attack prevention
 app.use(xssClean());
 
@@ -46,14 +45,6 @@ app.use(cors({
 }));
 
 app.options('*', cors()); // Pre-flight requests for all routes
-
-// debug only
-// app.use((req, res, next) => {
-//   res.on('finish', () => {
-//     console.log('Response Headers:', res.getHeaders());
-//   });
-//   next();
-// });
 
 // Security headers
 app.use(helmet());
