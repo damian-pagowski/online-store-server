@@ -47,7 +47,15 @@ app.use(cors({
 app.options('*', cors()); // Pre-flight requests for all routes
 
 // Security headers
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'none'"], // Block everything by default
+      imgSrc: ["'self'"], // Allow images only from this server
+    }
+  }
+}));
+
 
 // Routes
 app.use("/categories", categoryRouter);
@@ -71,8 +79,9 @@ app.listen(SERVER_PORT, () =>
   console.log(`Server is running on port ${SERVER_PORT}`)
 );
 
-// Swagger
-setupSwaggerDocs(app, SERVER_PORT);
-
+// Swagger - only in development mode
+if (process.env.NODE_ENV === 'development') {
+  setupSwaggerDocs(app, SERVER_PORT);
+}
 
 module.exports = app;
