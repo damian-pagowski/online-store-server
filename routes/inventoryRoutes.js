@@ -60,9 +60,16 @@
 
 const express = require("express");
 const { getInventoryHandler } = require("../controllers/inventoryController");
+const { authenticationMiddleware } = require('../middlewares/authMiddleware');
+const { authorizeRoles } = require('../middlewares/authorizeRoles');
 
 const router = express.Router();
 
-router.get("/:productId", getInventoryHandler);
+router.get(
+  "/:productId", 
+  authenticationMiddleware, 
+  authorizeRoles('guest', 'registered_user'),
+  getInventoryHandler
+);
 
 module.exports = router;

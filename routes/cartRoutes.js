@@ -143,12 +143,30 @@
 const express = require('express');
 const { addItemToCartHandler, getCartHandler, deleteCartHandler } = require('../controllers/cartController');
 const { authenticationMiddleware } = require('../middlewares/authMiddleware');
+const { authorizeRoles } = require('../middlewares/authorizeRoles');
 const validate = require('../middlewares/validate');
 
 const { cartOperationSchema } = require('../validation/cartValidation');
 
 const router = express.Router();
-router.post("/", authenticationMiddleware, validate(cartOperationSchema), addItemToCartHandler);
-router.get("/", authenticationMiddleware, getCartHandler);
-router.delete("/", authenticationMiddleware, deleteCartHandler);
+
+router.post("/", 
+  authenticationMiddleware, 
+  authorizeRoles('registered_user'),
+  validate(cartOperationSchema), 
+  addItemToCartHandler
+);
+
+router.get("/", 
+  authenticationMiddleware, 
+  authorizeRoles('registered_user'),
+  getCartHandler
+);
+
+router.delete("/", 
+  authenticationMiddleware, 
+  authorizeRoles('registered_user'),
+  deleteCartHandler
+);
+
 module.exports = router;

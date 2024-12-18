@@ -212,15 +212,31 @@
  *                   example: Internal server error
  */
 const express = require('express');
-const { checkoutHandler,
-    getOrderHistoryHandler,
-    getOrderByIdHandler } = require('../controllers/orderController');
+const { checkoutHandler, getOrderHistoryHandler, getOrderByIdHandler } = require('../controllers/orderController');
 const { authenticationMiddleware } = require('../middlewares/authMiddleware');
+const { authorizeRoles } = require('../middlewares/authorizeRoles');
 
 const router = express.Router();
 
-router.post('/checkout', authenticationMiddleware, checkoutHandler);
-router.get('/', authenticationMiddleware, getOrderHistoryHandler);
-router.get('/:id', authenticationMiddleware, getOrderByIdHandler);
+router.post(
+  '/checkout', 
+  authenticationMiddleware, 
+  authorizeRoles('registered_user'),
+  checkoutHandler
+);
+
+router.get(
+  '/', 
+  authenticationMiddleware, 
+  authorizeRoles('registered_user'),
+  getOrderHistoryHandler
+);
+
+router.get(
+  '/:id', 
+  authenticationMiddleware, 
+  authorizeRoles('registered_user'),
+  getOrderByIdHandler
+);
 
 module.exports = router;

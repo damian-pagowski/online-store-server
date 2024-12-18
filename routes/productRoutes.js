@@ -94,10 +94,25 @@ const express = require("express");
 const { searchProductHandler, getProductHandler } = require("../controllers/productController");
 const { productQuerySchema, productIdSchema } = require('../validation/productValidation');
 const validateParams = require('../middlewares/validateParams');
+const { authenticationMiddleware } = require('../middlewares/authMiddleware');
+const { authorizeRoles } = require('../middlewares/authorizeRoles');
 
 const router = express.Router();
 
-router.get("/", validateParams(productQuerySchema), searchProductHandler);
-router.get("/:id", validateParams(productIdSchema), getProductHandler);
+router.get(
+  "/", 
+  authenticationMiddleware, 
+  authorizeRoles('guest', 'registered_user'),
+  validateParams(productQuerySchema), 
+  searchProductHandler
+);
+
+router.get(
+  "/:id", 
+  authenticationMiddleware, 
+  authorizeRoles('guest', 'registered_user'),
+  validateParams(productIdSchema), 
+  getProductHandler
+);
 
 module.exports = router;

@@ -11,11 +11,17 @@ const registerUser = async (username, email, password) => {
     }
 
     const hashedPassword = hashPassword(password);
-    const newUser = new Users({ username, email, password: hashedPassword });
+    const newUser = new Users({ 
+      username, 
+      email, 
+      password: hashedPassword, 
+      role: 'registered_user'
+    });
+
     await newUser.save();
 
     const token = generateToken(newUser);
-    return { username: newUser.username, email: newUser.email, token };
+    return { username: newUser.username, email: newUser.email, token, role: newUser.role };
   } catch (error) {
     if (error instanceof ValidationError) throw error;
     throw new DatabaseError('Failed to register user', error);
@@ -53,7 +59,7 @@ const loginUser = async (username, password) => {
     if (!passwordValid) throw new UnauthorizedError('Invalid credentials');
 
     const token = generateToken(user);
-    return { username: user.username, email: user.email, token };
+    return { username: user.username, email: user.email, token, role: user.role };
   } catch (error) {
     if (error instanceof UnauthorizedError) throw error;
     throw new DatabaseError(`Failed to login user: ${username}`, error);

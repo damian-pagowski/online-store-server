@@ -167,14 +167,36 @@ const {
   loginHandler 
 } = require("../controllers/userController");
 const { authenticationMiddleware } = require("../middlewares/authMiddleware");
+const { authorizeRoles } = require("../middlewares/authorizeRoles");
 const { registerUserSchema, loginUserSchema } = require('../validation/userValidation');
 const validate = require('../middlewares/validate');
 
 const router = express.Router();
 
-router.post("/", validate(registerUserSchema), registerUserHandler);
-router.get("/", authenticationMiddleware, getUserHandler);
-router.delete("/", authenticationMiddleware, deleteUserHandler);
-router.post("/login", validate(loginUserSchema), loginHandler);
+router.post(
+  "/", 
+  validate(registerUserSchema), 
+  registerUserHandler 
+);
+
+router.get(
+  "/", 
+  authenticationMiddleware, 
+  authorizeRoles('registered_user'),
+  getUserHandler
+);
+
+router.delete(
+  "/", 
+  authenticationMiddleware, 
+  authorizeRoles('registered_user'),
+  deleteUserHandler
+);
+
+router.post(
+  "/login", 
+  validate(loginUserSchema), 
+  loginHandler
+);
 
 module.exports = router;

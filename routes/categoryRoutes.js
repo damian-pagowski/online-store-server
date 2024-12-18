@@ -50,9 +50,16 @@
 
 const express = require("express");
 const { getCategoriesHandler } = require("../controllers/categoryController");
+const { authenticationMiddleware } = require('../middlewares/authMiddleware');
+const { authorizeRoles } = require('../middlewares/authorizeRoles');
 
 const router = express.Router();
 
-router.get("/", getCategoriesHandler);
+router.get(
+  "/", 
+  authenticationMiddleware, 
+  authorizeRoles('guest', 'registered_user'),
+  getCategoriesHandler
+);
 
 module.exports = router;
