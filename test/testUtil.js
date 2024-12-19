@@ -1,4 +1,5 @@
-const request = require("supertest"); // Import supertest for API requests
+/* istanbul ignore file */
+const request = require("supertest"); 
 
 const { createUser, getUser } = require("../controllers/userController");
 const { deleteCart } = require("../controllers/cartController");
@@ -11,12 +12,10 @@ const Category = require("../models/category");
 const products = require("./fixtures/products");
 const categories = require("./fixtures/categories");
 const inventories = require("./fixtures/inventories");
-const users = require("./fixtures/users"); // Import user fixtures
+const users = require("./fixtures/users"); 
 
-// Extract default users from the fixtures
 const { defaultUser, userToDelete } = users;
 
-// Generate unique user data
 const generateUniqueUser = () => {
   const now = Date.now();
   return {
@@ -34,7 +33,6 @@ const makeAuthenticatedRequest = (endpoint, method, token, data = {}) => {
     .send(data);
 };
 
-// Create a user if it doesn't exist
 const createUserIfNotExist = async (user) => {
   const foundUser = await getUser(user.username);
   if (!foundUser) {
@@ -42,7 +40,6 @@ const createUserIfNotExist = async (user) => {
   }
 };
 
-// Set inventory for a product
 const setInventory = async (productId, quantity) => {
   await Inventory.findOneAndDelete({ productId });
   const newInventory = new Inventory({
@@ -52,18 +49,15 @@ const setInventory = async (productId, quantity) => {
   await newInventory.save();
 };
 
-// Clear a user's cart
 const clearCart = async (username) => {
   return deleteCart(username);
 };
 
-// Set an item in a user's cart
 const setCart = async (productId, username, quantity) => {
   const newItem = new Cart({ username, productId, quantity });
   return newItem.save();
 };
 
-// Clear all collections (products, categories, inventory, and carts)
 const clearDatabase = async () => {
   await Product.deleteMany();
   await Category.deleteMany();
@@ -71,11 +65,27 @@ const clearDatabase = async () => {
   await Cart.deleteMany();
 };
 
-// Seed the database with fixtures
 const seedDatabase = async () => {
   await Product.insertMany(products);
   await Category.insertMany(categories);
   await Inventory.insertMany(inventories);
+};
+
+const mockRequest = (data = {}) => ({
+  body: data.body || {},
+  params: data.params || {},
+  query: data.query || {},
+  currentUser: data.currentUser || {},
+  headers: data.headers || {},
+});
+
+const mockResponse = () => {
+  const res = {};
+  res.status = jest.fn().mockReturnValue(res);
+  res.json = jest.fn().mockReturnValue(res);
+  res.send = jest.fn().mockReturnValue(res);
+  res.end = jest.fn().mockReturnValue(res);
+  return res;
 };
 
 module.exports = {
@@ -89,4 +99,6 @@ module.exports = {
   makeAuthenticatedRequest,
   clearDatabase,
   seedDatabase,
+  mockRequest, 
+  mockResponse 
 };
