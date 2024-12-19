@@ -6,7 +6,7 @@ const { getProductsByIds } = require('./productService');
 const checkout = async (username) => {
   try {
     const cart = await getCart(username);
-    if (!cart) {
+    if (!cart ||Object.keys(cart).length === 0 ) {
       throw new ValidationError(['Cart is empty'], 'Cannot checkout with an empty cart');
     }
 

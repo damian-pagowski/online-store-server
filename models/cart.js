@@ -9,6 +9,8 @@ const CartSchema = new mongoose.Schema({
   items: {
     type: mongoose.Schema.Types.Mixed, 
     required: false,
+     default: {}
+
   },
 });
 

@@ -1,6 +1,6 @@
 const { getInventory, removeFromInventory } = require('../../../services/inventoryService');
 const Inventory = require('../../../models/inventory');
-const { DatabaseError, InventoryError } = require('../../../utils/errors');
+const { DatabaseError, InventoryError, NotFoundError } = require('../../../utils/errors');
 
 jest.mock('../../../models/inventory');
 
@@ -26,7 +26,7 @@ describe('Inventory Service', () => {
       expect(Inventory.findOne).toHaveBeenCalledWith({ productId }, { _id: 0, __v: 0 });
     });
 
-    it('should throw InventoryError if product is not found', async () => {
+    it('should throw NotFoundError if product is not found', async () => {
       const productId = 1;
 
       // Arrange
@@ -34,7 +34,7 @@ describe('Inventory Service', () => {
 
       // Act & Assert
       await expect(getInventory(productId))
-        .rejects.toThrow(InventoryError);
+        .rejects.toThrow(NotFoundError);
 
       expect(Inventory.findOne).toHaveBeenCalledWith({ productId }, { _id: 0, __v: 0 });
     });

@@ -1,15 +1,20 @@
 const Inventory = require("../models/inventory");
-const { DatabaseError, InventoryError } = require('../utils/errors');
+const { DatabaseError, InventoryError, NotFoundError } = require('../utils/errors');
 
 const getInventory = async (productId) => {
   try {
+    const productIdNumber = parseInt(productId, 10);
+    if (!Number.isInteger(productIdNumber) || productIdNumber <= 0) {
+      throw new InventoryError(productId, 'Invalid Product ID');
+    }
+
     const productInventory = await Inventory.findOne({ productId }, { _id: 0, __v: 0 });
     if (!productInventory) {
-      throw new InventoryError(productId, 'Product not found');
+      throw new NotFoundError(productId, 'Product not found');
     }
     return productInventory;
   } catch (error) {
-    if (error instanceof InventoryError) throw error;
+    if (error instanceof InventoryError || error instanceof NotFoundError) throw error;
     throw new DatabaseError(`Failed to get inventory for product ${productId}`, error);
   }
 };

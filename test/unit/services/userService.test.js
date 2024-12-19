@@ -126,10 +126,10 @@ describe('User Service', () => {
       });
     });
 
-    it('should throw an UnauthorizedError if user is not found', async () => {
+    it('should throw an NotFoundError if user is not found', async () => {
       Users.findOne.mockResolvedValueOnce(null);
 
-      await expect(loginUser('unknownuser', 'password123')).rejects.toThrow(UnauthorizedError);
+      await expect(loginUser('unknownuser', 'password123')).rejects.toThrow(NotFoundError);
     });
 
     it('should throw an UnauthorizedError if password is incorrect', async () => {

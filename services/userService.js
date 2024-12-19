@@ -53,7 +53,8 @@ const deleteUserByUsername = async (username) => {
 const loginUser = async (username, password) => {
   try {
     const user = await Users.findOne({ username });
-    if (!user) throw new UnauthorizedError('User not found');
+    if (!user) throw new NotFoundError('User', username);
+
 
     const passwordValid = verifyPassword(password, user.password);
     if (!passwordValid) throw new UnauthorizedError('Invalid credentials');
@@ -61,7 +62,8 @@ const loginUser = async (username, password) => {
     const token = generateToken(user);
     return { username: user.username, email: user.email, token, role: user.role };
   } catch (error) {
-    if (error instanceof UnauthorizedError) throw error;
+    if (error instanceof UnauthorizedError || error instanceof NotFoundError ) throw error;
+
     throw new DatabaseError(`Failed to login user: ${username}`, error);
   }
 };
