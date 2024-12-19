@@ -5,7 +5,8 @@
   "scripts": {
     "start": "node app.js",
     "seed": "node ./utils/seed.js",
-    "test": "jest"
+    "test": "jest --runInBand",
+    "test:watch": "jest --watch"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
@@ -31,6 +32,7 @@
   },
   "devDependencies": {
     "jest": "^29.7.0",
+    "mongodb-memory-server": "^10.1.2",
     "supertest": "^7.0.0"
   }
 }

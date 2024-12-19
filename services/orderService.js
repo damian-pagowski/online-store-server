@@ -46,6 +46,9 @@ const checkout = async (username) => {
 
     return { message: 'Order created successfully', orderId: newOrder._id };
   } catch (error) {
+    if (error instanceof ValidationError || error instanceof NotFoundError) {
+      throw error;
+    }
     throw new DatabaseError('Failed to create order', 'checkout', { username, originalError: error });
   }
 };
@@ -58,6 +61,9 @@ const getOrderHistory = async (username) => {
     }
     return orders;
   } catch (error) {
+    if (error instanceof NotFoundError) {
+      throw error;
+    }
     throw new DatabaseError('Failed to fetch order history', 'getOrderHistory', { username, originalError: error });
   }
 };
@@ -70,6 +76,9 @@ const getOrderById = async (id, username) => {
     }
     return order;
   } catch (error) {
+    if (error instanceof NotFoundError){
+      throw error;
+    }
     throw new DatabaseError('Failed to fetch order details', 'getOrderById', { orderId: id, username, originalError: error });
   }
 };

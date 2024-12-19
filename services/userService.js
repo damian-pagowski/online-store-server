@@ -74,6 +74,9 @@ const getUser = async (username) => {
     }
     return user;
   } catch (error) {
+    if (error instanceof NotFoundError){
+      throw error;
+    }
     throw new DatabaseError('Failed to get user', 'getUser', { username, originalError: error });
   }
 };

@@ -20,6 +20,9 @@ const addItemToCart = async (username, productId, quantity) => {
     } catch (rollbackError) {
       throw new InventoryRollbackError(`Failed to rollback inventory for product ${productId}`, rollbackError);
     }
+    if (err instanceof CartError){
+      throw err;
+    }
     throw new DatabaseError(`Failed to add item to cart for user ${username}`, err);
   }
 };

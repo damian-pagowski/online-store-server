@@ -20,6 +20,9 @@ const getProduct = async (productId) => {
     }
     return product;
   } catch (error) {
+    if (error instanceof NotFoundError) {
+      throw error;
+    }
     throw new DatabaseError(`Failed to get product with ID ${productId}`, error);
   }
 };
@@ -32,6 +35,9 @@ const getProductsByIds = async (productIds) => {
     }
     return products;
   } catch (error) {
+    if (error instanceof NotFoundError) {
+      throw error;
+    }
     throw new DatabaseError('Failed to get products by IDs', 'getProductsByIds', { productIds, originalError: error });
   }
 };
@@ -44,8 +50,8 @@ const buildQueryCriteria = (subcategory, category, search) => {
   return queryCriteria;
 };
 
-module.exports = { 
-  searchProduct, 
+module.exports = {
+  searchProduct,
   getProduct,
-  getProductsByIds 
+  getProductsByIds
 };
