@@ -35,7 +35,6 @@ describe('🔹 Cart Controller Integration Tests', () => {
   const userPayload = { username, email: 'testuser@example.com', password: 'password123', role: 'registered_user' };
 
   beforeEach(async () => {
-    // Create a user and generate a token for authentication
     await Users.create({ ...userPayload, password: 'hashedpassword' });
     token = generateToken(userPayload);
   });

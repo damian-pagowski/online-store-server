@@ -7,7 +7,6 @@ const Category = require('../../../models/category');
 let mongoServer;
 
 beforeAll(async () => {
-    // Start in-memory MongoDB instance
     mongoServer = await MongoMemoryServer.create();
     const uri = mongoServer.getUri();
     await mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true });
