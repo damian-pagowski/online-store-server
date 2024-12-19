@@ -64,10 +64,9 @@ jobs:
       run: npm i
 
     - name: Run Integration Tests
+      run: npm run test:integration -- --reporters=default --reporters=jest-junit
       env: 
         MONGO_URI: mongodb://localhost:27017/testdb
-      run: npm run test:integration -- --reporters=default --reporters=jest-junit
-      env:
         JEST_JUNIT_OUTPUT: ./coverage/junit-integration.xml
 
     - name: Upload Integration Test Results
