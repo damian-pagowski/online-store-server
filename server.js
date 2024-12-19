@@ -1,7 +1,7 @@
 require("dotenv").config();
 const mongoose = require("mongoose");
 const app = require("./app"); 
-
+const {setupSwaggerDocs} = require("./utils/swagger")
 const DB_URI = process.env.MONGOLAB_URI;
 
 mongoose.connect(DB_URI)
