@@ -1,63 +1,88 @@
-name: Node.js CI
+name: CI Pipeline
 
 on:
   push:
-    branches: ["master"]
+    branches:
+      - master
   pull_request:
-    branches: ["master"]
-  workflow_dispatch:
+    branches:
+      - master
+  workflow_dispatch: # Manual trigger for E2E tests
 
 jobs:
-  build:
+  unit-tests:
+    name: 🔥 Run Unit Tests
     runs-on: ubuntu-latest
-    env:
-      MONGOLAB_URI: ${{ secrets.MONGOLAB_URI }}
-    strategy:
-      matrix:
-        node-version: [18]
-    steps:
-      - uses: actions/checkout@v3
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: "npm"
-      - run: npm install
-      - run: npm run seed
-      - name: Start the server
-        run: npm start &
-      - name: Wait for server
-        uses: jakejarvis/wait-action@v0.1.0
-        with:
-          url: http://localhost:3000
-          timeout: 30s
-      - run: npm test
 
-  postman-tests:
-    if: github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
-    env:
-      MONGOLAB_URI: ${{ secrets.MONGOLAB_URI }}
     steps:
-      - uses: actions/checkout@v3
-      - name: Install Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-          cache: "npm"
-      - name: Install dependencies
-        run: npm install
-      - name: Start the server
-        run: npm start &
-      - name: Wait for server
-        uses: jakejarvis/wait-action@v0.1.0
-        with:
-          url: http://localhost:3000
-          timeout: 30s
-      - name: Seed the database
-        run: npm run seed
-      - name: Install Newman
-        run: npm install -g newman
-      - name: Run Postman tests
-        run: |
-          newman run test/postman/postman_collection.json --environment test/postman/env.json
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+
+    - name: Install Dependencies
+      run: npm ci
+
+    - name: Run Unit Tests
+      run: npm run test:unit
+
+    - name: Upload Coverage
+      uses: actions/upload-artifact@v3
+      with:
+        name: unit-coverage-report
+        path: coverage/
+
+  integration-tests:
+    name: 🔥 Run Integration Tests
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+
+    - name: Setup MongoDB (for integration tests)
+      uses: supercharge/mongodb-github-action@1.8.0
+      with:
+        mongodb-version: '5.0'
+
+    - name: Install Dependencies
+      run: npm ci
+
+    - name: Run Integration Tests
+      env: 
+        MONGO_URI: mongodb://localhost:27017/testdb
+      run: npm run test:integration
+
+    - name: Upload Coverage
+      uses: actions/upload-artifact@v3
+      with:
+        name: integration-coverage-report
+        path: coverage/
+
+  e2e-tests:
+    name: 🚀 Run E2E Tests (Manual Trigger)
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' # Run only on manual trigger
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+
+    - name: Install Newman CLI
+      run: npm install -g newman
+
+    - name: Run E2E Tests
+      run: npm run test:e2e
