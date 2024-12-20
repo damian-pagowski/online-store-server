@@ -8,21 +8,21 @@ jest.mock('../../../services/categoryService');
 describe('Category Controller Tests', () => {
 
   afterEach(() => {
-    jest.clearAllMocks(); 
+    jest.clearAllMocks();
   });
 
   describe('getCategoriesHandler', () => {
-    it('should return categories successfully', async () => {
+    it('should return categories successfully', async() => {
       // Arrange
       const req = mockRequest();
       const res = mockResponse();
       const next = jest.fn();
       const mockCategories = [{ name: 'Electronics' }, { name: 'Books' }];
       getCategories.mockResolvedValueOnce(mockCategories);
-      
+
       // Act
       await getCategoriesHandler(req, res, next);
-      
+
       // Assert
       expect(getCategories).toHaveBeenCalled();
       expect(res.status).toHaveBeenCalledWith(200);
@@ -30,17 +30,17 @@ describe('Category Controller Tests', () => {
       expect(next).not.toHaveBeenCalled();
     });
 
-    it('should call next with error on service failure', async () => {
+    it('should call next with error on service failure', async() => {
       // Arrange
       const req = mockRequest();
       const res = mockResponse();
       const next = jest.fn();
       const error = new DatabaseError('Failed to query categories from database');
       getCategories.mockRejectedValueOnce(error);
-      
+
       // Act
       await getCategoriesHandler(req, res, next);
-      
+
       // Assert
       expect(getCategories).toHaveBeenCalled();
       expect(next).toHaveBeenCalledWith(error);

@@ -1,9 +1,9 @@
-const Products = require("../models/product");
+const Products = require('../models/product');
 const { NotFoundError, DatabaseError } = require('../utils/errors');
 
 const mask = { _id: 0, __v: 0 };
 
-const searchProduct = async (subcategory, category, search) => {
+const searchProduct = async(subcategory, category, search) => {
   try {
     const queryCriteria = buildQueryCriteria(subcategory, category, search);
     return await Products.find(queryCriteria, mask);
@@ -12,7 +12,7 @@ const searchProduct = async (subcategory, category, search) => {
   }
 };
 
-const getProduct = async (productId) => {
+const getProduct = async(productId) => {
   try {
     const product = await Products.findOne({ productId }, mask);
     if (!product) {
@@ -27,7 +27,7 @@ const getProduct = async (productId) => {
   }
 };
 
-const getProductsByIds = async (productIds) => {
+const getProductsByIds = async(productIds) => {
   try {
     const products = await Products.find({ productId: { $in: productIds } });
     if (!products || products.length === 0) {
@@ -44,14 +44,14 @@ const getProductsByIds = async (productIds) => {
 
 const buildQueryCriteria = (subcategory, category, search) => {
   const queryCriteria = {};
-  if (category) queryCriteria.category = category;
-  if (subcategory) queryCriteria.subcategory = subcategory;
-  if (search) queryCriteria.name = { $regex: new RegExp(search, 'i') };
+  if (category) {queryCriteria.category = category;}
+  if (subcategory) {queryCriteria.subcategory = subcategory;}
+  if (search) {queryCriteria.name = { $regex: new RegExp(search, 'i') };}
   return queryCriteria;
 };
 
 module.exports = {
   searchProduct,
   getProduct,
-  getProductsByIds
+  getProductsByIds,
 };

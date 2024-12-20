@@ -1,6 +1,6 @@
 const { searchProduct, getProduct } = require('../services/productService');
 
-const searchProductHandler = async (req, res, next) => {
+const searchProductHandler = async(req, res, next) => {
   try {
     const { subcategory, category, search } = req.query;
     const products = await searchProduct(subcategory, category, search);
@@ -10,7 +10,7 @@ const searchProductHandler = async (req, res, next) => {
   }
 };
 
-const getProductHandler = async (req, res, next) => {
+const getProductHandler = async(req, res, next) => {
   try {
     const { id: productId } = req.params;
     const product = await getProduct(productId);
@@ -20,7 +20,7 @@ const getProductHandler = async (req, res, next) => {
   }
 };
 
-module.exports = { 
-  searchProductHandler, 
-  getProductHandler 
+module.exports = {
+  searchProductHandler,
+  getProductHandler,
 };

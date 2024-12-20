@@ -219,24 +219,24 @@ const { authorizeRoles } = require('../middlewares/authorizeRoles');
 const router = express.Router();
 
 router.post(
-  '/checkout', 
-  authenticationMiddleware, 
+  '/checkout',
+  authenticationMiddleware,
   authorizeRoles('registered_user'),
-  checkoutHandler
+  checkoutHandler,
 );
 
 router.get(
-  '/', 
-  authenticationMiddleware, 
+  '/',
+  authenticationMiddleware,
   authorizeRoles('registered_user'),
-  getOrderHistoryHandler
+  getOrderHistoryHandler,
 );
 
 router.get(
-  '/:id', 
-  authenticationMiddleware, 
+  '/:id',
+  authenticationMiddleware,
   authorizeRoles('registered_user'),
-  getOrderByIdHandler
+  getOrderByIdHandler,
 );
 
 module.exports = router;

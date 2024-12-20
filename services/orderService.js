@@ -3,15 +3,15 @@ const { NotFoundError, ValidationError, DatabaseError } = require('../utils/erro
 const { getCart, deleteCart } = require('./cartService');
 const { getProductsByIds } = require('./productService');
 
-const checkout = async (username) => {
+const checkout = async(username) => {
   try {
     const cart = await getCart(username);
-    if (!cart ||Object.keys(cart).length === 0 ) {
+    if (!cart ||Object.keys(cart).length === 0) {
       throw new ValidationError(['Cart is empty'], 'Cannot checkout with an empty cart');
     }
 
     const productIds = Object.keys(cart).map(i => Number(i));
-    const products = await getProductsByIds(productIds);    
+    const products = await getProductsByIds(productIds);
     const productNameMap = products.reduce((map, product) => {
       map[product.productId] = product.name;
       return map;
@@ -29,16 +29,16 @@ const checkout = async (username) => {
       }
       return total + productPrice * quantity;
     }, 0);
-    
+
     const orderObject = {
       username,
       items: Object.entries(cart).map(([productId, quantity]) => ({
         productId,
         quantity,
         name: productNameMap[Number(productId)],
-        price: productPriceMap[Number(productId)]
+        price: productPriceMap[Number(productId)],
       })),
-      totalPrice
+      totalPrice,
     };
 
     const newOrder = await Order.create(orderObject);
@@ -53,7 +53,7 @@ const checkout = async (username) => {
   }
 };
 
-const getOrderHistory = async (username) => {
+const getOrderHistory = async(username) => {
   try {
     const orders = await Order.find({ username }).sort({ createdAt: -1 });
     if (!orders || orders.length === 0) {
@@ -68,7 +68,7 @@ const getOrderHistory = async (username) => {
   }
 };
 
-const getOrderById = async (id, username) => {
+const getOrderById = async(id, username) => {
   try {
     const order = await Order.findOne({ _id: id, username });
     if (!order) {
@@ -86,5 +86,5 @@ const getOrderById = async (id, username) => {
 module.exports = {
   checkout,
   getOrderHistory,
-  getOrderById
+  getOrderById,
 };

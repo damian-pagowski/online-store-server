@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const CartSchema = new mongoose.Schema({
 
@@ -7,11 +7,11 @@ const CartSchema = new mongoose.Schema({
     required: true,
   },
   items: {
-    type: mongoose.Schema.Types.Mixed, 
+    type: mongoose.Schema.Types.Mixed,
     required: false,
-     default: {}
+    default: {},
 
   },
 });
 
-module.exports = mongoose.model("Cart", CartSchema);
+module.exports = mongoose.model('Cart', CartSchema);

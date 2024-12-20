@@ -2,24 +2,24 @@ const { searchProductHandler, getProductHandler } = require('../../../controller
 const { searchProduct, getProduct } = require('../../../services/productService');
 
 const mockRequest = (overrides = {}) => {
-    return {
-      body: {},
-      params: {},
-      query: {},
-      headers: {},
-      currentUser: {},
-      ...overrides,
-    };
+  return {
+    body: {},
+    params: {},
+    query: {},
+    headers: {},
+    currentUser: {},
+    ...overrides,
   };
-  
-  const mockResponse = () => {
-    const res = {};
-    res.status = jest.fn().mockReturnValue(res);
-    res.json = jest.fn().mockReturnValue(res);
-    return res;
-  };
-  
-  module.exports = { mockRequest, mockResponse };
+};
+
+const mockResponse = () => {
+  const res = {};
+  res.status = jest.fn().mockReturnValue(res);
+  res.json = jest.fn().mockReturnValue(res);
+  return res;
+};
+
+module.exports = { mockRequest, mockResponse };
 
 jest.mock('../../../services/productService');
 
@@ -30,14 +30,14 @@ describe('Product Controller', () => {
   });
 
   describe('searchProductHandler', () => {
-    it('should return products successfully and respond with 200 status', async () => {
+    it('should return products successfully and respond with 200 status', async() => {
       // Arrange
       const req = mockRequest({ query: { subcategory: 'laptops', category: 'electronics', search: 'MacBook' } });
       const res = mockResponse();
       const next = jest.fn();
       const mockProducts = [
         { id: 1, name: 'MacBook Pro', category: 'electronics', subcategory: 'laptops' },
-        { id: 2, name: 'MacBook Air', category: 'electronics', subcategory: 'laptops' }
+        { id: 2, name: 'MacBook Air', category: 'electronics', subcategory: 'laptops' },
       ];
 
       searchProduct.mockResolvedValueOnce(mockProducts);
@@ -52,7 +52,7 @@ describe('Product Controller', () => {
       expect(next).not.toHaveBeenCalled();
     });
 
-    it('should call next with error if searchProduct service throws error', async () => {
+    it('should call next with error if searchProduct service throws error', async() => {
       // Arrange
       const req = mockRequest({ query: { subcategory: 'laptops', category: 'electronics', search: 'MacBook' } });
       const res = mockResponse();
@@ -71,7 +71,7 @@ describe('Product Controller', () => {
   });
 
   describe('getProductHandler', () => {
-    it('should return product successfully and respond with 200 status', async () => {
+    it('should return product successfully and respond with 200 status', async() => {
       // Arrange
       const req = mockRequest({ params: { id: 1 } });
       const res = mockResponse();
@@ -90,7 +90,7 @@ describe('Product Controller', () => {
       expect(next).not.toHaveBeenCalled();
     });
 
-    it('should call next with error if getProduct service throws error', async () => {
+    it('should call next with error if getProduct service throws error', async() => {
       // Arrange
       const req = mockRequest({ params: { id: 1 } });
       const res = mockResponse();

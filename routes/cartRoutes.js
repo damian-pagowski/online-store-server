@@ -93,7 +93,7 @@
  *               properties:
  *                 items:
  *                   type: object
- *                   example: 
+ *                   example:
  *                     "64dcb8e7b1f8e8a34bafc3f2": 2
  *                     "64dcb8e7b1f8e8a34bafc3f3": 5
  *       500:
@@ -150,23 +150,23 @@ const { cartOperationSchema } = require('../validation/cartValidation');
 
 const router = express.Router();
 
-router.post("/", 
-  authenticationMiddleware, 
+router.post('/',
+  authenticationMiddleware,
   authorizeRoles('registered_user'),
-  validate(cartOperationSchema), 
-  addItemToCartHandler
+  validate(cartOperationSchema),
+  addItemToCartHandler,
 );
 
-router.get("/", 
-  authenticationMiddleware, 
+router.get('/',
+  authenticationMiddleware,
   authorizeRoles('registered_user'),
-  getCartHandler
+  getCartHandler,
 );
 
-router.delete("/", 
-  authenticationMiddleware, 
+router.delete('/',
+  authenticationMiddleware,
   authorizeRoles('registered_user'),
-  deleteCartHandler
+  deleteCartHandler,
 );
 
 module.exports = router;

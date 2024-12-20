@@ -1,7 +1,7 @@
 const { addItemToCart, getCart, deleteCart, ensureCartExists } = require('../../../services/cartService');
 const Cart = require('../../../models/cart');
 const { removeFromInventory } = require('../../../services/inventoryService');
-const { CartError, DatabaseError, InventoryRollbackError } = require('../../../utils/errors');
+const { CartError, DatabaseError } = require('../../../utils/errors');
 
 jest.mock('../../../models/cart');
 jest.mock('../../../services/inventoryService');
@@ -13,27 +13,27 @@ describe('Cart Service', () => {
   });
 
   describe('addItemToCart', () => {
-    it('should add item to cart successfully', async () => {
+    it('should add item to cart successfully', async() => {
       // Arrange
       const username = 'testuser';
       const productId = 1;
       const quantity = 2;
       const cartMock = { items: {}, save: jest.fn().mockResolvedValueOnce(true) };
       const updatedItems = { [productId]: quantity };
-    
-      Cart.findOne.mockResolvedValueOnce(cartMock); 
+
+      Cart.findOne.mockResolvedValueOnce(cartMock);
       removeFromInventory.mockResolvedValueOnce(true);
-    
+
       // Act
       const result = await addItemToCart(username, productId, quantity);
-    
+
       // Assert
       expect(result).toEqual(updatedItems);
       expect(removeFromInventory).toHaveBeenCalledWith(productId, quantity);
       expect(cartMock.save).toHaveBeenCalled();
     });
 
-    it('should rollback inventory if adding item fails', async () => {
+    it('should rollback inventory if adding item fails', async() => {
       const username = 'testuser';
       const productId = 1;
       const quantity = 2;
@@ -51,7 +51,7 @@ describe('Cart Service', () => {
       expect(removeFromInventory).toHaveBeenCalledWith(productId, -quantity);
     });
 
-    it('should throw a CartError if quantity exceeds the limit', async () => {
+    it('should throw a CartError if quantity exceeds the limit', async() => {
       const username = 'testuser';
       const productId = 1;
       const quantity = 20; // Over itemQuantityLimit
@@ -65,7 +65,7 @@ describe('Cart Service', () => {
   });
 
   describe('getCart', () => {
-    it('should return cart items successfully', async () => {
+    it('should return cart items successfully', async() => {
       const username = 'testuser';
       const mockCart = { items: { 1: 2, 2: 3 } };
 
@@ -77,7 +77,7 @@ describe('Cart Service', () => {
       expect(Cart.findOne).toHaveBeenCalledWith({ username });
     });
 
-    it('should return an empty object if cart does not exist', async () => {
+    it('should return an empty object if cart does not exist', async() => {
       const username = 'testuser';
 
       Cart.findOne.mockResolvedValueOnce(null);
@@ -87,7 +87,7 @@ describe('Cart Service', () => {
       expect(result).toEqual({});
     });
 
-    it('should throw a DatabaseError if database operation fails', async () => {
+    it('should throw a DatabaseError if database operation fails', async() => {
       const username = 'testuser';
       Cart.findOne.mockRejectedValueOnce(new Error('DB error'));
 
@@ -97,7 +97,7 @@ describe('Cart Service', () => {
   });
 
   describe('deleteCart', () => {
-    it('should delete the cart successfully', async () => {
+    it('should delete the cart successfully', async() => {
       const username = 'testuser';
 
       Cart.deleteOne.mockResolvedValueOnce({ acknowledged: true, deletedCount: 1 });
@@ -108,7 +108,7 @@ describe('Cart Service', () => {
       expect(Cart.deleteOne).toHaveBeenCalledWith({ username });
     });
 
-    it('should throw a DatabaseError if deletion fails', async () => {
+    it('should throw a DatabaseError if deletion fails', async() => {
       const username = 'testuser';
 
       Cart.deleteOne.mockRejectedValueOnce(new Error('DB error'));
@@ -119,7 +119,7 @@ describe('Cart Service', () => {
   });
 
   describe('ensureCartExists', () => {
-    it('should return an existing cart', async () => {
+    it('should return an existing cart', async() => {
       const username = 'testuser';
       const cartMock = { items: {} };
 
@@ -131,7 +131,7 @@ describe('Cart Service', () => {
       expect(Cart.findOne).toHaveBeenCalledWith({ username });
     });
 
-    it('should create a new cart if one does not exist', async () => {
+    it('should create a new cart if one does not exist', async() => {
       const username = 'testuser';
       const cartMock = { username, items: {} };
 
@@ -145,7 +145,7 @@ describe('Cart Service', () => {
       expect(Cart.create).toHaveBeenCalledWith({ username, items: {} });
     });
 
-    it('should throw a DatabaseError if database operation fails', async () => {
+    it('should throw a DatabaseError if database operation fails', async() => {
       const username = 'testuser';
 
       Cart.findOne.mockRejectedValueOnce(new Error('DB error'));

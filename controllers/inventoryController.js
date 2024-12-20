@@ -1,6 +1,6 @@
 const { getInventory } = require('../services/inventoryService');
 
-const getInventoryHandler = async (req, res, next) => {
+const getInventoryHandler = async(req, res, next) => {
   try {
     const { productId } = req.params;
     const productInventory = await getInventory(productId);
@@ -10,6 +10,6 @@ const getInventoryHandler = async (req, res, next) => {
   }
 };
 
-module.exports = { 
-  getInventoryHandler 
+module.exports = {
+  getInventoryHandler,
 };

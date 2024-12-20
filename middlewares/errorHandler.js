@@ -15,7 +15,7 @@ const errorHandler = (err, req, res, next) => {
     body,
     query,
     params,
-    stack: err.stack
+    stack: err.stack,
   });
 
   if (err instanceof AppError) {
@@ -32,31 +32,29 @@ const errorHandler = (err, req, res, next) => {
         ...(err.cartId && { cartId: err.cartId }),
         ...(err.operation && { operation: err.operation }),
         ...(err.details && { details: err.details }),
-        ...(err.errors && { errors: err.errors })
-      }
+        ...(err.errors && { errors: err.errors }),
+      },
     };
 
     return res.status(err.statusCode).json(errorResponse);
   }
 
- 
-  // if (process.env.NODE_ENV === 'development') {
+  if (process.env.NODE_ENV === 'development') {
     return res.status(500).json({
       success: false,
       message: err.message,
       stack: err.stack,
       statusCode: 500,
-      requestId
+      requestId,
     });
-  // }
-
-  // Production
-  // res.status(500).json({
-  //   success: false,
-  //   message: 'Something went wrong on our end. Please try again later.',
-  //   statusCode: 500,
-  //   requestId
-  // });
+  } else {
+    return res.status(500).json({
+      success: false,
+      message: 'Something went wrong on our end. Please try again later.',
+      statusCode: 500,
+      requestId,
+    });
+  }
 };
 
 module.exports = errorHandler;

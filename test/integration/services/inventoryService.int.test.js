@@ -2,29 +2,29 @@ const mongoose = require('mongoose');
 const { MongoMemoryServer } = require('mongodb-memory-server');
 const Inventory = require('../../../models/inventory');
 const { getInventory, removeFromInventory } = require('../../../services/inventoryService');
-const { InventoryError, DatabaseError , NotFoundError} = require('../../../utils/errors');
+const { InventoryError, DatabaseError , NotFoundError } = require('../../../utils/errors');
 
 let mongoServer;
 
-beforeAll(async () => {
+beforeAll(async() => {
   mongoServer = await MongoMemoryServer.create();
   const uri = mongoServer.getUri();
   await mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 });
 
-afterAll(async () => {
+afterAll(async() => {
   await mongoose.disconnect();
   await mongoServer.stop();
 });
 
-beforeEach(async () => {
+beforeEach(async() => {
   await Inventory.deleteMany(); // Clear inventory collection before each test
 });
 
 describe('🔹 Inventory Service Integration Tests', () => {
-  
+
   describe('🔹 getInventory()', () => {
-    it('should return inventory for a valid productId', async () => {
+    it('should return inventory for a valid productId', async() => {
       // Arrange
       const productId = 101;
       const inventoryData = { productId, quantity: 50 };
@@ -37,7 +37,7 @@ describe('🔹 Inventory Service Integration Tests', () => {
       expect(result).toMatchObject({ productId, quantity: 50 });
     });
 
-    it('should throw NotFoundError if product is not found', async () => {
+    it('should throw NotFoundError if product is not found', async() => {
       // Arrange
       const productId = 999;
 
@@ -45,7 +45,7 @@ describe('🔹 Inventory Service Integration Tests', () => {
       await expect(getInventory(productId)).rejects.toThrow(NotFoundError);
     });
 
-    it('should throw DatabaseError if database query fails', async () => {
+    it('should throw DatabaseError if database query fails', async() => {
       // Arrange
       jest.spyOn(Inventory, 'findOne').mockRejectedValueOnce(new Error('DB Error'));
       const productId = 101;
@@ -56,7 +56,7 @@ describe('🔹 Inventory Service Integration Tests', () => {
   });
 
   describe('🔹 removeFromInventory()', () => {
-    it('should remove the correct quantity from the inventory', async () => {
+    it('should remove the correct quantity from the inventory', async() => {
       // Arrange
       const productId = 101;
       const initialInventory = { productId, quantity: 50 };
@@ -71,7 +71,7 @@ describe('🔹 Inventory Service Integration Tests', () => {
       expect(result.quantity).toBe(30);
     });
 
-    it('should throw InventoryError if product is not found', async () => {
+    it('should throw InventoryError if product is not found', async() => {
       // Arrange
       const productId = 999;
 
@@ -80,7 +80,7 @@ describe('🔹 Inventory Service Integration Tests', () => {
       await expect(removeFromInventory(productId, 10)).rejects.toThrow('Product not found');
     });
 
-    it('should throw InventoryError if not enough stock is available', async () => {
+    it('should throw InventoryError if not enough stock is available', async() => {
       // Arrange
       const productId = 101;
       const initialInventory = { productId, quantity: 10 };
@@ -91,7 +91,7 @@ describe('🔹 Inventory Service Integration Tests', () => {
       await expect(removeFromInventory(productId, 20)).rejects.toThrow('Insufficient stock');
     });
 
-    it('should throw DatabaseError if database query fails', async () => {
+    it('should throw DatabaseError if database query fails', async() => {
       // Arrange
       jest.spyOn(Inventory, 'findOne').mockRejectedValueOnce(new Error('DB Error'));
       const productId = 101;

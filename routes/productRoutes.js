@@ -90,8 +90,8 @@
  *         description: Internal server error
  */
 
-const express = require("express");
-const { searchProductHandler, getProductHandler } = require("../controllers/productController");
+const express = require('express');
+const { searchProductHandler, getProductHandler } = require('../controllers/productController');
 const { productQuerySchema, productIdSchema } = require('../validation/productValidation');
 const validateParams = require('../middlewares/validateParams');
 const { authenticationMiddleware } = require('../middlewares/authMiddleware');
@@ -100,19 +100,19 @@ const { authorizeRoles } = require('../middlewares/authorizeRoles');
 const router = express.Router();
 
 router.get(
-  "/", 
-  authenticationMiddleware, 
+  '/',
+  authenticationMiddleware,
   authorizeRoles('guest', 'registered_user'),
-  validateParams(productQuerySchema), 
-  searchProductHandler
+  validateParams(productQuerySchema),
+  searchProductHandler,
 );
 
 router.get(
-  "/:id", 
-  authenticationMiddleware, 
+  '/:id',
+  authenticationMiddleware,
   authorizeRoles('guest', 'registered_user'),
-  validateParams(productIdSchema), 
-  getProductHandler
+  validateParams(productIdSchema),
+  getProductHandler,
 );
 
 module.exports = router;

@@ -3,23 +3,23 @@ const { addItemToCart, getCart, deleteCart } = require('../../../services/cartSe
 const { CartError } = require('../../../utils/errors');
 
 const mockRequest = (overrides = {}) => {
-    return {
-      body: {},
-      params: {},
-      query: {},
-      headers: {},
-      currentUser: {},
-      ...overrides,
-    };
+  return {
+    body: {},
+    params: {},
+    query: {},
+    headers: {},
+    currentUser: {},
+    ...overrides,
   };
-  
-  const mockResponse = () => {
-    const res = {};
-    res.status = jest.fn().mockReturnValue(res);
-    res.json = jest.fn().mockReturnValue(res);
-    return res;
-  };
-  
+};
+
+const mockResponse = () => {
+  const res = {};
+  res.status = jest.fn().mockReturnValue(res);
+  res.json = jest.fn().mockReturnValue(res);
+  return res;
+};
+
 jest.mock('../../../services/cartService');
 
 describe('Cart Controller', () => {
@@ -29,7 +29,7 @@ describe('Cart Controller', () => {
   });
 
   describe('addItemToCartHandler', () => {
-    it('should add item to cart successfully and return 200 status', async () => {
+    it('should add item to cart successfully and return 200 status', async() => {
       // Arrange
       const req = mockRequest({ body: { productId: 1, quantity: 2, operation: 'add' }, currentUser: { username: 'testuser' } });
       const res = mockResponse();
@@ -48,7 +48,7 @@ describe('Cart Controller', () => {
       expect(next).not.toHaveBeenCalled();
     });
 
-    it('should throw CartError if operation is invalid', async () => {
+    it('should throw CartError if operation is invalid', async() => {
       // Arrange
       const req = mockRequest({ body: { productId: 1, quantity: 2, operation: 'invalid' }, currentUser: { username: 'testuser' } });
       const res = mockResponse();
@@ -62,7 +62,7 @@ describe('Cart Controller', () => {
       expect(addItemToCart).not.toHaveBeenCalled();
     });
 
-    it('should call next with error if addItemToCart service throws error', async () => {
+    it('should call next with error if addItemToCart service throws error', async() => {
       // Arrange
       const req = mockRequest({ body: { productId: 1, quantity: 2, operation: 'add' }, currentUser: { username: 'testuser' } });
       const res = mockResponse();
@@ -81,7 +81,7 @@ describe('Cart Controller', () => {
   });
 
   describe('getCartHandler', () => {
-    it('should return cart successfully and respond with 200 status', async () => {
+    it('should return cart successfully and respond with 200 status', async() => {
       // Arrange
       const req = mockRequest({ currentUser: { username: 'testuser' } });
       const res = mockResponse();
@@ -100,7 +100,7 @@ describe('Cart Controller', () => {
       expect(next).not.toHaveBeenCalled();
     });
 
-    it('should call next with error if getCart service throws error', async () => {
+    it('should call next with error if getCart service throws error', async() => {
       // Arrange
       const req = mockRequest({ currentUser: { username: 'testuser' } });
       const res = mockResponse();
@@ -119,7 +119,7 @@ describe('Cart Controller', () => {
   });
 
   describe('deleteCartHandler', () => {
-    it('should delete cart successfully and respond with 200 status', async () => {
+    it('should delete cart successfully and respond with 200 status', async() => {
       // Arrange
       const req = mockRequest({ currentUser: { username: 'testuser' } });
       const res = mockResponse();
@@ -137,7 +137,7 @@ describe('Cart Controller', () => {
       expect(next).not.toHaveBeenCalled();
     });
 
-    it('should call next with error if deleteCart service throws error', async () => {
+    it('should call next with error if deleteCart service throws error', async() => {
       // Arrange
       const req = mockRequest({ currentUser: { username: 'testuser' } });
       const res = mockResponse();

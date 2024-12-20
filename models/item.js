@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const itemSchema = new Schema({
   productCsode: { type: Number, required: false },
@@ -13,4 +13,4 @@ const itemSchema = new Schema({
   subTotal: { type: Number, required: false },
 });
 
-module.exports = mongoose.model("Item", itemSchema);
+module.exports = mongoose.model('Item', itemSchema);

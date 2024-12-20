@@ -1,6 +1,6 @@
 const { getCategories } = require('../services/categoryService');
 
-const getCategoriesHandler = async (req, res, next) => {
+const getCategoriesHandler = async(req, res, next) => {
   try {
     const categories = await getCategories();
     res.status(200).json(categories);
@@ -9,6 +9,6 @@ const getCategoriesHandler = async (req, res, next) => {
   }
 };
 
-module.exports = { 
-  getCategoriesHandler 
+module.exports = {
+  getCategoriesHandler,
 };

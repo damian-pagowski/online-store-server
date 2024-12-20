@@ -1,7 +1,7 @@
 const { registerUserHandler, getUserHandler, deleteUserHandler, loginHandler } = require('../../../controllers/userController');
 const { registerUser, getUserByUsername, deleteUserByUsername, loginUser } = require('../../../services/userService');
 const { mockRequest, mockResponse } = require('../../testUtil');
-const { ValidationError, NotFoundError, DatabaseError, UnauthorizedError } = require('../../../utils/errors');
+const { ValidationError, NotFoundError, UnauthorizedError } = require('../../../utils/errors');
 
 jest.mock('../../../services/userService');
 
@@ -12,11 +12,11 @@ describe('User Controller Tests', () => {
   });
 
   describe('registerUserHandler', () => {
-    it('should register a new user successfully', async () => {
+    it('should register a new user successfully', async() => {
       // Arrange
       const req = mockRequest({ body: { username: 'testuser', email: 'test@example.com', password: 'password123' } });
       const res = mockResponse();
-      const mockResponseData = { username: 'testuser', email: 'test@example.com', token: 'testtoken', role: 'registered_user', "message": "User created successfully" };
+      const mockResponseData = { username: 'testuser', email: 'test@example.com', token: 'testtoken', role: 'registered_user', 'message': 'User created successfully' };
       registerUser.mockResolvedValueOnce(mockResponseData);
 
       // Act
@@ -27,7 +27,7 @@ describe('User Controller Tests', () => {
       expect(res.json).toHaveBeenCalledWith(mockResponseData);
     });
 
-    it('should handle validation errors', async () => {
+    it('should handle validation errors', async() => {
       const req = mockRequest({ body: { username: 'testuser', email: 'invalidemail', password: 'pass' } });
       const res = mockResponse();
       const next = jest.fn();
@@ -41,7 +41,7 @@ describe('User Controller Tests', () => {
   });
 
   describe('getUserHandler', () => {
-    it('should get user successfully', async () => {
+    it('should get user successfully', async() => {
       const req = mockRequest({ currentUser: { username: 'testuser' } });
       const res = mockResponse();
       const next = jest.fn();
@@ -55,7 +55,7 @@ describe('User Controller Tests', () => {
       expect(res.json).toHaveBeenCalledWith(mockUser);
     });
 
-    it('should handle user not found error', async () => {
+    it('should handle user not found error', async() => {
       const req = mockRequest({ currentUser: { username: 'nonexistentuser' } });
       const res = mockResponse();
       const next = jest.fn();
@@ -70,7 +70,7 @@ describe('User Controller Tests', () => {
   });
 
   describe('deleteUserHandler', () => {
-    it('should delete user successfully', async () => {
+    it('should delete user successfully', async() => {
       const req = mockRequest({ currentUser: { username: 'testuser' } });
       const res = mockResponse();
       deleteUserByUsername.mockResolvedValueOnce(true);
@@ -81,7 +81,7 @@ describe('User Controller Tests', () => {
       expect(res.send).toHaveBeenCalled();
     });
 
-    it('should handle user not found error', async () => {
+    it('should handle user not found error', async() => {
       const req = mockRequest({ currentUser: { username: 'nonexistentuser' } });
       const res = mockResponse();
       const next = jest.fn();
@@ -97,10 +97,10 @@ describe('User Controller Tests', () => {
   });
 
   describe('loginHandler', () => {
-    it('should login user successfully', async () => {
+    it('should login user successfully', async() => {
       const req = mockRequest({ body: { username: 'testuser', password: 'password123' } });
       const res = mockResponse();
-      const mockResponseData = { username: 'testuser', email: 'test@example.com', token: 'testtoken', role: 'registered_user', "message": "Login successful" };
+      const mockResponseData = { username: 'testuser', email: 'test@example.com', token: 'testtoken', role: 'registered_user', 'message': 'Login successful' };
       loginUser.mockResolvedValueOnce(mockResponseData);
 
       await loginHandler(req, res);
@@ -109,7 +109,7 @@ describe('User Controller Tests', () => {
       expect(res.json).toHaveBeenCalledWith(mockResponseData);
     });
 
-    it('should handle invalid credentials', async () => {
+    it('should handle invalid credentials', async() => {
       const req = mockRequest({ body: { username: 'testuser', password: 'wrongpassword' } });
       const res = mockResponse();
       const next = jest.fn();

@@ -11,12 +11,12 @@ describe('Category Service', () => {
   });
 
   describe('getCategories', () => {
-    it('should return categories successfully', async () => {
+    it('should return categories successfully', async() => {
       // Arrange
       const mockCategories = [
         { name: 'Electronics' },
         { name: 'Books' },
-        { name: 'Clothing' }
+        { name: 'Clothing' },
       ];
       Category.find.mockResolvedValueOnce(mockCategories);
 
@@ -28,7 +28,7 @@ describe('Category Service', () => {
       expect(Category.find).toHaveBeenCalledWith({}, { _id: 0, __v: 0 });
     });
 
-    it('should throw DatabaseError if database query fails', async () => {
+    it('should throw DatabaseError if database query fails', async() => {
       // Arrange
       Category.find.mockRejectedValueOnce(new Error('DB error'));
 

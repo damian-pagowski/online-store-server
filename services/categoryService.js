@@ -1,7 +1,7 @@
 const Category = require('../models/category');
 const { DatabaseError } = require('../utils/errors');
 
-const getCategories = async () => {
+const getCategories = async() => {
   try {
     return await Category.find({}, { _id: 0, __v: 0 });
   } catch (error) {
@@ -9,6 +9,6 @@ const getCategories = async () => {
   }
 };
 
-module.exports = { 
-  getCategories 
+module.exports = {
+  getCategories,
 };

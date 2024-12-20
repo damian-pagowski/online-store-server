@@ -1,6 +1,6 @@
 const { checkout, getOrderHistory, getOrderById } = require('../services/orderService');
 
-const checkoutHandler = async (req, res, next) => {
+const checkoutHandler = async(req, res, next) => {
   try {
     const username = req.currentUser.username;
     const response = await checkout(username);
@@ -10,7 +10,7 @@ const checkoutHandler = async (req, res, next) => {
   }
 };
 
-const getOrderHistoryHandler = async (req, res, next) => {
+const getOrderHistoryHandler = async(req, res, next) => {
   try {
     const username = req.currentUser.username;
     const orders = await getOrderHistory(username);
@@ -20,7 +20,7 @@ const getOrderHistoryHandler = async (req, res, next) => {
   }
 };
 
-const getOrderByIdHandler = async (req, res, next) => {
+const getOrderByIdHandler = async(req, res, next) => {
   try {
     const username = req.currentUser.username;
     const { id } = req.params;
@@ -34,5 +34,5 @@ const getOrderByIdHandler = async (req, res, next) => {
 module.exports = {
   checkoutHandler,
   getOrderHistoryHandler,
-  getOrderByIdHandler
+  getOrderByIdHandler,
 };

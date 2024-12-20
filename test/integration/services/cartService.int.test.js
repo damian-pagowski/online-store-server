@@ -3,24 +3,24 @@ const { MongoMemoryServer } = require('mongodb-memory-server');
 const Cart = require('../../../models/cart');
 const { addItemToCart, getCart, deleteCart, ensureCartExists } = require('../../../services/cartService');
 const { removeFromInventory } = require('../../../services/inventoryService');
-const { CartError, DatabaseError, InventoryRollbackError } = require('../../../utils/errors');
+const { CartError, DatabaseError } = require('../../../utils/errors');
 
 jest.mock('../../../services/inventoryService');
 
 let mongoServer;
 
-beforeAll(async () => {
+beforeAll(async() => {
   mongoServer = await MongoMemoryServer.create();
   const uri = mongoServer.getUri();
   await mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 });
 
-afterAll(async () => {
+afterAll(async() => {
   await mongoose.disconnect();
   await mongoServer.stop();
 });
 
-beforeEach(async () => {
+beforeEach(async() => {
   await Cart.deleteMany();
   jest.clearAllMocks();
 });
@@ -28,7 +28,7 @@ beforeEach(async () => {
 describe('🔹 Cart Service Integration Tests', () => {
 
   describe('🔹 addItemToCart()', () => {
-    it('should add item to cart successfully', async () => {
+    it('should add item to cart successfully', async() => {
       // Arrange
       const username = 'testuser';
       const productId = 1;
@@ -46,7 +46,7 @@ describe('🔹 Cart Service Integration Tests', () => {
       expect(removeFromInventory).toHaveBeenCalledWith(productId, quantity);
     });
 
-    it('should throw CartError if quantity exceeds limit', async () => {
+    it('should throw CartError if quantity exceeds limit', async() => {
       // Arrange
       const username = 'testuser';
       const productId = 1;
@@ -58,7 +58,7 @@ describe('🔹 Cart Service Integration Tests', () => {
         .rejects.toThrow(CartError);
     });
 
-    it('should rollback inventory if an error occurs after inventory removal', async () => {
+    it('should rollback inventory if an error occurs after inventory removal', async() => {
       // Arrange
       const username = 'testuser';
       const productId = 1;
@@ -76,7 +76,7 @@ describe('🔹 Cart Service Integration Tests', () => {
   });
 
   describe('🔹 getCart()', () => {
-    it('should return an empty cart if cart does not exist', async () => {
+    it('should return an empty cart if cart does not exist', async() => {
       // Arrange
       const username = 'nonexistentuser';
 
@@ -87,7 +87,7 @@ describe('🔹 Cart Service Integration Tests', () => {
       expect(result).toEqual({});
     });
 
-    it('should return items in the cart', async () => {
+    it('should return items in the cart', async() => {
       // Arrange
       const username = 'testuser';
       const items = { 1: 2, 2: 3 };
@@ -100,7 +100,7 @@ describe('🔹 Cart Service Integration Tests', () => {
       expect(result).toEqual(items);
     });
 
-    it('should throw DatabaseError if there is a DB query failure', async () => {
+    it('should throw DatabaseError if there is a DB query failure', async() => {
       // Arrange
       jest.spyOn(Cart, 'findOne').mockRejectedValueOnce(new Error('DB Query Error'));
 
@@ -110,7 +110,7 @@ describe('🔹 Cart Service Integration Tests', () => {
   });
 
   describe('🔹 deleteCart()', () => {
-    it('should delete a cart successfully', async () => {
+    it('should delete a cart successfully', async() => {
       // Arrange
       const username = 'testuser';
       await Cart.create({ username, items: { 1: 2, 2: 3 } });
@@ -123,7 +123,7 @@ describe('🔹 Cart Service Integration Tests', () => {
       expect(cart).toBeNull();
     });
 
-    it('should throw DatabaseError if there is a DB deletion failure', async () => {
+    it('should throw DatabaseError if there is a DB deletion failure', async() => {
       // Arrange
       jest.spyOn(Cart, 'deleteOne').mockRejectedValueOnce(new Error('DB Deletion Error'));
 
@@ -133,7 +133,7 @@ describe('🔹 Cart Service Integration Tests', () => {
   });
 
   describe('🔹 ensureCartExists()', () => {
-    it('should create a cart if it does not exist', async () => {
+    it('should create a cart if it does not exist', async() => {
       // Arrange
       const username = 'newuser';
 
@@ -147,7 +147,7 @@ describe('🔹 Cart Service Integration Tests', () => {
       expect(cart.items).toEqual({});
     });
 
-    it('should return an existing cart if it exists', async () => {
+    it('should return an existing cart if it exists', async() => {
       // Arrange
       const username = 'existinguser';
       await Cart.create({ username, items: { 1: 2 } });
@@ -161,7 +161,7 @@ describe('🔹 Cart Service Integration Tests', () => {
       expect(cart.items).toEqual({ 1: 2 });
     });
 
-    it('should throw DatabaseError if a DB query error occurs', async () => {
+    it('should throw DatabaseError if a DB query error occurs', async() => {
       // Arrange
       jest.spyOn(Cart, 'findOne').mockRejectedValueOnce(new Error('DB Error'));
 

@@ -1,16 +1,16 @@
-require("dotenv").config();
+require('dotenv').config();
 const path = require('path');
-const express = require("express");
-const helmet = require("helmet");
-const cors = require("cors");
-const rateLimit = require("express-rate-limit");
+const express = require('express');
+const helmet = require('helmet');
+const cors = require('cors');
+const rateLimit = require('express-rate-limit');
 const xssClean = require('xss-clean');
 
-const usersRouter = require("./routes/userRoutes");
-const cartRouter = require("./routes/cartRoutes");
-const productRouter = require("./routes/productRoutes");
-const inventoryRouter = require("./routes/inventoryRoutes");
-const categoryRouter = require("./routes/categoryRoutes");
+const usersRouter = require('./routes/userRoutes');
+const cartRouter = require('./routes/cartRoutes');
+const productRouter = require('./routes/productRoutes');
+const inventoryRouter = require('./routes/inventoryRoutes');
+const categoryRouter = require('./routes/categoryRoutes');
 const orderRouter = require('./routes/orderRoutes');
 const errorHandler = require('./middlewares/errorHandler');
 
@@ -36,12 +36,12 @@ app.use(cors());
 app.use(express.static(path.resolve(__dirname, 'public')));
 
 // Routes
-app.use("/categories", categoryRouter);
-app.use("/users", usersRouter);
-app.use("/cart", cartRouter);
-app.use("/products", productRouter);
-app.use("/inventory", inventoryRouter);
-app.use("/orders", orderRouter);
+app.use('/categories', categoryRouter);
+app.use('/users', usersRouter);
+app.use('/cart', cartRouter);
+app.use('/products', productRouter);
+app.use('/inventory', inventoryRouter);
+app.use('/orders', orderRouter);
 
 // Error Handling
 app.use(errorHandler);

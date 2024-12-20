@@ -1,10 +1,10 @@
-const Cart = require("../models/cart");
-const { removeFromInventory } = require("./inventoryService");
+const Cart = require('../models/cart');
+const { removeFromInventory } = require('./inventoryService');
 const { CartError, DatabaseError, InventoryRollbackError } = require('../utils/errors');
 
 const itemQuantityLimit = 10;
 
-const addItemToCart = async (username, productId, quantity) => {
+const addItemToCart = async(username, productId, quantity) => {
   const cart = await ensureCartExists(username);
   try {
     await removeFromInventory(productId, quantity);
@@ -14,7 +14,7 @@ const addItemToCart = async (username, productId, quantity) => {
     return updatedItems;
   } catch (err) {
     try {
-      if (err.type !== "product_unavailable") {
+      if (err.type !== 'product_unavailable') {
         await removeFromInventory(productId, -quantity);
       }
     } catch (rollbackError) {
@@ -27,7 +27,7 @@ const addItemToCart = async (username, productId, quantity) => {
   }
 };
 
-const getCart = async (username) => {
+const getCart = async(username) => {
   try {
     const cart = await Cart.findOne({ username });
     return cart ? cart.items : {};
@@ -36,7 +36,7 @@ const getCart = async (username) => {
   }
 };
 
-const deleteCart = async (username) => {
+const deleteCart = async(username) => {
   try {
     return await Cart.deleteOne({ username });
   } catch (error) {
@@ -44,7 +44,7 @@ const deleteCart = async (username) => {
   }
 };
 
-const ensureCartExists = async (username) => {
+const ensureCartExists = async(username) => {
   try {
     const cart = await Cart.findOne({ username });
     if (!cart) {
@@ -77,9 +77,9 @@ const updateCartItems = (items, productId, quantity) => {
   return currentItems;
 };
 
-module.exports = { 
-  addItemToCart, 
-  getCart, 
+module.exports = {
+  addItemToCart,
+  getCart,
   deleteCart,
-  ensureCartExists 
+  ensureCartExists,
 };

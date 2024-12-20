@@ -6,19 +6,19 @@ const Inventory = require('../../../models/inventory');
 
 let mongoServer;
 
-beforeAll(async () => {
+beforeAll(async() => {
   process.env.NODE_ENV = 'test';
   mongoServer = await MongoMemoryServer.create();
   const uri = mongoServer.getUri();
   await mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 });
 
-afterAll(async () => {
+afterAll(async() => {
   await mongoose.disconnect();
   await mongoServer.stop();
 });
 
-beforeEach(async () => {
+beforeEach(async() => {
   await Inventory.deleteMany();
 });
 
@@ -26,7 +26,7 @@ describe('🔹 Inventory Controller Integration Tests', () => {
 
   describe('🔹 GET /inventory/:productId', () => {
 
-    it('should return inventory for a valid productId', async () => {
+    it('should return inventory for a valid productId', async() => {
       // Arrange
       const productId = 1;
       const inventoryData = { productId, quantity: 50 };
@@ -42,7 +42,7 @@ describe('🔹 Inventory Controller Integration Tests', () => {
       expect(response.body).toHaveProperty('quantity', inventoryData.quantity);
     });
 
-    it('should return 404 if inventory for productId does not exist', async () => {
+    it('should return 404 if inventory for productId does not exist', async() => {
       // Arrange
       const productId = 999;
 
@@ -56,7 +56,7 @@ describe('🔹 Inventory Controller Integration Tests', () => {
       expect(response.body.message).toContain('Product not found');
     });
 
-    it('should return 400 if productId is not a valid number', async () => {
+    it('should return 400 if productId is not a valid number', async() => {
       // Arrange
       const productId = 'invalid_id';
 
@@ -70,7 +70,7 @@ describe('🔹 Inventory Controller Integration Tests', () => {
       expect(response.body.message).toContain('Invalid Product ID');
     });
 
-    it('should handle unexpected server errors gracefully', async () => {
+    it('should handle unexpected server errors gracefully', async() => {
       // Arrange
       const productId = 1;
       jest.spyOn(Inventory, 'findOne').mockImplementationOnce(() => {

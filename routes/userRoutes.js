@@ -159,44 +159,44 @@
  *         description: Invalid credentials
  */
 
-const express = require("express");
-const { 
-  registerUserHandler, 
-  getUserHandler, 
-  deleteUserHandler, 
-  loginHandler 
-} = require("../controllers/userController");
-const { authenticationMiddleware } = require("../middlewares/authMiddleware");
-const { authorizeRoles } = require("../middlewares/authorizeRoles");
+const express = require('express');
+const {
+  registerUserHandler,
+  getUserHandler,
+  deleteUserHandler,
+  loginHandler,
+} = require('../controllers/userController');
+const { authenticationMiddleware } = require('../middlewares/authMiddleware');
+const { authorizeRoles } = require('../middlewares/authorizeRoles');
 const { registerUserSchema, loginUserSchema } = require('../validation/userValidation');
 const validate = require('../middlewares/validate');
 
 const router = express.Router();
 
 router.post(
-  "/", 
-  validate(registerUserSchema), 
-  registerUserHandler 
+  '/',
+  validate(registerUserSchema),
+  registerUserHandler,
 );
 
 router.get(
-  "/", 
-  authenticationMiddleware, 
+  '/',
+  authenticationMiddleware,
   authorizeRoles('registered_user'),
-  getUserHandler
+  getUserHandler,
 );
 
 router.delete(
-  "/", 
-  authenticationMiddleware, 
+  '/',
+  authenticationMiddleware,
   authorizeRoles('registered_user'),
-  deleteUserHandler
+  deleteUserHandler,
 );
 
 router.post(
-  "/login", 
-  validate(loginUserSchema), 
-  loginHandler
+  '/login',
+  validate(loginUserSchema),
+  loginHandler,
 );
 
 module.exports = router;

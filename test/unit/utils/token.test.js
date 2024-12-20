@@ -4,7 +4,7 @@ describe('Token Utility Functions', () => {
   const user = { username: 'testuser', email: 'test@example.com', role: 'registered_user' };
 
   beforeAll(() => {
-    process.env.JWT_SECRET = 'your_jwt_secret_key'; 
+    process.env.JWT_SECRET = 'your_jwt_secret_key';
   });
 
   afterAll(() => {
@@ -17,8 +17,8 @@ describe('Token Utility Functions', () => {
     expect(typeof token).toBe('string');
   });
 
-  it('should verify a valid token',  () => {
-    const token =  generateToken(user); 
+  it('should verify a valid token', () => {
+    const token = generateToken(user);
     const decoded = verifyToken(token);
     expect(decoded).toHaveProperty('username', user.username);
     expect(decoded).toHaveProperty('role', user.role);

@@ -48,18 +48,18 @@
  *                   example: Internal server error
  */
 
-const express = require("express");
-const { getCategoriesHandler } = require("../controllers/categoryController");
+const express = require('express');
+const { getCategoriesHandler } = require('../controllers/categoryController');
 const { authenticationMiddleware } = require('../middlewares/authMiddleware');
 const { authorizeRoles } = require('../middlewares/authorizeRoles');
 
 const router = express.Router();
 
 router.get(
-  "/", 
-  authenticationMiddleware, 
+  '/',
+  authenticationMiddleware,
   authorizeRoles('guest', 'registered_user'),
-  getCategoriesHandler
+  getCategoriesHandler,
 );
 
 module.exports = router;

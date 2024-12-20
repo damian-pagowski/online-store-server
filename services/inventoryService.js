@@ -1,7 +1,7 @@
-const Inventory = require("../models/inventory");
+const Inventory = require('../models/inventory');
 const { DatabaseError, InventoryError, NotFoundError } = require('../utils/errors');
 
-const getInventory = async (productId) => {
+const getInventory = async(productId) => {
   try {
     const productIdNumber = parseInt(productId, 10);
     if (!Number.isInteger(productIdNumber) || productIdNumber <= 0) {
@@ -14,12 +14,12 @@ const getInventory = async (productId) => {
     }
     return productInventory;
   } catch (error) {
-    if (error instanceof InventoryError || error instanceof NotFoundError) throw error;
+    if (error instanceof InventoryError || error instanceof NotFoundError) {throw error;}
     throw new DatabaseError(`Failed to get inventory for product ${productId}`, error);
   }
 };
 
-const removeFromInventory = async (productId, quantity) => {
+const removeFromInventory = async(productId, quantity) => {
   try {
     const productInventory = await Inventory.findOne({ productId });
     if (!productInventory) {
@@ -32,12 +32,12 @@ const removeFromInventory = async (productId, quantity) => {
     await productInventory.save();
     return productInventory;
   } catch (error) {
-    if (error instanceof InventoryError) throw error;
+    if (error instanceof InventoryError) {throw error;}
     throw new DatabaseError(`Failed to update inventory for product ${productId}`, error);
   }
 };
 
-module.exports = { 
-  getInventory, 
-  removeFromInventory 
+module.exports = {
+  getInventory,
+  removeFromInventory,
 };

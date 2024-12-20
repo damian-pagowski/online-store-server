@@ -1,7 +1,7 @@
 const { hashPassword, verifyPassword } = require('../../../utils/crypto');
 
 describe('Crypto Utility Functions', () => {
-  
+
   it('should hash the password correctly', () => {
     const password = 'password123';
     const hash = hashPassword(password);

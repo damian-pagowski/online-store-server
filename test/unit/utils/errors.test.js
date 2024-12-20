@@ -9,7 +9,7 @@ const {
   InventoryError,
   AuthenticationError,
   TokenError,
-  InventoryRollbackError
+  InventoryRollbackError,
 } = require('../../../utils/errors');
 
 describe('Error Classes', () => {

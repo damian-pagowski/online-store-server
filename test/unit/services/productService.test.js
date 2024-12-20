@@ -11,7 +11,7 @@ describe('Product Service', () => {
   });
 
   describe('searchProduct', () => {
-    it('should return products successfully', async () => {
+    it('should return products successfully', async() => {
       const mockProducts = [{ productId: 1, name: 'Product 1' }, { productId: 2, name: 'Product 2' }];
       const subcategory = 'laptops';
       const category = 'electronics';
@@ -27,11 +27,11 @@ describe('Product Service', () => {
       expect(result).toEqual(mockProducts);
       expect(Products.find).toHaveBeenCalledWith(
         { category: category, subcategory: subcategory, name: { $regex: new RegExp(search, 'i') } },
-        { _id: 0, __v: 0 }
+        { _id: 0, __v: 0 },
       );
     });
 
-    it('should throw DatabaseError if database query fails', async () => {
+    it('should throw DatabaseError if database query fails', async() => {
       const subcategory = 'laptops';
       const category = 'electronics';
       const search = 'Product';
@@ -46,7 +46,7 @@ describe('Product Service', () => {
   });
 
   describe('getProduct', () => {
-    it('should return product successfully', async () => {
+    it('should return product successfully', async() => {
       const productId = 1;
       const mockProduct = { productId, name: 'Product 1' };
 
@@ -61,7 +61,7 @@ describe('Product Service', () => {
       expect(Products.findOne).toHaveBeenCalledWith({ productId }, { _id: 0, __v: 0 });
     });
 
-    it('should throw NotFoundError if product is not found', async () => {
+    it('should throw NotFoundError if product is not found', async() => {
       const productId = 1;
 
       // Arrange
@@ -74,7 +74,7 @@ describe('Product Service', () => {
       expect(Products.findOne).toHaveBeenCalledWith({ productId }, { _id: 0, __v: 0 });
     });
 
-    it('should throw DatabaseError if database query fails', async () => {
+    it('should throw DatabaseError if database query fails', async() => {
       const productId = 1;
 
       // Arrange
@@ -87,12 +87,12 @@ describe('Product Service', () => {
   });
 
   describe('getProductsByIds', () => {
-    it('should return products successfully', async () => {
+    it('should return products successfully', async() => {
       const productIds = [1, 2, 3];
       const mockProducts = [
         { productId: 1, name: 'Product 1' },
         { productId: 2, name: 'Product 2' },
-        { productId: 3, name: 'Product 3' }
+        { productId: 3, name: 'Product 3' },
       ];
 
       // Arrange
@@ -106,7 +106,7 @@ describe('Product Service', () => {
       expect(Products.find).toHaveBeenCalledWith({ productId: { $in: productIds } });
     });
 
-    it('should throw NotFoundError if no products are found', async () => {
+    it('should throw NotFoundError if no products are found', async() => {
       const productIds = [1, 2, 3];
 
       // Arrange
@@ -119,7 +119,7 @@ describe('Product Service', () => {
       expect(Products.find).toHaveBeenCalledWith({ productId: { $in: productIds } });
     });
 
-    it('should throw DatabaseError if database query fails', async () => {
+    it('should throw DatabaseError if database query fails', async() => {
       const productIds = [1, 2, 3];
 
       // Arrange

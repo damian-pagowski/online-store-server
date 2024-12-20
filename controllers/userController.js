@@ -1,16 +1,16 @@
 const { registerUser, getUserByUsername, deleteUserByUsername, loginUser } = require('../services/userService');
 
-const registerUserHandler = async (req, res, next) => {
+const registerUserHandler = async(req, res, next) => {
   const { username, email, password } = req.body;
   try {
     const user = await registerUser(username, email, password);
     res.status(201).json({ message: 'User created successfully', ...user });
   } catch (error) {
-    next(error); 
+    next(error);
   }
 };
 
-const getUserHandler = async (req, res, next) => {
+const getUserHandler = async(req, res, next) => {
   const username = req.currentUser.username;
   try {
     const user = await getUserByUsername(username);
@@ -20,7 +20,7 @@ const getUserHandler = async (req, res, next) => {
   }
 };
 
-const deleteUserHandler = async (req, res, next) => {
+const deleteUserHandler = async(req, res, next) => {
   const username = req.currentUser.username;
   try {
     await deleteUserByUsername(username);
@@ -30,7 +30,7 @@ const deleteUserHandler = async (req, res, next) => {
   }
 };
 
-const loginHandler = async (req, res, next) => {
+const loginHandler = async(req, res, next) => {
   const { username, password } = req.body;
   try {
     const user = await loginUser(username, password);
@@ -40,9 +40,9 @@ const loginHandler = async (req, res, next) => {
   }
 };
 
-module.exports = { 
-  registerUserHandler, 
-  getUserHandler, 
-  deleteUserHandler, 
-  loginHandler 
+module.exports = {
+  registerUserHandler,
+  getUserHandler,
+  deleteUserHandler,
+  loginHandler,
 };

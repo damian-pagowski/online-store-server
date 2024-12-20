@@ -8,10 +8,10 @@ const generateToken = (user) => {
     {
       username: user.username,
       email: user.email,
-      role: user.role
+      role: user.role,
     },
     JWT_SECRET,
-    { expiresIn: '12h' }
+    { expiresIn: '12h' },
   );
 };
 
@@ -19,8 +19,8 @@ const generateToken = (user) => {
 const verifyToken = (token) => {
   try {
     return jwt.verify(token, JWT_SECRET);
-  } catch (error) {
-    throw new Error('Invalid or expired token');
+  } catch ({ message }) {
+    throw new Error(`Invalid or expired token: ${message}`);
   }
 };
 

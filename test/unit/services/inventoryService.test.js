@@ -11,7 +11,7 @@ describe('Inventory Service', () => {
   });
 
   describe('getInventory', () => {
-    it('should return inventory successfully', async () => {
+    it('should return inventory successfully', async() => {
       const productId = 1;
       const mockInventory = { productId, quantity: 10 };
 
@@ -26,7 +26,7 @@ describe('Inventory Service', () => {
       expect(Inventory.findOne).toHaveBeenCalledWith({ productId }, { _id: 0, __v: 0 });
     });
 
-    it('should throw NotFoundError if product is not found', async () => {
+    it('should throw NotFoundError if product is not found', async() => {
       const productId = 1;
 
       // Arrange
@@ -39,7 +39,7 @@ describe('Inventory Service', () => {
       expect(Inventory.findOne).toHaveBeenCalledWith({ productId }, { _id: 0, __v: 0 });
     });
 
-    it('should throw DatabaseError if database query fails', async () => {
+    it('should throw DatabaseError if database query fails', async() => {
       const productId = 1;
 
       // Arrange
@@ -52,7 +52,7 @@ describe('Inventory Service', () => {
   });
 
   describe('removeFromInventory', () => {
-    it('should reduce quantity in inventory successfully', async () => {
+    it('should reduce quantity in inventory successfully', async() => {
       const productId = 1;
       const quantityToRemove = 2;
       const mockInventory = { productId, quantity: 10, save: jest.fn().mockResolvedValueOnce(true) };
@@ -70,7 +70,7 @@ describe('Inventory Service', () => {
       expect(mockInventory.save).toHaveBeenCalled();
     });
 
-    it('should throw InventoryError if product is not found', async () => {
+    it('should throw InventoryError if product is not found', async() => {
       const productId = 1;
       const quantityToRemove = 2;
 
@@ -84,7 +84,7 @@ describe('Inventory Service', () => {
       expect(Inventory.findOne).toHaveBeenCalledWith({ productId });
     });
 
-    it('should throw InventoryError if quantity requested is more than available stock', async () => {
+    it('should throw InventoryError if quantity requested is more than available stock', async() => {
       const productId = 1;
       const quantityToRemove = 20;
       const mockInventory = { productId, quantity: 10 };
@@ -99,7 +99,7 @@ describe('Inventory Service', () => {
       expect(Inventory.findOne).toHaveBeenCalledWith({ productId });
     });
 
-    it('should throw DatabaseError if save fails', async () => {
+    it('should throw DatabaseError if save fails', async() => {
       const productId = 1;
       const quantityToRemove = 2;
       const mockInventory = { productId, quantity: 10, save: jest.fn().mockRejectedValueOnce(new Error('DB error')) };

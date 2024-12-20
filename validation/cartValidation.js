@@ -8,14 +8,14 @@ const cartOperationSchema = Joi.object({
       'number.base': 'Product ID must be a number',
       'number.integer': 'Product ID must be an integer',
       'number.positive': 'Product ID must be a positive number',
-      'any.required': 'Product ID is required'
+      'any.required': 'Product ID is required',
     }),
   quantity: Joi.number().integer().positive().required()
     .messages({
       'number.base': 'Quantity must be a number',
       'number.integer': 'Quantity must be an integer',
       'number.positive': 'Quantity must be a positive number',
-      'any.required': 'Quantity is required'
+      'any.required': 'Quantity is required',
     }),
   operation: Joi.string()
     .trim()
@@ -24,8 +24,8 @@ const cartOperationSchema = Joi.object({
     .messages({
       'any.only': 'Operation must be either "add" or "remove"',
       'string.empty': 'Operation cannot be empty',
-      'any.required': 'Operation is required'
-    })
+      'any.required': 'Operation is required',
+    }),
 });
 
 module.exports = { checkoutCartSchema, cartOperationSchema };

@@ -1,19 +1,19 @@
-require("dotenv").config();
-const mongoose = require("mongoose");
-const app = require("./app"); 
-const {setupSwaggerDocs} = require("./utils/swagger")
+require('dotenv').config();
+const mongoose = require('mongoose');
+const app = require('./app');
+const { setupSwaggerDocs } = require('./utils/swagger');
 const DB_URI = process.env.MONGOLAB_URI;
 
 mongoose.connect(DB_URI)
-  .then(() => console.log("Connected to MongoDB"))
+  .then(() => console.log('Connected to MongoDB'))
   .catch((error) => {
-    console.error("MongoDB connection error:", error);
-    process.exit(1); 
+    console.error('MongoDB connection error:', error);
+    process.exit(1);
   });
 
 const SERVER_PORT = process.env.PORT || process.env.SERVER_PORT || 3030;
 const server = app.listen(SERVER_PORT, () =>
-  console.log(`Server is running on port ${SERVER_PORT}`)
+  console.log(`Server is running on port ${SERVER_PORT}`),
 );
 
 server.on('error', (error) => {
@@ -24,7 +24,7 @@ server.on('error', (error) => {
 
 // Swagger - only in development mode
 if (process.env.NODE_ENV === 'development') {
-    setupSwaggerDocs(app, SERVER_PORT);
-  }
+  setupSwaggerDocs(app, SERVER_PORT);
+}
 
 module.exports = server;

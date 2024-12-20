@@ -15,22 +15,22 @@ describe('User Service', () => {
   });
 
   describe('registerUser', () => {
-    it('should register a new user successfully', async () => {
+    it('should register a new user successfully', async() => {
       // Arrange
       const username = 'testuser';
       const email = 'testuser@example.com';
       const password = 'password123';
 
-      Users.findOne.mockResolvedValueOnce(null); 
-      hashPassword.mockReturnValueOnce('hashedpassword'); 
+      Users.findOne.mockResolvedValueOnce(null);
+      hashPassword.mockReturnValueOnce('hashedpassword');
       const newUserMock = {
         username,
         email,
         role: 'registered_user',
-        save: jest.fn().mockResolvedValueOnce(true)
+        save: jest.fn().mockResolvedValueOnce(true),
       };
-      Users.mockImplementation(() => newUserMock); 
-      generateToken.mockReturnValueOnce('testtoken'); 
+      Users.mockImplementation(() => newUserMock);
+      generateToken.mockReturnValueOnce('testtoken');
 
       // Act
       const result = await registerUser(username, email, password);
@@ -40,21 +40,21 @@ describe('User Service', () => {
         username,
         email,
         token: 'testtoken',
-        role: 'registered_user'
+        role: 'registered_user',
       });
 
       expect(Users.findOne).toHaveBeenCalledWith({ $or: [{ username }, { email }] });
       expect(newUserMock.save).toHaveBeenCalled();
     });
 
-    it('should throw a ValidationError if username or email already exists', async () => {
+    it('should throw a ValidationError if username or email already exists', async() => {
       Users.findOne.mockResolvedValueOnce({ username: 'testuser' });
 
       await expect(registerUser('testuser', 'testuser@example.com', 'password123'))
         .rejects.toThrow(ValidationError);
     });
 
-    it('should throw a DatabaseError if an unexpected error occurs', async () => {
+    it('should throw a DatabaseError if an unexpected error occurs', async() => {
       Users.findOne.mockRejectedValueOnce(new Error('Database is down'));
 
       await expect(registerUser('testuser', 'testuser@example.com', 'password123'))
@@ -63,7 +63,7 @@ describe('User Service', () => {
   });
 
   describe('getUserByUsername', () => {
-    it('should return user details successfully', async () => {
+    it('should return user details successfully', async() => {
       const mockUser = { username: 'testuser', email: 'testuser@example.com' };
       Users.findOne.mockResolvedValueOnce(mockUser);
 
@@ -73,13 +73,13 @@ describe('User Service', () => {
       expect(Users.findOne).toHaveBeenCalledWith({ username: 'testuser' }, { _id: 0, __v: 0, password: 0 });
     });
 
-    it('should throw a NotFoundError if user does not exist', async () => {
+    it('should throw a NotFoundError if user does not exist', async() => {
       Users.findOne.mockResolvedValueOnce(null);
 
       await expect(getUserByUsername('unknownuser')).rejects.toThrow(NotFoundError);
     });
 
-    it('should throw a DatabaseError if an unexpected error occurs', async () => {
+    it('should throw a DatabaseError if an unexpected error occurs', async() => {
       Users.findOne.mockRejectedValueOnce(new Error('Database is down'));
 
       await expect(getUserByUsername('testuser')).rejects.toThrow(DatabaseError);
@@ -87,7 +87,7 @@ describe('User Service', () => {
   });
 
   describe('deleteUserByUsername', () => {
-    it('should delete user successfully', async () => {
+    it('should delete user successfully', async() => {
       Users.findOneAndDelete.mockResolvedValueOnce(true);
 
       const result = await deleteUserByUsername('testuser');
@@ -96,13 +96,13 @@ describe('User Service', () => {
       expect(Users.findOneAndDelete).toHaveBeenCalledWith({ username: 'testuser' });
     });
 
-    it('should throw a NotFoundError if user does not exist', async () => {
+    it('should throw a NotFoundError if user does not exist', async() => {
       Users.findOneAndDelete.mockResolvedValueOnce(null);
 
       await expect(deleteUserByUsername('unknownuser')).rejects.toThrow(NotFoundError);
     });
 
-    it('should throw a DatabaseError if an unexpected error occurs', async () => {
+    it('should throw a DatabaseError if an unexpected error occurs', async() => {
       Users.findOneAndDelete.mockRejectedValueOnce(new Error('Database is down'));
 
       await expect(deleteUserByUsername('testuser')).rejects.toThrow(DatabaseError);
@@ -110,7 +110,7 @@ describe('User Service', () => {
   });
 
   describe('loginUser', () => {
-    it('should log in a user successfully', async () => {
+    it('should log in a user successfully', async() => {
       const mockUser = { username: 'testuser', password: 'hashedpassword', email: 'testuser@example.com', role: 'registered_user' };
       Users.findOne.mockResolvedValueOnce(mockUser);
       verifyPassword.mockReturnValueOnce(true);
@@ -122,17 +122,17 @@ describe('User Service', () => {
         username: 'testuser',
         email: 'testuser@example.com',
         token: 'testtoken',
-        role: 'registered_user'
+        role: 'registered_user',
       });
     });
 
-    it('should throw an NotFoundError if user is not found', async () => {
+    it('should throw an NotFoundError if user is not found', async() => {
       Users.findOne.mockResolvedValueOnce(null);
 
       await expect(loginUser('unknownuser', 'password123')).rejects.toThrow(NotFoundError);
     });
 
-    it('should throw an UnauthorizedError if password is incorrect', async () => {
+    it('should throw an UnauthorizedError if password is incorrect', async() => {
       const mockUser = { username: 'testuser', password: 'hashedpassword' };
       Users.findOne.mockResolvedValueOnce(mockUser);
       verifyPassword.mockReturnValueOnce(false);
@@ -140,7 +140,7 @@ describe('User Service', () => {
       await expect(loginUser('testuser', 'wrongpassword')).rejects.toThrow(UnauthorizedError);
     });
 
-    it('should throw a DatabaseError if an unexpected error occurs', async () => {
+    it('should throw a DatabaseError if an unexpected error occurs', async() => {
       Users.findOne.mockRejectedValueOnce(new Error('Database is down'));
 
       await expect(loginUser('testuser', 'password123')).rejects.toThrow(DatabaseError);
@@ -148,7 +148,7 @@ describe('User Service', () => {
   });
 
   describe('getUser', () => {
-    it('should return user details successfully', async () => {
+    it('should return user details successfully', async() => {
       const mockUser = { username: 'testuser', email: 'testuser@example.com' };
       Users.findOne.mockResolvedValueOnce(mockUser);
 
@@ -158,13 +158,13 @@ describe('User Service', () => {
       expect(Users.findOne).toHaveBeenCalledWith({ username: 'testuser' }, { _id: 0, __v: 0, password: 0 });
     });
 
-    it('should throw a NotFoundError if user does not exist', async () => {
+    it('should throw a NotFoundError if user does not exist', async() => {
       Users.findOne.mockResolvedValueOnce(null);
 
       await expect(getUser('unknownuser')).rejects.toThrow(NotFoundError);
     });
 
-    it('should throw a DatabaseError if an unexpected error occurs', async () => {
+    it('should throw a DatabaseError if an unexpected error occurs', async() => {
       Users.findOne.mockRejectedValueOnce(new Error('Database is down'));
 
       await expect(getUser('testuser')).rejects.toThrow(DatabaseError);
