@@ -24,7 +24,7 @@ const deleteUserHandler = async(req, res, next) => {
   const username = req.currentUser.username;
   try {
     await deleteUserByUsername(username);
-    res.status(204).send();
+    res.status(200).json({ message: 'User removed successfully' });
   } catch (error) {
     next(error);
   }

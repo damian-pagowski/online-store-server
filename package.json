@@ -7,7 +7,7 @@
     "seed": "node ./utils/seed.js",
     "test:unit": "jest test/unit --runInBand",
     "test:integration": "jest test/integration --runInBand",
-    "test:e2e": "newman run test/postman/postman_collection.json --environment test/postman/env.json"
+    "test:e2e": "newman run test/postman/DamiansStoreApiTests.postman_collection.json --environment test/postman/env.json"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
